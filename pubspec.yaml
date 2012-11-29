@@ -1,6 +1,6 @@
 name:  mustache4dart
 description:  A mustache implementation for Dart language
 
-#dependencies:
+dependencies:
 #  js: any
-#  unittest: { sdk: unittest }
+  unittest: { sdk: unittest }
