@@ -1,4 +1,5 @@
 name:  mustache4dart
+version: 0.0.0-dev
 description:  A mustache implementation for Dart language
 
 dependencies:
