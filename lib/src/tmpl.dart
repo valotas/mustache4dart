@@ -35,7 +35,7 @@ class _ExpressionToken extends _Token {
   String toString() => "ExpressionToken($_val)";
 }
 
-class _Template implements Iterable<_Token> {
+class _Template extends Collection<_Token> {
   static final RegExp _EXP = new RegExp("\{\{([^\}]+)\}\}", multiLine: true);
   final List<_Token> tokens;
   
@@ -48,6 +48,9 @@ class _Template implements Iterable<_Token> {
       tokens.add(new _ExpressionToken(m[1]));
       lastStart = m.end;
     });
+    if (tokens.isEmpty) {
+      tokens.add(new _StringToken(template));
+    }
     return new _Template._internal(tokens);
   }
   
@@ -58,4 +61,9 @@ class _Template implements Iterable<_Token> {
   _Token operator [](int index) {
     return tokens[index];
   }
+  
+  Collection<_Token> map(f(_Token element)) => tokens.map(f);
+  Collection<_Token> filter(bool f(_Token element)) => tokens.filter(f);
+  int get length => tokens.length;
+
 }
