@@ -2,6 +2,7 @@ import 'package:/unittest/unittest.dart';
 
 part '../lib/src/tmpl.dart';
 part '../lib/src/mustache.dart';
+part '../lib/src/mustache_context.dart';
 
 void main() {
   test('Create template', () {
@@ -15,5 +16,10 @@ void main() {
   test('Contextless template', () {
     Mustache m = new Mustache();
     expect(m.render('Ένα φανταστικό template', null), 'Ένα φανταστικό template');
+  });
+  
+  test('Simple template with map context', () {
+    Mustache m = new Mustache();
+    expect(m.render('Hello {{name}}!', {'name': 'George'}), 'Hello George!');
   });
 }
