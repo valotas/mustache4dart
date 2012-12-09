@@ -48,8 +48,12 @@ class _Template extends Collection<_Token> {
       tokens.add(new _ExpressionToken(m[1]));
       lastStart = m.end;
     });
-    if (tokens.isEmpty) {
+    
+    if (lastStart == 0) { //The case of no match found
       tokens.add(new _StringToken(template));
+    }
+    else if (lastStart < template.length) { //add the stuff after the last found expression
+      tokens.add(new _StringToken(template.substring(lastStart)));
     }
     return new _Template._internal(tokens);
   }
