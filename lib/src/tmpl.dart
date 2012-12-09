@@ -30,7 +30,7 @@ class _ExpressionToken extends _Token {
   
   _ExpressionToken(this._val);
   
-  apply(context) => throw new Exception('Not implemented');
+  apply(MustacheContext ctx) => ctx.getValue(_val);
   
   String toString() => "ExpressionToken($_val)";
 }
