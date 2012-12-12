@@ -13,13 +13,8 @@ void main() {
     expect(t[3], new _ExpressionToken('name2'));
   });
   
-  test('Contextless template', () {
-    Mustache m = new Mustache();
-    expect(m.render('Ένα φανταστικό template', null), 'Ένα φανταστικό template');
-  });
-  
-  test('Simple template with map context', () {
-    Mustache m = new Mustache();
-    expect(m.render('Hello {{name}}!', {'name': 'George'}), 'Hello George!');
-  });
+  Mustache m = new Mustache();
+  test('Contextless template', () => expect(m.render('Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
+  test('Simple template with map context', () => expect(m.render('Hello {{name}}!', {'name': 'George'}), 'Hello George!'));
+  test('Html escaped output', () => expect(m.render('Escaped: {{html}}', {'html': '!@#\$%^&*()?<>'}), 'Escaped: !@#\$%^&amp;*()?&lt;&gt;'));
 }
