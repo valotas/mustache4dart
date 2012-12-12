@@ -36,7 +36,7 @@ class _ExpressionToken extends _Token {
 }
 
 class _Template extends Collection<_Token> {
-  static final RegExp _EXP = new RegExp("\{\{([^\}]+)\}\}", multiLine: true);
+  static final RegExp _EXP = new RegExp("\{{2}([^\}]+)\}{2}", multiLine: true);
   final List<_Token> tokens;
   
   factory _Template(String template) {
