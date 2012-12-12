@@ -1,42 +1,7 @@
 part of mustache4dart;
 
-abstract class _Token {
-  
-  apply(MustacheContext context);
-  
-  String get _val;
-  
-  bool operator ==(other) {
-    if (other is _Token) {
-     _Token st = other;
-     return _val == st._val;
-    }
-    return false;
-  }
-}
-
-class _StringToken extends _Token {
-  final String _val;
-  
-  _StringToken(this._val);
-  
-  apply(context) => _val;
-  
-  String toString() => "StringToken($_val)";
-}
-
-class _ExpressionToken extends _Token {
-  final String _val;
-  
-  _ExpressionToken(this._val);
-  
-  apply(MustacheContext ctx) => ctx.getValue(_val);
-  
-  String toString() => "ExpressionToken($_val)";
-}
-
 class _Template extends Collection<_Token> {
-  static final RegExp _EXP = new RegExp("\{{2}([^\}]+)\}{2}", multiLine: true);
+  static final RegExp _EXP = new RegExp("\{{2,3}([^\}]+)(\}{2,3})", multiLine: true);
   final List<_Token> tokens;
   
   factory _Template(String template) {
@@ -45,7 +10,7 @@ class _Template extends Collection<_Token> {
     num lastStart = 0;
     _EXP.allMatches(template).forEach((m) {
       tokens.add(new _StringToken(template.substring(lastStart, m.start)));
-      tokens.add(new _ExpressionToken(m[1]));
+      tokens.add(new _ExpressionToken(m[1], m[2].length == 2));
       lastStart = m.end;
     });
     

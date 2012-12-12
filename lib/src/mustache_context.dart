@@ -6,11 +6,5 @@ class MustacheContext {
   
   MustacheContext(this.ctx);
   
-  String getValue(String key) => escapeHtml(ctx[key]);
-  
-  escapeHtml(String input) => input.replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&apos;");
+  String getValue(String key) => ctx[key];
 }
