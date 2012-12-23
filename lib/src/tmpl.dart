@@ -1,12 +1,11 @@
 part of mustache4dart;
 
-class _Template extends Collection<_Token> {
+class _Template extends Iterable<_Token> {
   static final RegExp _EXP = new RegExp("\{{2,3}([^\}]+)(\}{2,3})", multiLine: true);
-  final List<_Token> tokens;
+  final Iterable<_Token> tokens;
   
   factory _Template(String template) {
-    //print(template);
-    List<_Token> tokens = [];
+    TokenList tokens = new TokenList();
     num lastStart = 0;
     _EXP.allMatches(template).forEach((m) {
       tokens.add(new _StringToken(template.substring(lastStart, m.start)));
@@ -27,12 +26,7 @@ class _Template extends Collection<_Token> {
   
   Iterator<_Token> iterator() => tokens.iterator();
   
-  _Token operator [](int index) {
-    return tokens[index];
+  String toString() {
+    return "Template($tokens)";
   }
-  
-  Collection<_Token> map(f(_Token element)) => tokens.map(f);
-  Collection<_Token> filter(bool f(_Token element)) => tokens.filter(f);
-  int get length => tokens.length;
-
 }

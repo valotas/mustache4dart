@@ -6,14 +6,6 @@ part '../lib/src/mustache.dart';
 part '../lib/src/mustache_context.dart';
 
 void main() {
-  test('Create template', () {
-    var t = new _Template('Hello {{name}}!\nMy name is {{name2}}');
-    expect(t[0], new _StringToken('Hello '));
-    expect(t[1], new _ExpressionToken('name', true));
-    expect(t[2], new _StringToken('!\nMy name is '));
-    expect(t[3], new _ExpressionToken('name2', true));
-  });
-  
   Mustache m = new Mustache();
   test('Contextless template', () => expect(m.render('Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
   test('Simple template with map context', () => expect(m.render('Hello {{name}}!', {'name': 'George'}), 'Hello George!'));
@@ -21,5 +13,6 @@ void main() {
   test('No html escaped with tripple brackets', () => expect(m.render('Not escaped: {{{html}}}', {'html': '!@#\$%^&*()?<>'}), 'Not escaped: !@#\$%^&*()?<>'));
   test('No html escaped with & at the beginning of a key', () => expect(m.render('Not escaped: {{& html}}', {'html': '!@#\$%^&*()?<>'}), 'Not escaped: !@#\$%^&*()?<>'));
   test('Simple non existing section', () => expect(m.render('Shown. {{#nothin}}Never shown!{{/nothin}}', {'person': true}), 'Shown. '));
-  test('Simple existing section', () => expect(m.render('Shown: {{#person}}Yes, there is a person{{/person}}', {'person': true}), 'Shown: Yes, there is a person'));
+  
+  //test('Simple existing section', () => expect(m.render('Shown: {{#person}}Yes, there is a person{{/person}}', {'person': true}), 'Shown: Yes, there is a person'));
 }
