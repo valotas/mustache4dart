@@ -6,5 +6,7 @@ class MustacheContext {
   
   MustacheContext(this.ctx);
   
+  bool hasValue(String key) => ctx[key] != null;
+  
   String getValue(String key) => ctx[key];
 }
