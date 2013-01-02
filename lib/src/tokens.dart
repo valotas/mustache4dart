@@ -4,7 +4,7 @@ class TokenList extends Iterable<_Token> {
   _Token head;
   _Token tail;
   
-  Iterator<_Token> iterator() => new TokenListIterator(head);
+  Iterator<_Token> iterator() => new TokenIterator(head);
   
   void add(_Token other) {
     if (head == null) {
@@ -12,7 +12,7 @@ class TokenList extends Iterable<_Token> {
       tail = other;
     }
     else {
-      tail._next = other;
+      tail.next = other;
       tail = other;      
     }
   }
@@ -33,26 +33,28 @@ class TokenList extends Iterable<_Token> {
   }
 }
 
-class TokenListIterator implements Iterator<_Token> {
+class TokenIterator implements Iterator<_Token> {
+  _Token start;
   _Token current;
   
-  TokenListIterator(this.current);
+  TokenIterator(this.start);
   
-  bool get hasNext => current != null;
+  bool get hasNext => start != null || (current != null && current.next != null);
 
   _Token next() {
-    if (current == null) {
-     return null; 
+    if (current == null && start != null) {
+      current = start;
+      start = null;
     }
-    _Token next = current._next;
-    _Token result = current;
-    current = next;
-    return result;
+    else {
+      current = current.next;
+    }
+    return current;
   }
 }
 
 abstract class _Token {
-  _Token _next;
+  _Token next;
   
   StringBuffer apply(MustacheContext context);
   
@@ -81,19 +83,17 @@ class _ExpressionToken extends _Token {
   final String _val;
 
   factory _ExpressionToken(String val, bool escapeHtml) {
-    //print("1> $val, $escapeHtml");
     if (escapeHtml && val.startsWith('& ')) {
       escapeHtml = false;
       val = val.substring(2);
     }
-    //print("2> $val, $escapeHtml");
     if (!escapeHtml) {
       return new _ExpressionToken.simple(val);
     }
     
     String control = val.substring(0, 1);
     String newVal = val.substring(1);
-    
+        
     if ('#' == control) {
       return new _StartSectionToken(newVal); 
     } else if ('/' == control) {
@@ -130,13 +130,49 @@ class _EscapeHtmlToken extends _ExpressionToken {
 }
 
 class _StartSectionToken extends _ExpressionToken {
+  _Token _computedNext;
+  
   _StartSectionToken(String val) : super.simple(val);
+  
+  //Override the next getter
+  _Token get next => _computedNext != null ? _computedNext : super.next;
+  
+  apply(MustacheContext ctx) {
+    if (ctx.hasValue(_val)) {
+      _computedNext = null;
+      return ctx.getValue(_val);
+    }
+    else {
+      _computedNext = findEndSectionToken();
+      return "";
+    }
+  }
+  
+  _Token findEndSectionToken() {
+    Iterator<_Token> it = new TokenIterator(super.next);
+    while (it.hasNext) {
+      _Token n = it.next();
+      if (n._val == _val) {
+        return n;
+      }
+    }
+    return null;
+  }
   
   String toString() => "StartSectionToken($_val)";
 }
 
 class _EndSectionToken extends _ExpressionToken {
   _EndSectionToken(String val) : super.simple(val);
+  
+  apply(MustacheContext ctx) {
+    return "";
+  }
+  
+  _Token get next {
+    _Token n = super.next;
+    return n == null ? null : n.next;
+  }
   
   String toString() => "EndSectionToken($_val)";
 }
