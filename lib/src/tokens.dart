@@ -138,14 +138,8 @@ class _StartSectionToken extends _ExpressionToken {
   _Token get next => _computedNext != null ? _computedNext : super.next;
   
   apply(MustacheContext ctx) {
-    if (ctx.hasValue(_val)) {
-      _computedNext = null;
-      return ctx.getValue(_val);
-    }
-    else {
-      _computedNext = findEndSectionToken();
-      return "";
-    }
+    _computedNext = ctx.hasValue(_val) ? null : findEndSectionToken();
+    return "";
   }
   
   _Token findEndSectionToken() {
