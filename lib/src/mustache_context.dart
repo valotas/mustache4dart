@@ -11,9 +11,32 @@ class MustacheContext {
     if (val == null) {
       return 0;
     }
-    //InstanceMirror im = reflect(val);
-    //print(im);
+    
+    Iterable it = getIterable(val);
+    if (it != null) {
+      return it.length;
+    }
     return 1;
+  }
+  
+  Iterable getIterable(val) {
+    InstanceMirror im = reflect(val);
+    var t = im.type;
+    if ('dart:core.Iterable' == t.qualifiedName) {
+      return val;
+    }
+    if ('dart:core.Iterable' == t.superclass.qualifiedName) {
+      return val;
+    }
+    for (ClassMirror cm in t.superinterfaces) {
+      if ('dart:core.Iterable' == cm.qualifiedName) {
+        return val;
+      }
+      if ('dart:core.Iterable' == cm.superclass.qualifiedName) {
+        return val;
+      }
+    }
+    return null;
   }
   
   String getValue(String key) => ctx[key];
