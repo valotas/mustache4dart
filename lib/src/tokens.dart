@@ -1,7 +1,7 @@
 part of mustache4dart;
 
 /**
- * This is the main class describing a mustache token. ({{token}}).
+ * This is the main class describing a compiled token.
  */
 abstract class _Token {
   _Token next;
@@ -9,8 +9,7 @@ abstract class _Token {
   StringBuffer apply(MustacheContext context);
 
   /**
-   * This describes the value of the token. It should be the string between an opening
-   * and closing mustache.
+   * This describes the value of the token.
    */
   String get _val;
 
@@ -26,6 +25,10 @@ abstract class _Token {
   }
 }
 
+/**
+ * The simplest implementation of a token is the _StringToken which is any string that is not within
+ * an opening and closing mustache.
+ */
 class _StringToken extends _Token {
   final String _val;
 
@@ -36,6 +39,10 @@ class _StringToken extends _Token {
   String toString() => "StringToken($_val)";
 }
 
+/**
+ * This is a token that represends a mustache expression. That is anything between an opening and
+ * closing mustache.
+ */
 class _ExpressionToken extends _Token {
   final String _val;
 
@@ -95,14 +102,30 @@ class _StartSectionToken extends _ExpressionToken {
   _Token get next => _computedNext != null ? _computedNext : super.next;
 
   apply(MustacheContext ctx) {
-    _computedNext = ctx.hasValue(_val) ? null : findEndSectionToken();
-    return "";
+    int iterations = ctx.getIterations(_val);
+    if (iterations == 0) {
+      _computedNext = forEachUntilEndSection(null);
+      return "";
+    }
+    else {
+      StringBuffer result = new StringBuffer("");
+      print("Iterations: $iterations");
+      while (iterations-- > 0) {
+        _computedNext = forEachUntilEndSection((_Token t) {
+          result.add(t.apply(ctx));
+        });
+      }
+      return result;
+    }
   }
 
-  _Token findEndSectionToken() {
+  forEachUntilEndSection(void f(_Token)) {
     Iterator<_Token> it = new TokenIterator(super.next);
     while (it.moveNext()) {
       _Token n = it.current;
+      if (f != null) {
+        f(n);
+      }
       if (n._val == _val) {
         return n;
       }
