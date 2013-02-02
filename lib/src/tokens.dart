@@ -4,7 +4,7 @@ class TokenList extends Iterable<_Token> {
   _Token head;
   _Token tail;
   
-  Iterator<_Token> iterator() => new TokenIterator(head);
+  Iterator<_Token> get iterator => new TokenIterator(head);
   
   void add(_Token other) {
     if (head == null) {
@@ -38,10 +38,8 @@ class TokenIterator implements Iterator<_Token> {
   _Token current;
   
   TokenIterator(this.start);
-  
-  bool get hasNext => start != null || (current != null && current.next != null);
-
-  _Token next() {
+    
+  bool moveNext() {
     if (current == null && start != null) {
       current = start;
       start = null;
@@ -49,7 +47,7 @@ class TokenIterator implements Iterator<_Token> {
     else {
       current = current.next;
     }
-    return current;
+    return current != null;
   }
 }
 
@@ -144,8 +142,9 @@ class _StartSectionToken extends _ExpressionToken {
   
   _Token findEndSectionToken() {
     Iterator<_Token> it = new TokenIterator(super.next);
-    while (it.hasNext) {
-      _Token n = it.next();
+    it.moveNext();
+    while (it.current != null) {
+      _Token n = it.current;
       if (n._val == _val) {
         return n;
       }

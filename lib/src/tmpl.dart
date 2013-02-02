@@ -24,7 +24,7 @@ class _Template extends Iterable<_Token> {
   
   _Template._internal(this.tokens);
   
-  Iterator<_Token> iterator() => tokens.iterator();
+  Iterator<_Token> get iterator => tokens.iterator;
   
   String toString() {
     return "Template($tokens)";

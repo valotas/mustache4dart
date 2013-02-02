@@ -11,9 +11,7 @@ class Mustache {
     }
     MustacheContext ctx = new MustacheContext(context);
     StringBuffer result = new StringBuffer();
-    for (_Token t in tmpl) {
-      result.add(t.apply(ctx));
-    }
+    tmpl.forEach((t) => result.add(t.apply(ctx)));
     return result.toString();
   }
 }
