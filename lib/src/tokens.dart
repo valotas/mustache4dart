@@ -1,12 +1,22 @@
 part of mustache4dart;
 
+/**
+ * This is the main class describing a mustache token. ({{token}}).
+ */
 abstract class _Token {
   _Token next;
 
   StringBuffer apply(MustacheContext context);
 
+  /**
+   * This describes the value of the token. It should be the string between an opening
+   * and closing mustache.
+   */
   String get _val;
 
+  /**
+   * Two tokens are the same if their _val are the same.
+   */
   bool operator ==(other) {
     if (other is _Token) {
      _Token st = other;
