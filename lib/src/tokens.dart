@@ -142,8 +142,7 @@ class _StartSectionToken extends _ExpressionToken {
   
   _Token findEndSectionToken() {
     Iterator<_Token> it = new TokenIterator(super.next);
-    it.moveNext();
-    while (it.current != null) {
+    while (it.moveNext()) {
       _Token n = it.current;
       if (n._val == _val) {
         return n;
