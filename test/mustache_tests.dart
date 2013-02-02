@@ -1,9 +1,6 @@
 import 'package:/unittest/unittest.dart';
 
-part '../lib/src/tmpl.dart';
-part '../lib/src/tokens.dart';
-part '../lib/src/mustache.dart';
-part '../lib/src/mustache_context.dart';
+import '../lib/mustache4dart.dart';
 
 void main() {
   Mustache m = new Mustache();
