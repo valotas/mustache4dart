@@ -110,6 +110,7 @@ class _StartSectionToken extends _ExpressionToken {
     else {
       StringBuffer result = new StringBuffer("");
       print("Iterations: $iterations");
+      //MustacheContext subctx = ctx.getContext(_val);
       while (iterations-- > 0) {
         _computedNext = forEachUntilEndSection((_Token t) {
           result.add(t.apply(ctx));

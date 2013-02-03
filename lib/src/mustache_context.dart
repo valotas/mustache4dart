@@ -1,10 +1,12 @@
 part of mustache4dart;
 
-//We start with a very dummy approach!
 class MustacheContext {
-  final Map<String, Object> ctx;
+  final ctx;
+  final InstanceMirror ctxIm;
   
-  MustacheContext(this.ctx);
+  factory MustacheContext(ob) => new MustacheContext._internal(ob, reflect(ob));
+  
+  MustacheContext._internal(this.ctx, this.ctxIm);
   
   int getIterations(String key) {
     var val = ctx[key];
@@ -39,5 +41,28 @@ class MustacheContext {
     return null;
   }
   
-  String getValue(String key) => ctx[key];
+  String getValue(String key) {
+    try {
+      return ctx[key];      
+    } catch (NoSuchMethodError) {
+      //No idea how to get a field value via reflection. There is no sync API as
+      //I see: http://code.google.com/p/dart/issues/detail?id=4633 and I do not
+      //feel switching everything to Future at the moment.
+      var completed = false;
+      var val = null;
+      var fim = ctxIm.getField(key)
+          .catchError((e) => print("Could not compute value of $key"), test: (e) => true)
+          .then((v) {
+            print("Completed computation of $key and got value: $v");
+            val = v;
+            completed = true;
+          })
+          .whenComplete(() => print("Completed computation of $key"));
+      Future.wait([fim]);
+      return val;
+    }
+  }
+  
+  MustacheContext getSubContext(String key) => new MustacheContext(ctx[key]);
+  
 }
