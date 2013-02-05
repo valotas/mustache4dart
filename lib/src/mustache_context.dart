@@ -10,35 +10,14 @@ class MustacheContext {
     
   Iterable<MustacheContext> getIterable(val) {
     var v = _getValue(val);
-    Iterable i = getIterableValue(v);
-    if (i == null) {
-      return null;
+    if (v is Iterable) {
+      return new IterableMustacheContextDecorator(v);
     }
     else {
-      return new IterableMustacheContextDecorator(i);
+      return null;
     }
   }
-  
-  Iterable getIterableValue(val) {
-    InstanceMirror im = reflect(val);
-    var t = im.type;
-    if ('dart:core.Iterable' == t.qualifiedName) {
-      return val;
-    }
-    if ('dart:core.Iterable' == t.superclass.qualifiedName) {
-      return val;
-    }
-    for (ClassMirror cm in t.superinterfaces) {
-      if ('dart:core.Iterable' == cm.qualifiedName) {
-        return val;
-      }
-      if ('dart:core.Iterable' == cm.superclass.qualifiedName) {
-        return val;
-      }
-    }
-    return null;
-  }
-  
+    
   operator [](String key) {
     return _getValue(key);
   }
