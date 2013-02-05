@@ -9,7 +9,7 @@ class MustacheContext {
   MustacheContext._internal(this.ctx, this.ctxIm);
   
   int getIterations(String key) {
-    var val = ctx[key];
+    var val = getValue(key);
     if (val == null) {
       return 0;
     }
@@ -49,7 +49,13 @@ class MustacheContext {
       //As I do not feel switching everything to Future at the moment, we use the 
       //deprecatedFutureValue as seen at 
       //http://code.google.com/p/dart/source/browse/experimental/lib_v2/dart/sdk/lib/_internal/dartdoc/lib/src/json_serializer.dart?spec=svn16262&r=16262
-      return deprecatedFutureValue(ctxIm.getField(key)).reflectee;
+      var im = deprecatedFutureValue(ctxIm.getField(key));
+      if (im is InstanceMirror) {
+        return im.reflectee;
+      }
+      else {
+        return null;
+      }
     }
   }
   

@@ -9,14 +9,17 @@ void main() {
     expect(ctx.getIterations('k2'), 1);
     expect(ctx.getIterations('k3'), 0);
     expect(ctx.getValue('k1'), 'value1');
+    expect(ctx.getValue('k3'), null);
   });
   
   test('Simple context with object test', () {
     var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
-    //expect(ctx.getIterations('name'), 1);
-    //expect(ctx.getIterations('lastname'), 1);
     expect(ctx.getValue('name'), 'Γιώργος');
     expect(ctx.getValue('lastname'), 'Βαλοτάσιος');
+    expect(ctx.getValue('last'), null);
+    expect(ctx.getIterations('name'), 1);
+    expect(ctx.getIterations('lastname'), 1);
+    expect(ctx.getIterations('l'), 0);
   });
 }
 
