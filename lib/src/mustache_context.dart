@@ -7,21 +7,19 @@ class MustacheContext {
   factory MustacheContext(ob) => new MustacheContext._internal(ob, reflect(ob));
   
   MustacheContext._internal(this.ctx, this.ctxIm);
-  
-  int getIterations(String key) {
-    var val = getValue(key);
-    if (val == null) {
-      return 0;
-    }
     
-    Iterable it = _getIterable(val);
-    if (it != null) {
-      return it.length;
+  Iterable<MustacheContext> getIterable(val) {
+    var v = getValue(val);
+    Iterable i = getIterableValue(v);
+    if (i == null) {
+      return null;
     }
-    return 1;
+    else {
+      return new IterableMustacheContextDecorator(i);
+    }
   }
   
-  static Iterable _getIterable(val) {
+  Iterable getIterableValue(val) {
     InstanceMirror im = reflect(val);
     var t = im.type;
     if ('dart:core.Iterable' == t.qualifiedName) {
@@ -41,7 +39,7 @@ class MustacheContext {
     return null;
   }
   
-  String getValue(String key) {
+  getValue(String key) {
     try {
       return ctx[key];      
     } catch (NoSuchMethodError) {
@@ -59,6 +57,35 @@ class MustacheContext {
     }
   }
   
-  MustacheContext getSubContext(String key) => new MustacheContext(ctx[key]);
+  MustacheContext getSubContext(String key) => new MustacheContext(getValue(key));
+}
+
+class IterableMustacheContextDecorator extends Iterable<MustacheContext> {
+  final Iterable delegate;
   
+  IterableMustacheContextDecorator(this.delegate);
+  
+  Iterator<MustacheContext> get iterator => new MustachContextIteratorDecorator(delegate.iterator);
+  
+  int get length {
+    return delegate.length;
+  }
+  
+}
+
+class MustachContextIteratorDecorator extends Iterator<MustacheContext> {
+  Iterator delegate;
+  MustacheContext current;
+  
+  MustachContextIteratorDecorator(this.delegate);
+  
+  bool moveNext() {
+    if (delegate.moveNext()) {
+      current = new MustacheContext(delegate.current);
+      return true;
+    } else {
+      current = null;
+      return false;
+    }
+  }
 }
