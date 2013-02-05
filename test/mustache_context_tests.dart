@@ -35,11 +35,32 @@ void main() {
     expect(ctx.getIterable('k').length, 2);
     expect(ctx.getIterable('k').last.getIterable('k3').length, 2);
   });
+  
+  test('Obect with iterables test', () {
+    var p = new _Person('Νικόλας', 'Νικολάου');
+    p.contactInfos.add(new _ContactInfo('Address', {
+      'Street': 'Κολοκωτρόνη',
+      'Num': '31',
+      'Zip': '42100',
+      'Country': 'GR'
+    }));
+    p.contactInfos.add(new _ContactInfo('skype', 'some1'));
+    var ctx = new MustacheContext(p);
+    expect(ctx.getIterable('contactInfos').length, 2);
+  });
 }
 
 class _Person {
   final name;
   final lastname;
+  List<_ContactInfo> contactInfos = [];
   
   _Person(this.name, this.lastname);
+}
+
+class _ContactInfo {
+  final String type;
+  final value;
+  
+  _ContactInfo(this.type, this.value);
 }
