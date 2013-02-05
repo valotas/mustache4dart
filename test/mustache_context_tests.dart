@@ -8,15 +8,15 @@ void main() {
     expect(ctx.getIterable('k1'), null);
     expect(ctx.getIterable('k2'), null);
     expect(ctx.getIterable('k3'), null);
-    expect(ctx.getValue('k1'), 'value1');
-    expect(ctx.getValue('k3'), null);
+    expect(ctx['k1'], 'value1');
+    expect(ctx['k3'], null);
   });
   
   test('Simple context with object test', () {
     var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
-    expect(ctx.getValue('name'), 'Γιώργος');
-    expect(ctx.getValue('lastname'), 'Βαλοτάσιος');
-    expect(ctx.getValue('last'), null);
+    expect(ctx['name'], 'Γιώργος');
+    expect(ctx['lastname'], 'Βαλοτάσιος');
+    expect(ctx['last'], null);
     expect(ctx.getIterable('name'), null);
     expect(ctx.getIterable('lastname'), null);
     expect(ctx.getIterable('l'), null);

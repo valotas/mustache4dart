@@ -9,7 +9,7 @@ class MustacheContext {
   MustacheContext._internal(this.ctx, this.ctxIm);
     
   Iterable<MustacheContext> getIterable(val) {
-    var v = getValue(val);
+    var v = _getValue(val);
     Iterable i = getIterableValue(v);
     if (i == null) {
       return null;
@@ -39,7 +39,11 @@ class MustacheContext {
     return null;
   }
   
-  getValue(String key) {
+  operator [](String key) {
+    return _getValue(key);
+  }
+  
+  _getValue(String key) {
     try {
       return ctx[key];      
     } catch (NoSuchMethodError) {
@@ -57,7 +61,7 @@ class MustacheContext {
     }
   }
   
-  MustacheContext getSubContext(String key) => new MustacheContext(getValue(key));
+  MustacheContext getSubContext(String key) => new MustacheContext(_getValue(key));
 }
 
 class IterableMustacheContextDecorator extends Iterable<MustacheContext> {
