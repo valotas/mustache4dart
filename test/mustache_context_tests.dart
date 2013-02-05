@@ -16,7 +16,7 @@ void main() {
     //expect(ctx.getIterations('name'), 1);
     //expect(ctx.getIterations('lastname'), 1);
     expect(ctx.getValue('name'), 'Γιώργος');
-    expect(ctx.getValue('lastname'), 'Β');
+    expect(ctx.getValue('lastname'), 'Βαλοτάσιος');
   });
 }
 
