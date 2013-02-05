@@ -14,14 +14,14 @@ class MustacheContext {
       return 0;
     }
     
-    Iterable it = getIterable(val);
+    Iterable it = _getIterable(val);
     if (it != null) {
       return it.length;
     }
     return 1;
   }
   
-  Iterable getIterable(val) {
+  static Iterable _getIterable(val) {
     InstanceMirror im = reflect(val);
     var t = im.type;
     if ('dart:core.Iterable' == t.qualifiedName) {
