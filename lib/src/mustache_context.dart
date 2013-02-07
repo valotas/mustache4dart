@@ -2,24 +2,15 @@ part of mustache4dart;
 
 class MustacheContext {
   final ctx;
-  final InstanceMirror ctxIm;
-  
-  factory MustacheContext(ob) => new MustacheContext._internal(ob, reflect(ob));
-  
-  MustacheContext._internal(this.ctx, this.ctxIm);
-    
-  Iterable<MustacheContext> getIterable(val) {
-    var v = _getValue(val);
-    if (v is Iterable) {
-      return new IterableMustacheContextDecorator(v);
-    }
-    else {
-      return null;
-    }
-  }
-    
+
+  MustacheContext(this.ctx);
+
   operator [](String key) {
-    return _getValue(key);
+    var v = _getValue(key);
+    if (v is Iterable) {
+      v = new _IterableMustacheContextDecorator(v);
+    }
+    return v;
   }
   
   _getValue(String key) {
@@ -30,7 +21,7 @@ class MustacheContext {
       //As I do not feel switching everything to Future at the moment, we use the 
       //deprecatedFutureValue as seen at 
       //http://code.google.com/p/dart/source/browse/experimental/lib_v2/dart/sdk/lib/_internal/dartdoc/lib/src/json_serializer.dart?spec=svn16262&r=16262
-      var im = deprecatedFutureValue(ctxIm.getField(key));
+      var im = deprecatedFutureValue(mirror.getField(key));
       if (im is InstanceMirror) {
         return im.reflectee;
       }
@@ -40,27 +31,27 @@ class MustacheContext {
     }
   }
   
+  InstanceMirror get mirror => reflect(ctx);
+  
   MustacheContext getSubContext(String key) => new MustacheContext(_getValue(key));
 }
 
-class IterableMustacheContextDecorator extends Iterable<MustacheContext> {
+class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
   final Iterable delegate;
   
-  IterableMustacheContextDecorator(this.delegate);
+  _IterableMustacheContextDecorator(this.delegate);
   
-  Iterator<MustacheContext> get iterator => new MustachContextIteratorDecorator(delegate.iterator);
+  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(delegate.iterator);
   
-  int get length {
-    return delegate.length;
-  }
+  int get length => delegate.length;
   
 }
 
-class MustachContextIteratorDecorator extends Iterator<MustacheContext> {
+class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
   Iterator delegate;
   MustacheContext current;
   
-  MustachContextIteratorDecorator(this.delegate);
+  _MustachContextIteratorDecorator(this.delegate);
   
   bool moveNext() {
     if (delegate.moveNext()) {
