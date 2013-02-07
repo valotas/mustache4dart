@@ -15,6 +15,9 @@ void main() {
     expect(ctx['name'], 'Γιώργος');
     expect(ctx['lastname'], 'Βαλοτάσιος');
     expect(ctx['last'], null);
+    expect(ctx['fullname'], 'Γιώργος Βαλοτάσιος');
+    expect(ctx['reversedName'], 'ςογρώιΓ');
+    expect(ctx['reversedLastName'], 'ςοισάτολαΒ');
   });
   
   test('Simple map with list of maps test', () {
@@ -51,6 +54,20 @@ class _Person {
   List<_ContactInfo> contactInfos = [];
   
   _Person(this.name, this.lastname);
+  
+  get fullname => "$name $lastname";
+  
+  getReversedName() => _reverse(name);
+  
+  static _reverse(String str) {
+    StringBuffer out = new StringBuffer();
+    for (int i = str.length; i >= 0; i--) {
+      out.add(str[i -1]);
+    }
+    return out.toString();
+  }
+  
+  reversedLastName() => _reverse(lastname);
 }
 
 class _ContactInfo {
