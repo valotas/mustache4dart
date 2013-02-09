@@ -12,7 +12,7 @@ void main() {
   test('Simple non existing section', () => expect(m.render('Shown. {{#nothin}}Never shown!{{/nothin}}', {'person': true}), 'Shown. '));
   test('False value', () => expect(m.render('Shown. {{#show}}Never shown!{{/show}}', {'show': false}), 'Shown. '));
   test('Empty list', () => expect(m.render('Shown. {{#list}}Never shown!{{/list}}', {'list': []}), 'Shown. '));
-  //test('True value', () => expect(m.render('Shown? {{#show}}Yes it is shown!{{/show}}', {'show': true}), 'Shown? Yes it is shown!'));
+  test('True value', () => expect(m.render('Shown? {{#show}}Yes it is shown!{{/show}}', {'show': true}), 'Shown? Yes it is shown!'));
   test('Simple existing section', () => expect(m.render('Shown: {{#person}}Yes, there is a person{{/person}}', {'person': true}), 'Shown: Yes, there is a person'));
   test('Existing section with list', () => expect(m.render('Persons: {{#persons}}{{name}},{{/persons}}', {'persons': [{'name': 'name1'}, {'name': 'name2'}] }), 'Persons: name1,name2,'));
 }
