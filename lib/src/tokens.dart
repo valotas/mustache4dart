@@ -70,7 +70,7 @@ class _ExpressionToken extends _Token {
   _ExpressionToken.simple(this._val);
 
   apply(MustacheContext ctx) {
-    var val = ctx.getValue(_val);
+    var val = ctx[_val];
     if (val == null) {
       return '';
     }
@@ -102,20 +102,22 @@ class _StartSectionToken extends _ExpressionToken {
   _Token get next => _computedNext != null ? _computedNext : super.next;
 
   apply(MustacheContext ctx) {
-    int iterations = ctx.getIterations(_val);
-    if (iterations == 0) {
+    var val = ctx[_val];
+    if (val == null) {
       _computedNext = forEachUntilEndSection(null);
       return "";
     }
-    else {
+    if (val is MustacheContext) {
+      return ""; //TODO: implementation
+    }
+    if (val is Iterable) {
       StringBuffer result = new StringBuffer("");
-      print("Iterations: $iterations");
-      //MustacheContext subctx = ctx.getContext(_val);
-      while (iterations-- > 0) {
+
+      val.forEach((v) {
         _computedNext = forEachUntilEndSection((_Token t) {
-          result.add(t.apply(ctx));
+          result.add(t.apply(v));
         });
-      }
+      });
       return result;
     }
   }
