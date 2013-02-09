@@ -90,7 +90,7 @@ class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
 }
 
 class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
-  Iterator delegate;
+  final Iterator delegate;
   MustacheContext current;
   
   _MustachContextIteratorDecorator(this.delegate);
