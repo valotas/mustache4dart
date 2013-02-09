@@ -11,6 +11,9 @@ class MustacheContext {
       return null;
     }
     if (v is Iterable) {
+      if (v.first == null) {
+        return null;
+      }
       return new _IterableMustacheContextDecorator(v);
     }
     if (v == false) {
