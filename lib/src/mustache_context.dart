@@ -19,6 +19,9 @@ class MustacheContext {
     if (v == false) {
       return null;
     }
+    if (v == true) {
+      return true;
+    }
     if (!(v is String)) {
       return new MustacheContext(v);
     }

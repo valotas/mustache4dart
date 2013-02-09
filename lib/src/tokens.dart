@@ -107,8 +107,11 @@ class _StartSectionToken extends _ExpressionToken {
       _computedNext = forEachUntilEndSection(null);
       return "";
     }
-    if (val is MustacheContext) {
-      return ""; //TODO: implementation
+    if (val == true) {
+      return '';
+    }
+    if (val is Function) {
+      throw new Exception('Not implemented yet!');
     }
     if (val is Iterable) {
       StringBuffer result = new StringBuffer("");
