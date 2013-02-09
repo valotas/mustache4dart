@@ -13,6 +13,9 @@ class MustacheContext {
     if (v is Iterable) {
       return new _IterableMustacheContextDecorator(v);
     }
+    if (v == false) {
+      return null;
+    }
     if (!(v is String)) {
       return new MustacheContext(v);
     }
