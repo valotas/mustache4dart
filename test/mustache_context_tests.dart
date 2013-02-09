@@ -34,7 +34,7 @@ void main() {
     expect(ctx['k'].last['k3'].length, 2);
   });
   
-  test('Obect with iterables test', () {
+  test('Object with iterables test', () {
     var p = new _Person('Νικόλας', 'Νικολάου');
     p.contactInfos.add(new _ContactInfo('Address', {
       'Street': 'Κολοκωτρόνη',
@@ -45,15 +45,31 @@ void main() {
     p.contactInfos.add(new _ContactInfo('skype', 'some1'));
     var ctx = new MustacheContext(p);
     expect(ctx['contactInfos'].length, 2);
+    expect(ctx['contactInfos'].first['value']['Num'], '31');
+  });
+  
+  test('Deep search with object test', () {
+    //create our model:
+    _Person p = null;
+    for (int i = 10; i > 0; i--) {
+      p = new _Person("name$i", "lastname$i", p);
+    }
+    
+    
+    MustacheContext ctx = new MustacheContext(p);
+    expect(ctx['name'], 'name1');
+    expect(ctx['parent']['lastname'], 'lastname2');
+    expect(ctx['parent']['parent']['fullname'], 'name3 lastname3');
   });
 }
 
 class _Person {
   final name;
   final lastname;
+  final _Person parent;
   List<_ContactInfo> contactInfos = [];
   
-  _Person(this.name, this.lastname);
+  _Person(this.name, this.lastname, [this.parent = null]);
   
   get fullname => "$name $lastname";
   

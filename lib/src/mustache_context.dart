@@ -7,8 +7,14 @@ class MustacheContext {
 
   operator [](String key) {
     var v = _getValue(key);
+    if (v == null) {
+      return null;
+    }
     if (v is Iterable) {
-      v = new _IterableMustacheContextDecorator(v);
+      return new _IterableMustacheContextDecorator(v);
+    }
+    if (!(v is String)) {
+      return new MustacheContext(v);
     }
     return v;
   }
@@ -59,19 +65,17 @@ class MustacheContext {
     var membersMirror = members[memberName];
     if (membersMirror == null) {
       //try out a getter:
-      membersMirror = members[_toGetter(memberName)];
+      membersMirror = members[_getterName(memberName)];
     }
     return membersMirror;
   }
   
-  static String _toGetter(String name) {
+  static String _getterName(String name) {
     StringBuffer out = new StringBuffer('get');
     out.add(name[0].toUpperCase());
     out.add(name.substring(1));
     return out.toString();
-  }
-  
-  MustacheContext getSubContext(String key) => new MustacheContext(_getValue(key));
+  }  
 }
 
 class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
