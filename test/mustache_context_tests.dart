@@ -1,3 +1,5 @@
+library mustache_context_tests;
+
 import 'package:/unittest/unittest.dart';
 
 import '../lib/mustache4dart.dart';
