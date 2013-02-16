@@ -127,9 +127,7 @@ class _StartSectionToken extends _ExpressionToken {
       StringBuffer result = new StringBuffer("");
 
       val.forEach((v) {
-        _computedNext = forEachUntilEndSection((_Token t) {
-          result.add(t.apply(v));
-        });
+        _computedNext = forEachUntilEndSection((_Token t) => result.add(t.apply(v)));
       });
       return result;
     }
