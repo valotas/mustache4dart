@@ -12,6 +12,8 @@ abstract class _Token {
    * This describes the value of the token.
    */
   String get _val;
+  
+  String get _uncompiledVal;
 
   /**
    * Two tokens are the same if their _val are the same.
@@ -35,6 +37,8 @@ class _StringToken extends _Token {
   _StringToken(this._val);
 
   apply(context) => _val;
+  
+  String get _uncompiledVal => _val;
 
   String toString() => "StringToken($_val)";
 }
@@ -76,6 +80,8 @@ class _ExpressionToken extends _Token {
     }
     return val;
   }
+  
+  String get _uncompiledVal => "{{& $_val}}";
 
   String toString() => "ExpressionToken($_val)";
 }
@@ -89,6 +95,8 @@ class _EscapeHtmlToken extends _ExpressionToken {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&apos;");
+  
+  String get _uncompiledVal => "{{$_val}}";
 
   String toString() => "EscapeHtmlToken($_val)";
 }
@@ -110,8 +118,10 @@ class _StartSectionToken extends _ExpressionToken {
     if (val == true) {
       return '';
     }
-    if (val is Function) {
-      throw new Exception('Not implemented yet!');
+    if (val is MustacheFunction) {
+      StringBuffer str = new StringBuffer();
+      _computedNext = forEachUntilEndSection((_Token t) => str.add(t._uncompiledVal));
+      return val.apply(str.toString());
     }
     if (val is Iterable) {
       StringBuffer result = new StringBuffer("");
@@ -129,15 +139,17 @@ class _StartSectionToken extends _ExpressionToken {
     Iterator<_Token> it = new TokenIterator(super.next);
     while (it.moveNext()) {
       _Token n = it.current;
-      if (f != null) {
-        f(n);
-      }
       if (n._val == _val) {
         return n;
+      }
+      if (f != null) {
+        f(n);
       }
     }
     return null;
   }
+  
+  String get _uncompiledVal => "{{# $_val}}";
 
   String toString() => "StartSectionToken($_val)";
 }
@@ -153,6 +165,8 @@ class _EndSectionToken extends _ExpressionToken {
     _Token n = super.next;
     return n == null ? null : n.next;
   }
+  
+  String get _uncompiledVal => "{{/ $_val}}";
 
   String toString() => "EndSectionToken($_val)";
 }
