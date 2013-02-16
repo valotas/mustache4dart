@@ -63,6 +63,24 @@ void main() {
     expect(ctx['parent']['lastname'], 'lastname2');
     expect(ctx['parent']['parent']['fullname'], 'name3 lastname3');
   });
+  
+  test('simple MustacheFunction value test', () {
+    var t = new _Transformer();
+    var ctx = new MustacheContext(t);
+    var f = ctx['transform'];
+    
+    expect(f is MustacheFunction, true);
+    expect(f.apply('123 456 777'), t.transform('123 456 777'));
+  });
+  
+  test('MustacheFunction from anonymus function tets', () {
+    var map = {'transform': (String val) => "$val!"};
+    var ctx = new MustacheContext(map);
+    var f = ctx['transform'];
+    
+    expect(f is MustacheFunction, true);
+    expect(f.apply('woh'), 'woh!');
+  });
 }
 
 class _Person {
@@ -93,4 +111,8 @@ class _ContactInfo {
   final value;
   
   _ContactInfo(this.type, this.value);
+}
+
+class _Transformer {
+  String transform(String val) => "<b>$val</b>";
 }
