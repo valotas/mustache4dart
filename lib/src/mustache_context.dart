@@ -22,6 +22,9 @@ class MustacheContext {
     if (v == true) {
       return true;
     }
+    if (v is MustacheFunction) {
+      return v;
+    }
     if (!(v is String)) {
       return new MustacheContext(v);
     }
@@ -30,7 +33,11 @@ class MustacheContext {
   
   _getValue(String key) {
     try {
-      return ctx[key];      
+      var val = ctx[key];
+      if (val is Function) {
+        return new MustacheFunction(val);
+      }
+      return val;
     } catch (NoSuchMethodError) {
       //There is no sync API as I see: http://code.google.com/p/dart/issues/detail?id=4633 
       //As I do not feel switching everything to Future at the moment, we use the 
@@ -52,6 +59,9 @@ class MustacheContext {
       }
       else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
         fim = m.invoke(membersMirror.simpleName, []);
+      }
+      else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
+        return new MustacheFunction(m, membersMirror.simpleName); 
       }
       else {
         return null;
@@ -111,6 +121,39 @@ class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
     } else {
       current = null;
       return false;
+    }
+  }
+}
+
+class MustacheFunction {
+  final Function _func;
+  final InstanceMirror _mirror;
+  final String _methodName;
+  
+  factory MustacheFunction(func, [name]) {
+    if (name != null && func is InstanceMirror) {
+      return new MustacheFunction._internal(func, name, null);
+    }
+    if (name == null && func is Function) {
+      return new MustacheFunction._internal(null, null, func);
+    }
+  }
+  
+  MustacheFunction._internal(this._mirror, this._methodName, this._func);
+  
+  apply(String val) {
+    if (_func != null) {
+      return Function.apply(_func, [val]);
+    }
+    //otherwise:
+    var fim = _mirror.invoke(_methodName, [val]);
+    var im = deprecatedFutureValue(fim);
+    if (im is InstanceMirror) {
+      var r = im.reflectee;
+      return r;
+    }
+    else {
+      return null;
     }
   }
 }
