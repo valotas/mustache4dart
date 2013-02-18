@@ -4,7 +4,22 @@ part of mustache4dart;
  * This is the main class describing a compiled token.
  */
 abstract class _Token {
+  final String _source;
   _Token next;
+  
+  _Token.withSource(this._source);
+ 
+  factory _Token(String token) {
+    if (token.startsWith('{{{')) {
+      return new _ExpressionToken(token.substring(3, token.length - 3), false, token);
+    } 
+    else if (token.startsWith('{{')) {
+      return new _ExpressionToken(token.substring(2, token.length - 2), true, token);
+    }
+    else {
+      return new _StringToken(token);
+    }
+  }
 
   StringBuffer apply(MustacheContext context);
 
@@ -12,8 +27,6 @@ abstract class _Token {
    * This describes the value of the token.
    */
   String get _val;
-  
-  String get _uncompiledVal;
 
   /**
    * Two tokens are the same if their _val are the same.
@@ -32,13 +45,12 @@ abstract class _Token {
  * an opening and closing mustache.
  */
 class _StringToken extends _Token {
-  final String _val;
 
-  _StringToken(this._val);
-
+  _StringToken(_val) : super.withSource(_val);
+  
   apply(context) => _val;
   
-  String get _uncompiledVal => _val;
+  String get _val => _source;
 
   String toString() => "StringToken($_val)";
 }
@@ -50,29 +62,29 @@ class _StringToken extends _Token {
 class _ExpressionToken extends _Token {
   final String _val;
 
-  factory _ExpressionToken(String val, bool escapeHtml) {
+  factory _ExpressionToken(String val, bool escapeHtml, String source) {
     if (escapeHtml && val.startsWith('& ')) {
       escapeHtml = false;
       val = val.substring(2);
     }
     if (!escapeHtml) {
-      return new _ExpressionToken.simple(val);
+      return new _ExpressionToken.withSource(val, source);
     }
 
     String control = val.substring(0, 1);
     String newVal = val.substring(1);
 
     if ('#' == control) {
-      return new _StartSectionToken(newVal);
+      return new _StartSectionToken.withSource(newVal, source);
     } else if ('/' == control) {
-      return new _EndSectionToken(newVal);
+      return new _EndSectionToken.withSource(newVal, source);
     } else {
-      return new _EscapeHtmlToken(val);
+      return new _EscapeHtmlToken.withSource(val, source);
     }
   }
 
-  _ExpressionToken.simple(this._val);
-
+  _ExpressionToken.withSource(this._val, source) : super.withSource(source);
+  
   apply(MustacheContext ctx) {
     var val = ctx[_val];
     if (val == null) {
@@ -87,7 +99,7 @@ class _ExpressionToken extends _Token {
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
-  _EscapeHtmlToken(String val) : super.simple(val);
+  _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx) => super.apply(ctx)
       .replaceAll("&", "&amp;")
@@ -104,7 +116,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 class _StartSectionToken extends _ExpressionToken {
   _Token _computedNext;
 
-  _StartSectionToken(String val) : super.simple(val);
+  _StartSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
@@ -120,7 +132,7 @@ class _StartSectionToken extends _ExpressionToken {
     }
     if (val is MustacheFunction) {
       StringBuffer str = new StringBuffer();
-      _computedNext = forEachUntilEndSection((_Token t) => str.add(t._uncompiledVal));
+      _computedNext = forEachUntilEndSection((_Token t) => str.add(t._source));
       return val.apply(str.toString());
     }
     if (val is Iterable) {
@@ -153,7 +165,7 @@ class _StartSectionToken extends _ExpressionToken {
 }
 
 class _EndSectionToken extends _ExpressionToken {
-  _EndSectionToken(String val) : super.simple(val);
+  _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx) {
     return "";

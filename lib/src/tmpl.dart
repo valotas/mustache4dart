@@ -8,8 +8,9 @@ class _Template extends Iterable<_Token> {
     TokenList tokens = new TokenList();
     num lastStart = 0;
     _EXP.allMatches(template).forEach((m) {
-      tokens.add(new _StringToken(template.substring(lastStart, m.start)));
-      tokens.add(new _ExpressionToken(m[1], m[2].length == 2));
+      StringBuffer b = new StringBuffer(m[1]);
+      tokens.add(new _Token(template.substring(lastStart, m.start)));
+      tokens.add(new _Token(m[0]));
       lastStart = m.end;
     });
     
