@@ -93,8 +93,6 @@ class _ExpressionToken extends _Token {
     return val;
   }
   
-  String get _uncompiledVal => "{{& $_val}}";
-
   String toString() => "ExpressionToken($_val)";
 }
 
@@ -108,8 +106,6 @@ class _EscapeHtmlToken extends _ExpressionToken {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&apos;");
   
-  String get _uncompiledVal => "{{$_val}}";
-
   String toString() => "EscapeHtmlToken($_val)";
 }
 
@@ -159,8 +155,6 @@ class _StartSectionToken extends _ExpressionToken {
     return null;
   }
   
-  String get _uncompiledVal => "{{# $_val}}";
-
   String toString() => "StartSectionToken($_val)";
 }
 
@@ -176,8 +170,6 @@ class _EndSectionToken extends _ExpressionToken {
     return n == null ? null : n.next;
   }
   
-  String get _uncompiledVal => "{{/ $_val}}";
-
   String toString() => "EndSectionToken($_val)";
 }
 
