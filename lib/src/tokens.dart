@@ -38,6 +38,8 @@ abstract class _Token {
     }
     return false;
   }
+  
+  int get hashCode => _val.hashCode;
 }
 
 /**
