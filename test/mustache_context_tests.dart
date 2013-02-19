@@ -1,8 +1,7 @@
 library mustache_context_tests;
 
 import 'package:/unittest/unittest.dart';
-
-import '../lib/mustache4dart.dart';
+import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
   test('Simple context with map test', () {

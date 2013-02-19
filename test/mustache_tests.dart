@@ -1,8 +1,7 @@
 library mustache_tests;
 
 import 'package:/unittest/unittest.dart';
-
-import '../lib/mustache4dart.dart';
+import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
   Mustache m = new Mustache();
