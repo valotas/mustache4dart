@@ -19,6 +19,6 @@ void main() {
   test('Inverted section', () => expect(m.render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}none!{{/persons}}', {}), 'Persons: none!'));
   test('Simple lambda value', () => expect(m.render('{{#ff}}{{name}} is awesome{{/ff}}', {'name': 'George', 'ff': (t) => "$t!!!"}), '{{name}} is awesome!!!'));
   test('Inverted section with lambda content', () => expect(m.render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}{{#format}}none{{/format}}{{/persons}}', {'format': (t) => "$t!!!"}), 'Persons: none!!!'));
-  test('Comment test', () => expect(m.render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
+  test('Simple comment', () => expect(m.render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
   test('Comment with in a lambda', () => expect(m.render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), '{{! ignore this}}none!!!'));
 }
