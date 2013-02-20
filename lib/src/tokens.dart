@@ -80,6 +80,8 @@ class _ExpressionToken extends _Token {
       return new _StartSectionToken.withSource(newVal, source);
     } else if ('/' == control) {
       return new _EndSectionToken.withSource(newVal, source);
+    } else if ('^' == control) {
+      return new _InvertedSectionToken.withSource(newVal, source);
     } else {
       return new _EscapeHtmlToken.withSource(val, source);
     }
@@ -123,7 +125,7 @@ class _StartSectionToken extends _ExpressionToken {
     var val = ctx[_val];
     if (val == null) {
       _computedNext = forEachUntilEndSection(null);
-      return "";
+      return '';
     }
     if (val == true) {
       return '';
@@ -173,6 +175,25 @@ class _EndSectionToken extends _ExpressionToken {
   }
   
   String toString() => "EndSectionToken($_val)";
+}
+
+class _InvertedSectionToken extends _StartSectionToken {
+  _InvertedSectionToken.withSource(String val, String source) : super.withSource(val, source);
+  
+  apply(MustacheContext ctx) {
+    var val = ctx[_val];
+    if (val == null) {
+      StringBuffer buf = new StringBuffer();
+      _computedNext = forEachUntilEndSection((_Token t) {
+        var val2 = t.apply(ctx);
+        buf.add(val2);
+      });
+      return buf.toString();
+    }
+    //else just return an empty string
+    _computedNext = forEachUntilEndSection(null);
+    return '';
+  }
 }
 
 class TokenList extends Iterable<_Token> {
