@@ -97,7 +97,7 @@ class _Person {
   static _reverse(String str) {
     StringBuffer out = new StringBuffer();
     for (int i = str.length; i > 0; i--) {
-      out.add(str[i - 1]);
+      out.write(str[i - 1]);
     }
     return out.toString();
   }

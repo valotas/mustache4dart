@@ -219,12 +219,12 @@ class TokenList extends Iterable<_Token> {
       //Do not display anything
     }
     else if (head == tail) {
-      str.add("$head");
+      str.write(head);
     }
     else {
-      str.add("$head...$tail");
+      str.write("$head...$tail");
     }
-    str.add(")");
+    str.write(")");
     return str.toString();
   }
 }
