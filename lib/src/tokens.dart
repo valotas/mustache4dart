@@ -186,7 +186,7 @@ class _InvertedSectionToken extends _StartSectionToken {
       StringBuffer buf = new StringBuffer();
       _computedNext = forEachUntilEndSection((_Token t) {
         var val2 = t.apply(ctx);
-        buf.add(val2);
+        buf.write(val2);
       });
       return buf.toString();
     }
