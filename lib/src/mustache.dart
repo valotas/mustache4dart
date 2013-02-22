@@ -1,9 +1,16 @@
 part of mustache4dart;
 
-String render(String template, Object context) {
+compile(String template) {
   _Template tmpl = new _Template(template);
-  MustacheContext ctx = new MustacheContext(context);
-  StringBuffer result = new StringBuffer();
-  tmpl.forEach((t) => result.write(t.apply(ctx)));
-  return result.toString();
+  return (context) {
+    MustacheContext ctx = new MustacheContext(context);
+    StringBuffer result = new StringBuffer();
+    tmpl.forEach((t) => result.write(t.apply(ctx)));
+    return result.toString();
+  };
+}
+
+String render(String template, Object context) {
+  Function renderer = compile(template);
+  return renderer(context);
 }

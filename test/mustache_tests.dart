@@ -20,4 +20,8 @@ void main() {
   test('Inverted section with lambda content', () => expect(render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}{{#format}}none{{/format}}{{/persons}}', {'format': (t) => "$t!!!"}), 'Persons: none!!!'));
   test('Simple comment', () => expect(render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
   test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), '{{! ignore this}}none!!!'));
+  
+  var salut = compile('Hi {{name}}{{^name}}customer{{/name}}');
+  test('Compiled function with existing context', () => expect(salut({'name': 'George'}), 'Hi George'));
+  test('Compiled function with non existing context', () => expect(salut({}), 'Hi customer'));
 }
