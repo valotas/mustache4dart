@@ -16,14 +16,14 @@ class _Template extends Iterable<_Token> {
           searchFor = '}';
         }
         else if (char == '}' && template[i-1] == '}' && (i + 1 == template.length || template[i+1] != '}')) {
-          buf.add(char);
+          buf.write(char);
           tokens.add(new _Token(buf.toString()));
           buf = new StringBuffer(); //resut our buffer: new token starts
           searchFor = '{';
           continue;
         }
       }
-      buf.add(char);
+      buf.write(char);
     }
     tokens.add(new _Token(buf.toString()));
 

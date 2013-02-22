@@ -91,8 +91,8 @@ class MustacheContext {
   
   static String _getterName(String name) {
     StringBuffer out = new StringBuffer('get');
-    out.add(name[0].toUpperCase());
-    out.add(name.substring(1));
+    out.write(name[0].toUpperCase());
+    out.write(name.substring(1));
     return out.toString();
   }  
 }
