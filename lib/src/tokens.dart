@@ -168,11 +168,6 @@ class _EndSectionToken extends _ExpressionToken {
   apply(MustacheContext ctx) {
     return "";
   }
-
-  _Token get next {
-    _Token n = super.next;
-    return n == null ? null : n.next;
-  }
   
   String toString() => "EndSectionToken($_val)";
 }
