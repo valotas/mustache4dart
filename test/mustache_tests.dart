@@ -21,9 +21,13 @@ void main() {
   test('Simple comment', () => expect(render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
   test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), '{{! ignore this}}none!!!'));
   
-  var salut = compile('Hi {{name}}{{^name}}customer{{/name}}');
+  var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
+  var salut = compile(salutTemplate);
   test('Compiled function with existing context', () => expect(salut({'name': 'George'}), 'Hi George'));
   test('Compiled function with non existing context', () => expect(salut({}), 'Hi customer'));
+  test('Compiled function with existing context same with render', () => expect(salut({'name': 'George'}), render(salutTemplate, {'name': 'George'})));
+  test('Compiled function with non existing context same with render', () => expect(salut({}), render(salutTemplate, {})));
+    
 
   test('Contextless one letter template', () => expect(render('!', null), '!'));
   test('Template with string context after closing one', () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
