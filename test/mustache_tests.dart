@@ -24,4 +24,7 @@ void main() {
   var salut = compile('Hi {{name}}{{^name}}customer{{/name}}');
   test('Compiled function with existing context', () => expect(salut({'name': 'George'}), 'Hi George'));
   test('Compiled function with non existing context', () => expect(salut({}), 'Hi customer'));
+
+  test('Contextless one letter template', () => expect(render('!', null), '!'));
+  test('Template with string context after closing one', () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
 }
