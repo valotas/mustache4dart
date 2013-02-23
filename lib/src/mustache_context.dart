@@ -1,11 +1,30 @@
 part of mustache4dart;
 
 class MustacheContext {
+  static final Pattern DOT = '\.';
   final ctx;
 
   MustacheContext(this.ctx);
 
   operator [](String key) {
+    if (key.contains(DOT)) {
+      List<String> keys = key.split(DOT);
+      Iterator<String> k = keys.iterator;
+      var val = this;
+      while(k.moveNext()) {
+        val = val._getValueConverted(k.current);
+        if (val == null) {
+          return null;
+        }
+      }
+      return val;
+    }
+    else {
+      return _getValueConverted(key);
+    }
+  }
+  
+  _getValueConverted(String key) {
     var v = _getValue(key);
     if (v == null) {
       return null;
