@@ -29,8 +29,8 @@ void main() {
   test('Compiled function with non existing context', () => expect(salut({}), 'Hi customer'));
   test('Compiled function with existing context same with render', () => expect(salut({'name': 'George'}), render(salutTemplate, {'name': 'George'})));
   test('Compiled function with non existing context same with render', () => expect(salut({}), render(salutTemplate, {})));
-    
 
   test('Contextless one letter template', () => expect(render('!', null), '!'));
   test('Template with string context after closing one', () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
+  test('Template with token with dotted names', () => expect(render('{{person.name}} should be the same with {{#person}}{{name}}{{/person}}', {'person': {'name': 'Bob'}}), 'Bob should be the same with Bob'));
 }
