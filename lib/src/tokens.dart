@@ -170,10 +170,19 @@ class _StartSectionToken extends _ExpressionToken {
 
   forEachUntilEndSection(void f(_Token)) {
     Iterator<_Token> it = new TokenIterator(super.next);
+    int counter = 1;
     while (it.moveNext()) {
       _Token n = it.current;
       if (n._val == _val) {
-        return n;
+        if (n is _StartSectionToken) {
+          counter++;
+        }
+        if (n is _EndSectionToken) {
+          counter--;
+        }
+        if (counter == 0) {
+          return n;          
+        }
       }
       if (f != null) {
         f(n);
