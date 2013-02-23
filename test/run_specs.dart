@@ -11,13 +11,19 @@ void main() {
   specs_dir
     .listSync()
     .forEach((f) {
+      // filter out only .json files and not the lambda tests at the moment
       if (f.name.endsWith('.json') && !f.name.endsWith('~lambdas.json')) {
-        print(f.name);
         f.readAsString(Encoding.UTF_8)
           .then((text) {
             var json = parse(text);
             var tests = json['tests'];
-            tests.forEach( (t) => test(t['desc'], () => expect(render(t['template'], t['data']), t['expected'])) );
+            tests.forEach( (t) {
+              var testDescription = t['desc'];
+              var template = t['template'];
+              var data = t['data'];
+              var expected = t['expected'];
+              test(testDescription, () => expect(render(template, data), expected)); 
+            });
           });
       }
     });
