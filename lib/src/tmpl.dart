@@ -23,7 +23,7 @@ class _Template extends Iterable<_Token> {
           continue;
         }
       }
-      else if (char == '\n') {
+      else if (char == '\n' && searchFor != '}') {
         //Handle newlines as standalone tokens
         if (buf.length > 0) {
           tokens.add(new _Token(buf.toString()));
