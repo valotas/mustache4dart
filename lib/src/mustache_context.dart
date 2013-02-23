@@ -12,19 +12,18 @@ class MustacheContext {
       Iterator<String> k = keys.iterator;
       var val = this;
       while(k.moveNext()) {
-        val = val._getValueConverted(k.current);
+        val = val._getContext(k.current);
         if (val == null) {
           return null;
         }
       }
       return val;
     }
-    else {
-      return _getValueConverted(key);
-    }
+    //else
+    return _getContext(key);
   }
   
-  _getValueConverted(String key) {
+  _getContext(String key) {
     var v = _getValue(key);
     if (v == null) {
       return null;
