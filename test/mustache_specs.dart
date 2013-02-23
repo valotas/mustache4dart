@@ -5,7 +5,7 @@ import 'dart:json';
 import 'package:/unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
-void main() {
+main() {
   print("Running mustache specs");
   var specs_dir = new Directory('spec/specs');
   specs_dir
@@ -18,11 +18,14 @@ void main() {
             var json = parse(text);
             var tests = json['tests'];
             tests.forEach( (t) {
-              var testDescription = t['desc'];
+              var testDescription = new StringBuffer(t['name']);
+              testDescription.write(': ');
+              testDescription.write(t['desc']);
               var template = t['template'];
               var data = t['data'];
+              testDescription.write(" When rendering '''$template''' with '$data'");
               var expected = t['expected'];
-              test(testDescription, () => expect(render(template, data), expected)); 
+              test(testDescription.toString(), () => expect(render(template, data), expected)); 
             });
           });
       }
