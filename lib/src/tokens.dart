@@ -65,9 +65,9 @@ class _ExpressionToken extends _Token {
   final String _val;
 
   factory _ExpressionToken(String val, bool escapeHtml, String source) {
-    if (escapeHtml && val.startsWith('& ')) {
+    if (escapeHtml && val.startsWith('&')) {
       escapeHtml = false;
-      val = val.substring(2);
+      val = val.substring(1).trim();
     }
     if (!escapeHtml) {
       return new _ExpressionToken.withSource(val, source);
