@@ -25,6 +25,9 @@ class MustacheContext {
     if (v is MustacheFunction) {
       return v;
     }
+    if (v is int) {
+      return "$v";
+    }
     if (!(v is String)) {
       return new MustacheContext(v);
     }
