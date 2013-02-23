@@ -82,6 +82,8 @@ class _ExpressionToken extends _Token {
       return new _EndSectionToken.withSource(newVal, source);
     } else if ('^' == control) {
       return new _InvertedSectionToken.withSource(newVal, source);
+    } else if ('!' == control) {
+      return new _CommentToken.withSource(newVal, source);
     } else {
       return new _EscapeHtmlToken.withSource(val, source);
     }
@@ -98,6 +100,22 @@ class _ExpressionToken extends _Token {
   }
   
   String toString() => "ExpressionToken($_val)";
+}
+
+class _CommentToken extends _ExpressionToken {
+  _Token _computedNext;
+  
+  _CommentToken.withSource(String val, String source) : super.withSource(val, source);
+  
+  apply(MustacheContext ctx) {
+    _Token n = super.next;
+    if (n != null && n._source == '\n') {
+      _computedNext = n.next;
+    }
+    return '';
+  }
+  
+  _Token get next => _computedNext != null ? _computedNext : super.next;
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {

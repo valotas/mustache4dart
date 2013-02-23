@@ -23,6 +23,15 @@ class _Template extends Iterable<_Token> {
           continue;
         }
       }
+      else if (char == '\n') {
+        //Handle newlines as standalone tokens
+        if (buf.length > 0) {
+          tokens.add(new _Token(buf.toString()));
+          buf = new StringBuffer();
+        }
+        tokens.add(new _Token(char));
+        continue;
+      }
       buf.write(char);
     }
     tokens.add(new _Token(buf.toString()));
