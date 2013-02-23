@@ -23,7 +23,8 @@ main() {
               testDescription.write(t['desc']);
               var template = t['template'];
               var data = t['data'];
-              testDescription.write(" When rendering '''$template''' with '$data'");
+              var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
+              testDescription.write(" When rendering '''$templateOnline''' with '$data'");
               var expected = t['expected'];
               test(testDescription.toString(), () => expect(render(template, data), expected)); 
             });
