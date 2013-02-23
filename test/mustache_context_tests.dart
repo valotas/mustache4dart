@@ -80,6 +80,11 @@ void main() {
     expect(f is MustacheFunction, true);
     expect(f.apply('woh'), 'woh!');
   });
+  
+  test('Dotted names', () {
+    var ctx = new MustacheContext({'person': new _Person('George', 'Valotasios')});
+    expect(ctx['person.name'], 'George');
+  });
 }
 
 class _Person {
