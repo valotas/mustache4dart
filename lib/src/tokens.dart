@@ -122,12 +122,19 @@ class _CommentToken extends _ExpressionToken {
 class _EscapeHtmlToken extends _ExpressionToken {
   _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx) => super.apply(ctx)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&apos;");
+  apply(MustacheContext ctx) {
+    var val = super.apply(ctx);
+    if (val is String) {
+      return val.replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&apos;");
+    }
+    else {
+      return val;
+    }
+  }
   
   String toString() => "EscapeHtmlToken($_val)";
 }

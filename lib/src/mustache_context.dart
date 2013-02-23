@@ -1,12 +1,15 @@
 part of mustache4dart;
 
 class MustacheContext {
-  static final Pattern DOT = '\.';
+  static final String DOT = '\.';
   final ctx;
 
   MustacheContext(this.ctx);
 
   operator [](String key) {
+    if (key == DOT) {
+      return ctx;
+    }
     if (key.contains(DOT)) {
       List<String> keys = key.split(DOT);
       Iterator<String> k = keys.iterator;
