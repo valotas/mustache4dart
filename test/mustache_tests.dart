@@ -35,4 +35,8 @@ void main() {
   test('Template with token with dotted names', () => expect(render('{{person.name}} should be the same with {{#person}}{{name}}{{/person}}', {'person': {'name': 'Bob'}}), 'Bob should be the same with Bob'));
   
   test('Implicit iterator', () => expect(render('{{#list}}{{.}}{{/list}}', {'list': [1, 2, 3]}), '123'));
+  
+  var map = {'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}};
+  test('Simple context test', () => expect(render('{{#a}}{{one}}{{/a}}', map), '1'));
+  test('Deeper context test', () => expect(render('{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{/b}}{{/a}}', map), '1-12'));
 }
