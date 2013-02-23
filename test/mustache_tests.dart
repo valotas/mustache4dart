@@ -9,6 +9,7 @@ void main() {
   test('Html escaped output', () => expect(render('Escaped: {{html}}', {'html': '!@#\$%^&*()?<>'}), 'Escaped: !@#\$%^&amp;*()?&lt;&gt;'));
   test('No html escaped with tripple brackets', () => expect(render('Not escaped: {{{html}}}', {'html': '!@#\$%^&*()?<>'}), 'Not escaped: !@#\$%^&*()?<>'));
   test('No html escaped with & at the beginning of a key', () => expect(render('Not escaped: {{& html}}', {'html': '!@#\$%^&*()?<>'}), 'Not escaped: !@#\$%^&*()?<>'));
+  test('No html escaped with & and no space at the beginning of a key', () => expect(render('Not escaped: {{&html}}', {'html': '!@#\$%^&*()?<>'}), 'Not escaped: !@#\$%^&*()?<>'));
   test('Simple non existing section', () => expect(render('Shown. {{#nothin}}Never shown!{{/nothin}}', {'person': true}), 'Shown. '));
   test('False value', () => expect(render('Shown. {{#show}}Never shown!{{/show}}', {'show': false}), 'Shown. '));
   test('Empty list', () => expect(render('Shown. {{#list}}Never shown!{{/list}}', {'list': []}), 'Shown. '));
