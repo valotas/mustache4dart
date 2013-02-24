@@ -85,6 +85,13 @@ void main() {
     var ctx = new MustacheContext({'person': new _Person('George', 'Valotasios')});
     expect(ctx['person.name'], 'George');
   });
+  
+  test('Subcontext', () {
+    var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
+    expect(ctx['name'], 'George');
+    expect(ctx['a']['one'], 1);
+    expect(ctx['b']['two'], 2);
+  });
 }
 
 class _Person {
