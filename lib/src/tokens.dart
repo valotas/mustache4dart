@@ -80,19 +80,21 @@ class _SpecialCharToken extends _StringToken {
     if (n == null) {
       return;
     }
-    int nextSectionsMarked = 0;
+    int tokensMarked = 0;
+    bool foundSection = false;
     while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if (n._val == ' ' || n is _StartSectionToken || n is _EndSectionToken) {
+      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken) {
         n.rendable = false;
-        nextSectionsMarked++;
+        tokensMarked++;
         n = n.next;
+        foundSection = n is _StartSectionToken || n is _EndSectionToken;
       }
       else {
-        _resetNext(nextSectionsMarked);
+        _resetNext(tokensMarked);
         return;
       }
     }
-    if (nextSectionsMarked > 0 && n != null) {
+    if (tokensMarked > 0 && n != null) {
       n.rendable = false;
     }
   }
@@ -163,14 +165,8 @@ class _CommentToken extends _ExpressionToken {
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
   apply(MustacheContext ctx) {
-    _Token n = super.next;
-    if (n != null && n._source == '\n') {
-      _computedNext = n.next;
-    }
     return '';
-  }
-  
-  _Token get next => _computedNext != null ? _computedNext : super.next;
+  }  
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {

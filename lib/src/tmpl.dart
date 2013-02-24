@@ -79,7 +79,7 @@ class _Template extends Iterable<_Token> {
     tokens.forEach((t) {
       var value = t.apply(ctx);
       if (t.rendable) {
-        buf.write(value);        
+        buf.write(value);
       }
     });
     return buf.toString();
