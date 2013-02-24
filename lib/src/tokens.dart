@@ -21,7 +21,7 @@ abstract class _Token {
     else if (token.startsWith('{{')) {
       return new _ExpressionToken(token.substring(2, token.length - 2), true, token);
     }
-    else if (token == ' ' || token == '\n') {
+    else if (token == ' ' || token == '\n' || token == '\r\n') {
       return new _SpecialCharToken(token);
     }
     else {
@@ -69,7 +69,7 @@ class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
   apply(context) {
-    if (_val == '\n' || _val == '') {
+    if (_val == '\n' || _val =='\r\n' || _val == '') {
       _markNextStandAloneLineIfAny();      
     }
     return super.apply(context);
@@ -81,7 +81,7 @@ class _SpecialCharToken extends _StringToken {
       return;
     }
     int nextSectionsMarked = 0;
-    while (n != null && n._val != '\n') { //find the next endline
+    while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
       if (n._val == ' ' || n is _StartSectionToken || n is _EndSectionToken) {
         n.rendable = false;
         nextSectionsMarked++;
@@ -105,7 +105,10 @@ class _SpecialCharToken extends _StringToken {
     }
   }
   
-  String toString() => "SpecialCharToken($_val)";
+  String toString() {
+    var val = _val.replaceAll('\r', '\\r').replaceAll('\n', '\\n');
+    return "SpecialCharToken($val)";
+  }
 }
 
 /**

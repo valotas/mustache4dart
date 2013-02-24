@@ -11,8 +11,10 @@ class _Template extends Iterable<_Token> {
       String char = template[i];
       if (char == searchFor) {
         if (char == '{' && template[i+1] == '{') {
-          tokens.add(new _Token(buf.toString()));
-          buf = new StringBuffer(); //resut our buffer: new token starts
+          if (buf.length > 0) {
+            tokens.add(new _Token(buf.toString()));
+            buf = new StringBuffer(); //resut our buffer: new token starts
+          }
           searchFor = '}';
         }
         else if (char == '}' && template[i-1] == '}' && (i + 1 == template.length || template[i+1] != '}')) {
@@ -29,6 +31,15 @@ class _Template extends Iterable<_Token> {
           buf = new StringBuffer();
         }
         tokens.add(new _Token(char));
+        continue;
+      }
+      else if (isSpecialNewLine(template, i)) {
+        if (buf.length > 0) {
+          tokens.add(new _Token(buf.toString()));
+          buf = new StringBuffer();
+        }
+        tokens.add(new _Token('\r\n'));
+        i++;
         continue;
       }
       buf.write(char);
@@ -48,6 +59,15 @@ class _Template extends Iterable<_Token> {
    return false; 
   }
   
+  static bool isSpecialNewLine(String template, int position) {
+    if (position + 1 == template.length) {
+      return false;
+    }
+    var char = template[position];
+    var nextChar = template[position + 1];
+    return char == '\r' && nextChar == '\n'; 
+  }
+  
   _Template._internal(this.tokens);
   
   Iterator<_Token> get iterator => tokens.iterator;
@@ -57,8 +77,9 @@ class _Template extends Iterable<_Token> {
       buf = new StringBuffer();
     }
     tokens.forEach((t) {
+      var value = t.apply(ctx);
       if (t.rendable) {
-        buf.write(t.apply(ctx));        
+        buf.write(value);        
       }
     });
     return buf.toString();
