@@ -14,11 +14,14 @@ main() {
     .listSync()
     .forEach((f) {
       // filter out only .json files and not the lambda tests at the moment
-      if (shouldRun(f.name)) {
+      var filename = f.name;
+      if (shouldRun(filename)) {
         f.readAsString(Encoding.UTF_8)
-          .then((text) {
-            var json = parse(text);
-            var tests = json['tests'];
+        .then((text) {
+          var json = parse(text);
+          var tests = json['tests'];
+          filename = filename.substring(filename.lastIndexOf('/') + 1);
+          group("Specs of $filename", () {
             tests.forEach( (t) {
               var testDescription = new StringBuffer(t['name']);
               testDescription.write(': ');
@@ -29,8 +32,9 @@ main() {
               testDescription.write(" When rendering '''$templateOnline''' with '$data'");
               var expected = t['expected'];
               test(testDescription.toString(), () => expect(render(template, data), expected)); 
-            });
+            });            
           });
+        });
       }
     });
 }
