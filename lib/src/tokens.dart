@@ -126,7 +126,7 @@ class _ExpressionToken extends _Token {
     }
 
     String control = val.substring(0, 1);
-    String newVal = val.substring(1);
+    String newVal = val.substring(1).trim();
 
     if ('#' == control) {
       return new _StartSectionToken.withSource(newVal, source);
