@@ -5,7 +5,7 @@ import 'dart:json';
 import 'package:/unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
-final List<String> EXCLUDES = ['~lambdas.json', 'partials.json', 'inverted.json', 'delimiters.json', 'comments.json']; 
+final List<String> EXCLUDES = ['~lambdas.json']; 
 
 main() {
   print("Running mustache specs");

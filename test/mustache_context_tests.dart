@@ -4,93 +4,95 @@ import 'package:/unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
-  test('Simple context with map', () {
-    var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
-    expect(ctx['k1'], 'value1');
-    expect(ctx['k2'], 'value2');
-    expect(ctx['k3'], null);
-  });
-  
-  test('Simple context with object', () {
-    var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
-    expect(ctx['name'], 'Γιώργος');
-    expect(ctx['lastname'], 'Βαλοτάσιος');
-    expect(ctx['last'], null);
-    expect(ctx['fullname'], 'Γιώργος Βαλοτάσιος');
-    expect(ctx['reversedName'], 'ςογρώιΓ');
-    expect(ctx['reversedLastName'], 'ςοισάτολαΒ');
-  });
-  
-  test('Simple map with list of maps', () {
-    var ctx = new MustacheContext({'k': [{'k1': 'item1'}, 
-                                         {'k2': 'item2'}, 
-                                         {'k3': {'kk1' : 'subitem1', 'kk2': 'subitem2'}}]});
-    expect(ctx['k'].length, 3);
-  });
-  
-  test('Map with list of lists', () {
-    var ctx = new MustacheContext({'k': [{'k1': 'item1'}, 
-                                         {'k3': [{'kk1' : 'subitem1'}, {'kk2': 'subitem2'}]}]});
-    expect(ctx['k'].length, 2);
-    expect(ctx['k'].last['k3'].length, 2);
-  });
-  
-  test('Object with iterables', () {
-    var p = new _Person('Νικόλας', 'Νικολάου');
-    p.contactInfos.add(new _ContactInfo('Address', {
-      'Street': 'Κολοκωτρόνη',
-      'Num': '31',
-      'Zip': '42100',
-      'Country': 'GR'
-    }));
-    p.contactInfos.add(new _ContactInfo('skype', 'some1'));
-    var ctx = new MustacheContext(p);
-    expect(ctx['contactInfos'].length, 2);
-    expect(ctx['contactInfos'].first['value']['Num'], '31');
-  });
-  
-  test('Deep search with object', () {
-    //create our model:
-    _Person p = null;
-    for (int i = 10; i > 0; i--) {
-      p = new _Person("name$i", "lastname$i", p);
-    }
+  group ('Mustache contexts', () {
+    test('Simple context with map', () {
+      var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
+      expect(ctx['k1'], 'value1');
+      expect(ctx['k2'], 'value2');
+      expect(ctx['k3'], null);
+    });
     
+    test('Simple context with object', () {
+      var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
+      expect(ctx['name'], 'Γιώργος');
+      expect(ctx['lastname'], 'Βαλοτάσιος');
+      expect(ctx['last'], null);
+      expect(ctx['fullname'], 'Γιώργος Βαλοτάσιος');
+      expect(ctx['reversedName'], 'ςογρώιΓ');
+      expect(ctx['reversedLastName'], 'ςοισάτολαΒ');
+    });
     
-    MustacheContext ctx = new MustacheContext(p);
-    expect(ctx['name'], 'name1');
-    expect(ctx['parent']['lastname'], 'lastname2');
-    expect(ctx['parent']['parent']['fullname'], 'name3 lastname3');
-  });
-  
-  test('simple MustacheFunction value', () {
-    var t = new _Transformer();
-    var ctx = new MustacheContext(t);
-    var f = ctx['transform'];
+    test('Simple map with list of maps', () {
+      var ctx = new MustacheContext({'k': [{'k1': 'item1'}, 
+                                           {'k2': 'item2'}, 
+                                           {'k3': {'kk1' : 'subitem1', 'kk2': 'subitem2'}}]});
+      expect(ctx['k'].length, 3);
+    });
     
-    expect(f is MustacheFunction, true);
-    expect(f.apply('123 456 777'), t.transform('123 456 777'));
-  });
-  
-  test('MustacheFunction from anonymus function', () {
-    var map = {'transform': (String val) => "$val!"};
-    var ctx = new MustacheContext(map);
-    var f = ctx['transform'];
+    test('Map with list of lists', () {
+      var ctx = new MustacheContext({'k': [{'k1': 'item1'}, 
+                                           {'k3': [{'kk1' : 'subitem1'}, {'kk2': 'subitem2'}]}]});
+      expect(ctx['k'].length, 2);
+      expect(ctx['k'].last['k3'].length, 2);
+    });
     
-    expect(f is MustacheFunction, true);
-    expect(f.apply('woh'), 'woh!');
-  });
-  
-  test('Dotted names', () {
-    var ctx = new MustacheContext({'person': new _Person('George', 'Valotasios')});
-    expect(ctx['person.name'], 'George');
-  });
-  
-  test('Context with another context', () {
-    var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
-    expect(ctx['name'], 'George');
-    expect(ctx['a']['one'], '1');
-    expect(ctx['b']['two'], '2');
+    test('Object with iterables', () {
+      var p = new _Person('Νικόλας', 'Νικολάου');
+      p.contactInfos.add(new _ContactInfo('Address', {
+        'Street': 'Κολοκωτρόνη',
+        'Num': '31',
+        'Zip': '42100',
+        'Country': 'GR'
+      }));
+      p.contactInfos.add(new _ContactInfo('skype', 'some1'));
+      var ctx = new MustacheContext(p);
+      expect(ctx['contactInfos'].length, 2);
+      expect(ctx['contactInfos'].first['value']['Num'], '31');
+    });
+    
+    test('Deep search with object', () {
+      //create our model:
+      _Person p = null;
+      for (int i = 10; i > 0; i--) {
+        p = new _Person("name$i", "lastname$i", p);
+      }
+      
+      
+      MustacheContext ctx = new MustacheContext(p);
+      expect(ctx['name'], 'name1');
+      expect(ctx['parent']['lastname'], 'lastname2');
+      expect(ctx['parent']['parent']['fullname'], 'name3 lastname3');
+    });
+    
+    test('simple MustacheFunction value', () {
+      var t = new _Transformer();
+      var ctx = new MustacheContext(t);
+      var f = ctx['transform'];
+      
+      expect(f is MustacheFunction, true);
+      expect(f.apply('123 456 777'), t.transform('123 456 777'));
+    });
+    
+    test('MustacheFunction from anonymus function', () {
+      var map = {'transform': (String val) => "$val!"};
+      var ctx = new MustacheContext(map);
+      var f = ctx['transform'];
+      
+      expect(f is MustacheFunction, true);
+      expect(f.apply('woh'), 'woh!');
+    });
+    
+    test('Dotted names', () {
+      var ctx = new MustacheContext({'person': new _Person('George', 'Valotasios')});
+      expect(ctx['person.name'], 'George');
+    });
+    
+    test('Context with another context', () {
+      var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
+      expect(ctx['name'], 'George');
+      expect(ctx['a']['one'], '1');
+      expect(ctx['b']['two'], '2');
+    });
   });
 }
 
