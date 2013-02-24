@@ -81,7 +81,7 @@ class _SpecialCharToken extends _StringToken {
       return;
     }
     int nextSectionsMarked = 0;
-    while (n._val != '\n') { //find the next endline
+    while (n != null && n._val != '\n') { //find the next endline
       if (n._val == ' ' || n is _StartSectionToken || n is _EndSectionToken) {
         n.rendable = false;
         nextSectionsMarked++;
@@ -92,7 +92,7 @@ class _SpecialCharToken extends _StringToken {
         return;
       }
     }
-    if (nextSectionsMarked > 0) {
+    if (nextSectionsMarked > 0 && n != null) {
       n.rendable = false;
     }
   }
