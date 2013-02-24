@@ -7,7 +7,9 @@ class MustacheContext {
 
   MustacheContext(this.ctx, [MustacheContext this.other]);
 
-  operator [](String key) {
+  operator [](String key) => _get(key);
+  
+  _get(String key, [MustacheContext additionalCtx]) {
     if (key == DOT) {
       return ctx;
     }
@@ -24,14 +26,14 @@ class MustacheContext {
       return val;
     }
     //else
-    var result = _getContext(key);
+    var result = _getContext(key, additionalCtx == null ? this : additionalCtx);
     if (result == null && other != null) {
-      result = other[key];
+      result = other._get(key, this);
     }
-    return result;
+    return result; 
   }
   
-  _getContext(String key) {
+  _getContext(String key, [MustacheContext other]) {
     var v = _getValue(key);
     if (v == null) {
       return null;
@@ -40,7 +42,7 @@ class MustacheContext {
       if (v.isEmpty) {
         return null;
       }
-      return new _IterableMustacheContextDecorator(v, this);
+      return new _IterableMustacheContextDecorator(v, other);
     }
     if (v == false) {
       return null;
@@ -55,7 +57,7 @@ class MustacheContext {
       return "$v";
     }
     if (!(v is String)) {
-      return new MustacheContext(v, this);
+      return new MustacheContext(v, other);
     }
     return v;
   }
@@ -119,7 +121,9 @@ class MustacheContext {
     out.write(name[0].toUpperCase());
     out.write(name.substring(1));
     return out.toString();
-  }  
+  }
+  
+  String toString() => "MustacheContext($ctx, $other)";
 }
 
 class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
