@@ -86,11 +86,11 @@ void main() {
     expect(ctx['person.name'], 'George');
   });
   
-  test('Subcontext', () {
+  test('Context with another context', () {
     var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
     expect(ctx['name'], 'George');
-    expect(ctx['a']['one'], 1);
-    expect(ctx['b']['two'], 2);
+    expect(ctx['a']['one'], '1');
+    expect(ctx['b']['two'], '2');
   });
 }
 

@@ -3,8 +3,9 @@ part of mustache4dart;
 class MustacheContext {
   static final String DOT = '\.';
   final ctx;
+  final MustacheContext other;
 
-  MustacheContext(this.ctx);
+  MustacheContext(this.ctx, [MustacheContext this.other]);
 
   operator [](String key) {
     if (key == DOT) {
@@ -23,7 +24,11 @@ class MustacheContext {
       return val;
     }
     //else
-    return _getContext(key);
+    var result = _getContext(key);
+    if (result == null && other != null) {
+      result = other[key];
+    }
+    return result;
   }
   
   _getContext(String key) {
@@ -35,7 +40,7 @@ class MustacheContext {
       if (v.isEmpty) {
         return null;
       }
-      return new _IterableMustacheContextDecorator(v);
+      return new _IterableMustacheContextDecorator(v, this);
     }
     if (v == false) {
       return null;
@@ -50,7 +55,7 @@ class MustacheContext {
       return "$v";
     }
     if (!(v is String)) {
-      return new MustacheContext(v);
+      return new MustacheContext(v, this);
     }
     return v;
   }
@@ -87,18 +92,14 @@ class MustacheContext {
       else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
         return new MustacheFunction(m, membersMirror.simpleName); 
       }
-      else {
-        return null;
+      if (fim != null) {
+        var im = deprecatedFutureValue(fim);
+        if (im is InstanceMirror) {
+          return im.reflectee;
+        }
       }
-      var im = deprecatedFutureValue(fim);
-      if (im is InstanceMirror) {
-        var r = im.reflectee;
-        return r;
-      }
-      else {
-        return null;
-      }
-    }
+      return null;
+    } 
   }
   
   InstanceMirror get mirror => reflect(ctx);
@@ -123,10 +124,11 @@ class MustacheContext {
 
 class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
   final Iterable delegate;
+  final MustacheContext other;
   
-  _IterableMustacheContextDecorator(this.delegate);
+  _IterableMustacheContextDecorator(this.delegate, this.other);
   
-  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(delegate.iterator);
+  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(delegate.iterator, other);
   
   int get length => delegate.length;
   
@@ -134,9 +136,10 @@ class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
 
 class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
   final Iterator delegate;
+  final MustacheContext other;
   MustacheContext current;
   
-  _MustachContextIteratorDecorator(this.delegate);
+  _MustachContextIteratorDecorator(this.delegate, this.other);
   
   bool moveNext() {
     if (delegate.moveNext()) {
