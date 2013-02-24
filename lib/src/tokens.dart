@@ -12,7 +12,7 @@ abstract class _Token {
   _Token.withSource(this._source);
  
   factory _Token(String token) {
-    if (token == null || token == '') {
+    if (token == '' || token == null) {
       return null;
     }
     if (token.startsWith('{{{')) {
@@ -65,19 +65,17 @@ class _StringToken extends _Token {
   String toString() => "StringToken($_val)";
 }
 
-
 class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
   apply(context) {
-    markNextIdentedStandAloneLineIfAny();
+    if (_val == '\n' || _val == '') {
+      _markNextStandAloneLineIfAny();      
+    }
     return super.apply(context);
   }
   
-  markNextIdentedStandAloneLineIfAny() {
-    if (_val != '\n') {
-      return;
-    }
+  _markNextStandAloneLineIfAny() {
     var n = next;
     if (n == null) {
       return;
@@ -90,7 +88,7 @@ class _SpecialCharToken extends _StringToken {
         n = n.next;
       }
       else {
-        resetNext(nextSectionsMarked);
+        _resetNext(nextSectionsMarked);
         return;
       }
     }
@@ -98,8 +96,8 @@ class _SpecialCharToken extends _StringToken {
       n.rendable = false;
     }
   }
-  
-  resetNext(int counter) {
+
+  _resetNext(int counter) {
     var n = next;
     while (counter -- >= 0) {
       n.rendable = true;
@@ -295,13 +293,12 @@ class TokenList extends Iterable<_Token> {
       return;
     }
     if (head == null) {
-      head = other;
-      tail = other;
+      //Our template should start as an empty string token
+      head = new _SpecialCharToken('');
+      tail = head;
     }
-    else {
-      tail.next = other;
-      tail = other;
-    }
+    tail.next = other;
+    tail = other;
   }
 
   String toString() {
