@@ -3,24 +3,32 @@ part of mustache4dart;
 /**
  * This is the main class describing a compiled token.
  */
-abstract class _Token {
+
+abstract class _Token { 
   final String _source;
   _Token next;
+  bool rendable = true;
   
   _Token.withSource(this._source);
  
   factory _Token(String token) {
+    if (token == null || token == '') {
+      return null;
+    }
     if (token.startsWith('{{{')) {
       return new _ExpressionToken(token.substring(3, token.length - 3), false, token);
     } 
     else if (token.startsWith('{{')) {
       return new _ExpressionToken(token.substring(2, token.length - 2), true, token);
     }
+    else if (token == ' ' || token == '\n') {
+      return new _SpecialCharToken(token);
+    }
     else {
       return new _StringToken(token);
     }
   }
-
+  
   StringBuffer apply(MustacheContext context);
 
   /**
@@ -55,6 +63,51 @@ class _StringToken extends _Token {
   String get _val => _source;
 
   String toString() => "StringToken($_val)";
+}
+
+
+class _SpecialCharToken extends _StringToken {
+  _SpecialCharToken(_val) : super(_val);
+  
+  apply(context) {
+    markNextIdentedStandAloneLineIfAny();
+    return super.apply(context);
+  }
+  
+  markNextIdentedStandAloneLineIfAny() {
+    if (_val != '\n') {
+      return;
+    }
+    var n = next;
+    if (n == null) {
+      return;
+    }
+    int nextSectionsMarked = 0;
+    while (n._val != '\n') { //find the next endline
+      if (n._val == ' ' || n is _StartSectionToken || n is _EndSectionToken) {
+        n.rendable = false;
+        nextSectionsMarked++;
+        n = n.next;
+      }
+      else {
+        resetNext(nextSectionsMarked);
+        return;
+      }
+    }
+    if (nextSectionsMarked > 0) {
+      n.rendable = false;
+    }
+  }
+  
+  resetNext(int counter) {
+    var n = next;
+    while (counter -- >= 0) {
+      n.rendable = true;
+      n = n.next;
+    }
+  }
+  
+  String toString() => "SpecialCharToken($_val)";
 }
 
 /**
@@ -238,6 +291,9 @@ class TokenList extends Iterable<_Token> {
   Iterator<_Token> get iterator => new TokenIterator(head);
 
   void add(_Token other) {
+    if (other == null) {
+      return;
+    }
     if (head == null) {
       head = other;
       tail = other;

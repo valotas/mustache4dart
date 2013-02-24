@@ -39,4 +39,5 @@ void main() {
   var map = {'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}};
   test('Simple context test', () => expect(render('{{#a}}{{one}}{{/a}}', map), '1'));
   test('Deeper context test', () => expect(render('{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{/b}}{{/a}}', map), '1-12'));
+  test('Template with intented line', () => expect(render('| This is a\n  {{#boolean}}\n|\n  {{#boolean}}\n| new line', {'boolean': true}), '| This is a\n|\n| new line'));
 }

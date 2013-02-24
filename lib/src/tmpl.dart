@@ -23,8 +23,7 @@ class _Template extends Iterable<_Token> {
           continue;
         }
       }
-      else if (char == '\n' && searchFor != '}') {
-        //Handle newlines as standalone tokens
+      else if (isSingleCharToken(char, searchFor)) {
         if (buf.length > 0) {
           tokens.add(new _Token(buf.toString()));
           buf = new StringBuffer();
@@ -39,9 +38,31 @@ class _Template extends Iterable<_Token> {
     return new _Template._internal(tokens);
   }
   
+  static bool isSingleCharToken(String char, String searchFor) {
+   if (char == '\n' && searchFor != '}') {
+     return true;
+   }
+   if (char == ' ' && searchFor == '{') {
+     return true;
+   }
+   return false; 
+  }
+  
   _Template._internal(this.tokens);
   
   Iterator<_Token> get iterator => tokens.iterator;
+  
+  String renderWith(MustacheContext ctx, [StringBuffer buf]) {
+    if (buf == null) {
+      buf = new StringBuffer();
+    }
+    tokens.forEach((t) {
+      if (t.rendable) {
+        buf.write(t.apply(ctx));        
+      }
+    });
+    return buf.toString();
+  }
   
   String toString() {
     return "Template($tokens)";
