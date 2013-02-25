@@ -83,6 +83,9 @@ class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
   apply(context) {
+    if (!rendable) {
+      return '';
+    }
     if (_val == '\n' || _val =='\r\n' || _val == '') {
       _markNextStandAloneLineIfAny();      
     }
@@ -221,11 +224,11 @@ class _StartSectionToken extends _ExpressionToken {
       return '';
     }
     StringBuffer str = new StringBuffer();
-    if (val is Function) {
+    if (val is Function) { //apply the source to the given function
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
       return val(str.toString());
     }
-    if (val is MustacheContext) {
+    if (val is MustacheContext) { //apply the new context to each of the tokens until the end
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
       return str;
     }
@@ -259,6 +262,9 @@ class _StartSectionToken extends _ExpressionToken {
     }
     return null;
   }
+  
+  //The token itself is always rendable
+  bool get rendable => true;
   
   String toString() => "StartSectionToken($_val)";
 }
