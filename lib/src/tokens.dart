@@ -178,9 +178,7 @@ class _CommentToken extends _ExpressionToken {
   
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx) {
-    return '';
-  }  
+  apply(MustacheContext ctx) => '';
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
@@ -205,7 +203,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 
 class _StartSectionToken extends _ExpressionToken {
   _Token _computedNext;
-
+  
   _StartSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
   //Override the next getter
@@ -213,30 +211,29 @@ class _StartSectionToken extends _ExpressionToken {
 
   apply(MustacheContext ctx) {
     var val = ctx[_val];
+    if (val == true) {
+      // we do not have to find the end section and apply
+      //it's content here
+      return '';
+    }
     if (val == null) {
       _computedNext = forEachUntilEndSection(null);
       return '';
     }
-    if (val == true) {
-      return '';
-    }
+    StringBuffer str = new StringBuffer();
     if (val is Function) {
-      StringBuffer str = new StringBuffer();
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
       return val(str.toString());
     }
     if (val is MustacheContext) {
-      StringBuffer str = new StringBuffer();
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
       return str;
     }
     if (val is Iterable) {
-      StringBuffer result = new StringBuffer();
-
       val.forEach((v) {
-        _computedNext = forEachUntilEndSection((_Token t) => result.write(t.apply(v)));
+        _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(v)));
       });
-      return result;
+      return str;
     }
   }
 
@@ -269,9 +266,7 @@ class _StartSectionToken extends _ExpressionToken {
 class _EndSectionToken extends _ExpressionToken {
   _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx) {
-    return "";
-  }
+  apply(MustacheContext ctx) => '';
   
   String toString() => "EndSectionToken($_val)";
 }
