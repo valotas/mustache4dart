@@ -50,7 +50,7 @@ class MustacheContext {
     if (v == true) {
       return true;
     }
-    if (v is MustacheFunction) {
+    if (v is Function) {
       return v;
     }
     if (v is num) {
@@ -65,9 +65,6 @@ class MustacheContext {
   _getValue(String key) {
     try {
       var val = ctx[key];
-      if (val is Function) {
-        return new MustacheFunction(val);
-      }
       return val;
     } catch (NoSuchMethodError) {
       //There is no sync API as I see: http://code.google.com/p/dart/issues/detail?id=4633 
@@ -92,7 +89,7 @@ class MustacheContext {
         fim = m.invoke(membersMirror.simpleName, []);
       }
       else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
-        return new MustacheFunction(m, membersMirror.simpleName); 
+        return _toFuncion(m, membersMirror.simpleName); 
       }
       if (fim != null) {
         var im = deprecatedFutureValue(fim);
@@ -121,6 +118,20 @@ class MustacheContext {
     out.write(name[0].toUpperCase());
     out.write(name.substring(1));
     return out.toString();
+  }
+  
+  static Function _toFuncion(InstanceMirror mirror, String method) {
+    return (val) {
+      var fim = mirror.invoke(method, [val]);
+      var im = deprecatedFutureValue(fim);
+      if (im is InstanceMirror) {
+        var r = im.reflectee;
+        return r;
+      }
+      else {
+        return null;
+      }
+    };
   }
   
   String toString() => "MustacheContext($ctx, $other)";
@@ -152,39 +163,6 @@ class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
     } else {
       current = null;
       return false;
-    }
-  }
-}
-
-class MustacheFunction {
-  final Function _func;
-  final InstanceMirror _mirror;
-  final String _methodName;
-  
-  factory MustacheFunction(func, [name]) {
-    if (name != null && func is InstanceMirror) {
-      return new MustacheFunction._internal(func, name, null);
-    }
-    if (name == null && func is Function) {
-      return new MustacheFunction._internal(null, null, func);
-    }
-  }
-  
-  MustacheFunction._internal(this._mirror, this._methodName, this._func);
-  
-  apply(String val) {
-    if (_func != null) {
-      return Function.apply(_func, [val]);
-    }
-    //otherwise:
-    var fim = _mirror.invoke(_methodName, [val]);
-    var im = deprecatedFutureValue(fim);
-    if (im is InstanceMirror) {
-      var r = im.reflectee;
-      return r;
-    }
-    else {
-      return null;
     }
   }
 }

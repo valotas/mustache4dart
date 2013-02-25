@@ -220,10 +220,10 @@ class _StartSectionToken extends _ExpressionToken {
     if (val == true) {
       return '';
     }
-    if (val is MustacheFunction) {
+    if (val is Function) {
       StringBuffer str = new StringBuffer();
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
-      return val.apply(str.toString());
+      return val(str.toString());
     }
     if (val is MustacheContext) {
       StringBuffer str = new StringBuffer();
