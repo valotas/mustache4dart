@@ -29,6 +29,20 @@ abstract class _Token {
     }
   }
   
+  String render(MustacheContext context, [StringBuffer buf]) {
+    var string = apply(context);
+    if (buf == null) {
+      buf = new StringBuffer();
+    }
+    if (rendable) {
+      buf.write(string);
+    }
+    if (next != null) {
+      next.render(context, buf);
+    }
+    return buf.toString();
+  }
+  
   StringBuffer apply(MustacheContext context);
 
   /**
@@ -227,7 +241,7 @@ class _StartSectionToken extends _ExpressionToken {
   }
 
   forEachUntilEndSection(void f(_Token)) {
-    Iterator<_Token> it = new TokenIterator(super.next);
+    Iterator<_Token> it = new _TokenIterator(super.next);
     int counter = 1;
     while (it.moveNext()) {
       _Token n = it.current;
@@ -281,46 +295,11 @@ class _InvertedSectionToken extends _StartSectionToken {
   }
 }
 
-class TokenList extends Iterable<_Token> {
-  _Token head;
-  _Token tail;
-
-  Iterator<_Token> get iterator => new TokenIterator(head);
-
-  void add(_Token other) {
-    if (other == null) {
-      return;
-    }
-    if (head == null) {
-      //Our template should start as an empty string token
-      head = new _SpecialCharToken('');
-      tail = head;
-    }
-    tail.next = other;
-    tail = other;
-  }
-
-  String toString() {
-    StringBuffer str = new StringBuffer("TokenList(");
-    if (head == null) {
-      //Do not display anything
-    }
-    else if (head == tail) {
-      str.write(head);
-    }
-    else {
-      str.write("$head...$tail");
-    }
-    str.write(")");
-    return str.toString();
-  }
-}
-
-class TokenIterator implements Iterator<_Token> {
+class _TokenIterator implements Iterator<_Token> {
   _Token start;
   _Token current;
 
-  TokenIterator(this.start);
+  _TokenIterator(this.start);
 
   bool moveNext() {
     if (current == null && start != null) {
@@ -333,4 +312,3 @@ class TokenIterator implements Iterator<_Token> {
     return current != null;
   }
 }
-

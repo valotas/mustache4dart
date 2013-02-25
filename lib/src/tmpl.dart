@@ -1,10 +1,10 @@
 part of mustache4dart;
 
-class _Template extends Iterable<_Token> {
-  final Iterable<_Token> tokens;
+class _Template {
+  final _TokenList list;
   
   factory _Template(String template) {
-    TokenList tokens = new TokenList();
+    _TokenList tokens = new _TokenList();
     StringBuffer buf = new StringBuffer();
     String searchFor = '{';
     for (int i = 0; i < template.length; i++) {
@@ -68,24 +68,46 @@ class _Template extends Iterable<_Token> {
     return char == '\r' && nextChar == '\n'; 
   }
   
-  _Template._internal(this.tokens);
-  
-  Iterator<_Token> get iterator => tokens.iterator;
-  
-  String renderWith(MustacheContext ctx, [StringBuffer buf]) {
-    if (buf == null) {
-      buf = new StringBuffer();
-    }
-    tokens.forEach((t) {
-      var value = t.apply(ctx);
-      if (t.rendable) {
-        buf.write(value);
-      }
-    });
-    return buf.toString();
+  _Template._internal(this.list);
+    
+  String renderWith(MustacheContext ctx) {
+    return list.head.render(ctx);
   }
   
   String toString() {
-    return "Template($tokens)";
+    return "Template($list)";
+  }
+}
+
+class _TokenList {
+  _Token head;
+  _Token tail;
+
+  void add(_Token other) {
+    if (other == null) {
+      return;
+    }
+    if (head == null) {
+      //Our template should start as an empty string token
+      head = new _SpecialCharToken('');
+      tail = head;
+    }
+    tail.next = other;
+    tail = other;
+  }
+
+  String toString() {
+    StringBuffer str = new StringBuffer("TokenList(");
+    if (head == null) {
+      //Do not display anything
+    }
+    else if (head == tail) {
+      str.write(head);
+    }
+    else {
+      str.write("$head...$tail");
+    }
+    str.write(")");
+    return str.toString();
   }
 }
