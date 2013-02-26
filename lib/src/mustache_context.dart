@@ -3,13 +3,22 @@ part of mustache4dart;
 class MustacheContext {
   static final String DOT = '\.';
   final ctx;
-  final MustacheContext other;
+  MustacheContext other;
 
   MustacheContext(this.ctx, [MustacheContext this.other]);
 
-  operator [](String key) => _get(key);
+  operator [](String key) {
+    var result = _get(key);
+    if (result == null && other != null) {
+      result = other[key];
+      if (result != null && result is MustacheContext) {
+        result.other = this;
+      }
+    }
+    return result;
+  }
   
-  _get(String key, [MustacheContext additionalCtx]) {
+  _get(String key) {
     if (key == DOT) {
       return ctx;
     }
@@ -26,14 +35,10 @@ class MustacheContext {
       return val;
     }
     //else
-    var result = _getContext(key, additionalCtx == null ? this : additionalCtx);
-    if (result == null && other != null) {
-      result = other._get(key, this);
-    }
-    return result; 
+    return _getContext(key);
   }
   
-  _getContext(String key, [MustacheContext other]) {
+  _getContext(String key) {
     var v = _getValue(key);
     if (v == null) {
       return null;
@@ -42,7 +47,7 @@ class MustacheContext {
       if (v.isEmpty) {
         return null;
       }
-      return new _IterableMustacheContextDecorator(v, other);
+      return new _IterableMustacheContextDecorator(v, this);
     }
     if (v == false) {
       return null;
@@ -57,7 +62,7 @@ class MustacheContext {
       return "$v";
     }
     if (!(v is String)) {
-      return new MustacheContext(v, other);
+      return new MustacheContext(v, this);
     }
     return v;
   }
