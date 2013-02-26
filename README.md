@@ -8,6 +8,7 @@ as an excuse to better explore the language. Although it is still in development
 Using it
 --------
 In order to use the library, just add it to your pubspec.yalm as a dependency
+
 	dependencies:
 	  mustache4dart: any
 
