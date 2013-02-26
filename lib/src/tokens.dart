@@ -83,11 +83,11 @@ class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
   apply(context) {
-    if (!rendable) {
-      return '';
-    }
     if (_val == '\n' || _val =='\r\n' || _val == '') {
       _markNextStandAloneLineIfAny();      
+    }
+    if (!rendable) {
+      return '';
     }
     return super.apply(context);
   }
