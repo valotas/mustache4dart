@@ -70,8 +70,8 @@ class _Template {
   
   _Template._internal(this.list);
     
-  String renderWith(MustacheContext ctx) {
-    return list.head.render(ctx);
+  String renderWith(MustacheContext ctx, [Function partial]) {
+    return list.head.render(ctx, null, partial);
   }
   
   String toString() {

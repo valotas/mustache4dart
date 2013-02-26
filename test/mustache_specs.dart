@@ -31,7 +31,16 @@ main() {
               var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
               testDescription.write(" When rendering '''$templateOnline''' with '$data'");
               var expected = t['expected'];
-              test(testDescription.toString(), () => expect(render(template, data), expected)); 
+              var partial = (String name) {
+                var partials = t['partials'];
+                if (partials == null) {
+                  return null;
+                }
+                var p = partials[name];
+                
+                return p;
+              };
+              test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
           });
         });

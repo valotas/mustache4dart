@@ -29,8 +29,8 @@ abstract class _Token {
     }
   }
   
-  String render(MustacheContext context, [StringBuffer buf]) {
-    var string = apply(context);
+  String render(MustacheContext context, [StringBuffer buf, Function partial]) {
+    var string = apply(context, partial);
     if (buf == null) {
       buf = new StringBuffer();
     }
@@ -38,12 +38,12 @@ abstract class _Token {
       buf.write(string);
     }
     if (next != null) {
-      next.render(context, buf);
+      next.render(context, buf, partial);
     }
     return buf.toString();
   }
   
-  StringBuffer apply(MustacheContext context);
+  StringBuffer apply(MustacheContext context, [Function partial]);
 
   /**
    * This describes the value of the token.
@@ -72,7 +72,7 @@ class _StringToken extends _Token {
 
   _StringToken(_val) : super.withSource(_val);
   
-  apply(context) => _val;
+  apply(context, [partial]) => _val;
   
   String get _val => _source;
 
@@ -82,14 +82,14 @@ class _StringToken extends _Token {
 class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
-  apply(context) {
+  apply(context, [partial]) {
     if (_val == '\n' || _val =='\r\n' || _val == '') {
       _markNextStandAloneLineIfAny();      
     }
     if (!rendable) {
       return '';
     }
-    return super.apply(context);
+    return super.apply(context, [partial]);
   }
   
   _markNextStandAloneLineIfAny() {
@@ -158,6 +158,8 @@ class _ExpressionToken extends _Token {
       return new _InvertedSectionToken.withSource(newVal, source);
     } else if ('!' == control) {
       return new _CommentToken.withSource(newVal, source);
+    } else if ('>' == control) {
+      return new _PartialToken(newVal, source);
     } else {
       return new _EscapeHtmlToken.withSource(val, source);
     }
@@ -165,7 +167,7 @@ class _ExpressionToken extends _Token {
 
   _ExpressionToken.withSource(this._val, source) : super.withSource(source);
   
-  apply(MustacheContext ctx) {
+  apply(MustacheContext ctx, [partial]) {
     var val = ctx[_val];
     if (val == null) {
       return '';
@@ -176,18 +178,24 @@ class _ExpressionToken extends _Token {
   String toString() => "ExpressionToken($_val)";
 }
 
+class _PartialToken extends _ExpressionToken {
+  _PartialToken(String val, String source) : super.withSource(val, source);
+  
+  apply(MustacheContext ctx, [partial]) => render(partial(_val), ctx, partial);
+}
+
 class _CommentToken extends _ExpressionToken {
   _Token _computedNext;
   
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx) => '';
+  apply(MustacheContext ctx, [partial]) => '';
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
   _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx) {
+  apply(MustacheContext ctx, [partial]) {
     var val = super.apply(ctx);
     if (val is String) {
       return val.replaceAll("&", "&amp;")
@@ -212,7 +220,7 @@ class _StartSectionToken extends _ExpressionToken {
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
 
-  apply(MustacheContext ctx) {
+  apply(MustacheContext ctx, [partial]) {
     var val = ctx[_val];
     if (val == true) {
       // we do not have to find the end section and apply
@@ -272,7 +280,7 @@ class _StartSectionToken extends _ExpressionToken {
 class _EndSectionToken extends _ExpressionToken {
   _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx) => '';
+  apply(MustacheContext ctx, [partial]) => '';
   
   String toString() => "EndSectionToken($_val)";
 }
@@ -280,7 +288,7 @@ class _EndSectionToken extends _ExpressionToken {
 class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx) {
+  apply(MustacheContext ctx, [partial]) {
     var val = ctx[_val];
     if (val == null) {
       StringBuffer buf = new StringBuffer();
