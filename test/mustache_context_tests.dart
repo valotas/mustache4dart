@@ -93,6 +93,21 @@ void main() {
       expect(ctx['a']['one'], '1');
       expect(ctx['b']['two'], '2');
     });
+    
+    test('Deep subcontext test', () {
+      var ctx = new MustacheContext({'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}});
+      expect(ctx['a'], isNotNull);
+      expect(ctx['a']['one'], '1');
+      expect(ctx['a']['two'], isNull);
+      expect(ctx['a']['b'], isNotNull);
+      expect(ctx['a']['b']['one'], '1');
+      expect(ctx['a']['b']['two'], '2');
+      expect(ctx['a']['b']['three'], isNull);
+      expect(ctx['a']['b']['c'], isNotNull);
+      expect(ctx['a']['b']['c']['one'], '1');
+      expect(ctx['a']['b']['c']['two'], '2', reason: "The map contains a value maped to 'c' and should be accessed by any subcontext");
+      expect(ctx['a']['b']['c']['three'], '3');
+    });
   });
 }
 
