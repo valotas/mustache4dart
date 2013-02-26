@@ -97,14 +97,14 @@ void main() {
     test('Deep subcontext test', () {
       var map = {'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}};
       var ctx = new MustacheContext({'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}});
-      expect(ctx['a'], isNotNull);
+      expect(ctx['a'], isNotNull, reason: "a should exists when using $map");
       expect(ctx['a']['one'], '1');
       expect(ctx['a']['two'], isNull);
-      expect(ctx['a']['b'], isNotNull);
+      expect(ctx['a']['b'], isNotNull, reason: "a.b should exists when using $map");
       expect(ctx['a']['b']['one'], '1', reason: "a.b.one == a.own when using $map");
       expect(ctx['a']['b']['two'], '2', reason: "a.b.two == b.two when using $map");
       expect(ctx['a']['b']['three'], isNull);
-      expect(ctx['a']['b']['c'], isNotNull);
+      expect(ctx['a']['b']['c'], isNotNull, reason: "a.b.c should not be null when using $map");
       expect(ctx['a']['b']['c']['one'], '1', reason: "a.b.c.one == a.one when using $map");
       expect(ctx['a']['b']['c']['two'], '2', reason: "a.b.c.two == b.two when using $map");
       expect(ctx['a']['b']['c']['three'], '3');
