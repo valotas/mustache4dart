@@ -6,7 +6,8 @@ part of mustache4dart;
 
 abstract class _Token { 
   final String _source;
-  _Token next;
+  _Token prev;
+  _Token _next;
   bool rendable = true;
   
   _Token.withSource(this._source);
@@ -49,6 +50,13 @@ abstract class _Token {
    * This describes the value of the token.
    */
   String get _val;
+  
+  void set next (_Token n) {
+    _next = n;
+    n.prev = this;
+  }
+  
+  _Token get next => _next;
 
   /**
    * Two tokens are the same if their _val are the same.
@@ -110,6 +118,7 @@ class _SpecialCharToken extends _StringToken {
         _resetNext(tokensMarked);
         return;
       }
+      
     }
     if (tokensMarked > 0 && n != null) {
       n.rendable = false;
