@@ -3,10 +3,10 @@ part of mustache4dart;
 class _Template {
   final _TokenList list;
   
-  factory _Template(String template) {
+  factory _Template(String template, [Function partial]) {
     _TokenList tokens = new _TokenList();
     if (template == null) {
-      tokens.add(new _Token(''));
+      tokens.add(new _Token('', null));
       return new _Template._internal(tokens);
     }
     StringBuffer buf = new StringBuffer();
@@ -16,14 +16,14 @@ class _Template {
       if (char == searchFor) {
         if (char == '{' && template[i+1] == '{') {
           if (buf.length > 0) {
-            tokens.add(new _Token(buf.toString()));
+            tokens.add(new _Token(buf.toString(), partial));
             buf = new StringBuffer(); //resut our buffer: new token starts
           }
           searchFor = '}';
         }
         else if (char == '}' && template[i-1] == '}' && (i + 1 == template.length || template[i+1] != '}')) {
           buf.write(char);
-          tokens.add(new _Token(buf.toString()));
+          tokens.add(new _Token(buf.toString(), partial));
           buf = new StringBuffer(); //resut our buffer: new token starts
           searchFor = '{';
           continue;
@@ -31,24 +31,24 @@ class _Template {
       }
       else if (isSingleCharToken(char, searchFor)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString()));
+          tokens.add(new _Token(buf.toString(), partial));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token(char));
+        tokens.add(new _Token(char, partial));
         continue;
       }
       else if (isSpecialNewLine(template, i)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString()));
+          tokens.add(new _Token(buf.toString(), partial));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token('\r\n'));
+        tokens.add(new _Token('\r\n', partial));
         i++;
         continue;
       }
       buf.write(char);
     }
-    tokens.add(new _Token(buf.toString()));
+    tokens.add(new _Token(buf.toString(), partial));
 
     return new _Template._internal(tokens);
   }
@@ -74,11 +74,11 @@ class _Template {
   
   _Template._internal(this.list);
     
-  String renderWith(MustacheContext ctx, [Function partial]) {
+  String renderWith(MustacheContext ctx) {
     if (list.head == null) {
       return '';
     }
-    return list.head.render(ctx, null, partial);
+    return list.head.render(ctx, null);
   }
   
   String toString() {

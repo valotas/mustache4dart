@@ -11,15 +11,15 @@ abstract class _Token {
   
   _Token.withSource(this._source);
  
-  factory _Token(String token) {
+  factory _Token(String token, Function partial) {
     if (token == '' || token == null) {
       return null;
     }
     if (token.startsWith('{{{')) {
-      return new _ExpressionToken(token.substring(3, token.length - 3), false, token);
+      return new _ExpressionToken(token.substring(3, token.length - 3), false, token, partial);
     } 
     else if (token.startsWith('{{')) {
-      return new _ExpressionToken(token.substring(2, token.length - 2), true, token);
+      return new _ExpressionToken(token.substring(2, token.length - 2), true, token, partial);
     }
     else if (token == ' ' || token == '\n' || token == '\r\n') {
       return new _SpecialCharToken(token);
@@ -29,8 +29,8 @@ abstract class _Token {
     }
   }
   
-  String render(MustacheContext context, [StringBuffer buf, Function partial]) {
-    var string = apply(context, partial);
+  String render(MustacheContext context, [StringBuffer buf]) {
+    var string = apply(context);
     if (buf == null) {
       buf = new StringBuffer();
     }
@@ -38,12 +38,12 @@ abstract class _Token {
       buf.write(string);
     }
     if (next != null) {
-      next.render(context, buf, partial);
+      next.render(context, buf);
     }
     return buf.toString();
   }
   
-  StringBuffer apply(MustacheContext context, [Function partial]);
+  StringBuffer apply(MustacheContext context);
 
   /**
    * This describes the value of the token.
@@ -72,7 +72,7 @@ class _StringToken extends _Token {
 
   _StringToken(_val) : super.withSource(_val);
   
-  apply(context, [partial]) => _val;
+  apply(context) => _val;
   
   String get _val => _source;
 
@@ -82,14 +82,14 @@ class _StringToken extends _Token {
 class _SpecialCharToken extends _StringToken {
   _SpecialCharToken(_val) : super(_val);
   
-  apply(context, [partial]) {
+  apply(context) {
     if (_val == '\n' || _val =='\r\n' || _val == '') {
       _markNextStandAloneLineIfAny();      
     }
     if (!rendable) {
       return '';
     }
-    return super.apply(context, [partial]);
+    return super.apply(context);
   }
   
   _markNextStandAloneLineIfAny() {
@@ -137,7 +137,7 @@ class _SpecialCharToken extends _StringToken {
 class _ExpressionToken extends _Token {
   final String _val;
 
-  factory _ExpressionToken(String val, bool escapeHtml, String source) {
+  factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial) {
     val = val.trim();
     if (escapeHtml && val.startsWith('&')) {
       escapeHtml = false;
@@ -159,7 +159,7 @@ class _ExpressionToken extends _Token {
     } else if ('!' == control) {
       return new _CommentToken.withSource(newVal, source);
     } else if ('>' == control) {
-      return new _PartialToken(newVal, source);
+      return new _PartialToken(partial, newVal, source);
     } else {
       return new _EscapeHtmlToken.withSource(val, source);
     }
@@ -167,7 +167,7 @@ class _ExpressionToken extends _Token {
 
   _ExpressionToken.withSource(this._val, source) : super.withSource(source);
   
-  apply(MustacheContext ctx, [partial]) {
+  apply(MustacheContext ctx) {
     var val = ctx[_val];
     if (val == null) {
       return '';
@@ -179,9 +179,11 @@ class _ExpressionToken extends _Token {
 }
 
 class _PartialToken extends _ExpressionToken {
-  _PartialToken(String val, String source) : super.withSource(val, source);
+  final Function partial;
+  _PartialToken(this.partial, String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx, [partial]) {
+  apply(MustacheContext ctx) {
+    print("$ctx, $partial");
     if (partial != null) {
       return render(partial(_val), ctx, partial);      
     }
@@ -194,13 +196,13 @@ class _CommentToken extends _ExpressionToken {
   
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx, [partial]) => '';
+  apply(MustacheContext ctx) => '';
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
   _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx, [partial]) {
+  apply(MustacheContext ctx) {
     var val = super.apply(ctx);
     if (val is String) {
       return val.replaceAll("&", "&amp;")
@@ -225,7 +227,7 @@ class _StartSectionToken extends _ExpressionToken {
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
 
-  apply(MustacheContext ctx, [partial]) {
+  apply(MustacheContext ctx) {
     var val = ctx[_val];
     if (val == true) {
       // we do not have to find the end section and apply
@@ -293,7 +295,7 @@ class _EndSectionToken extends _ExpressionToken {
 class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx, [partial]) {
+  apply(MustacheContext ctx) {
     var val = ctx[_val];
     if (val == null) {
       StringBuffer buf = new StringBuffer();
