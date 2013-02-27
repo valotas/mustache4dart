@@ -100,7 +100,7 @@ class _SpecialCharToken extends _StringToken {
     int tokensMarked = 0;
     bool foundSection = false;
     while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken) {
+      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken) {
         n.rendable = false;
         tokensMarked++;
         n = n.next;
@@ -188,6 +188,8 @@ class _PartialToken extends _ExpressionToken {
     }
     return '';
   }
+  
+  bool get rendable => true;
 }
 
 class _CommentToken extends _ExpressionToken {
