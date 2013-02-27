@@ -20,7 +20,7 @@ For example:
 
 ### Compiling to functions
 If you have a template that you are going to reuse with different contextes you can compile
-a template to a function using the toplevel function compile:
+it to a function using the toplevel function compile:
 
 	var salut = compile('Hello {{name}}!');
 	print(salut('Alice')); //should print Hello Alice! 
