@@ -13,7 +13,6 @@ main() {
   specs_dir
     .listSync()
     .forEach((f) {
-      // filter out only .json files and not the lambda tests at the moment
       var filename = f.name;
       if (shouldRun(filename)) {
         f.readAsString(Encoding.UTF_8)
@@ -49,9 +48,11 @@ main() {
 }
 
 bool shouldRun(String filename) {
+  // filter out only .json files
   if (!filename.endsWith('.json')) {
     return false;
   }
   String name = filename.substring(filename.lastIndexOf('/') + 1);
+  // do not include the exluded test
   return !EXCLUDES.contains(name);
 }
