@@ -5,6 +5,10 @@ class _Template {
   
   factory _Template(String template) {
     _TokenList tokens = new _TokenList();
+    if (template == null) {
+      tokens.add(new _Token(''));
+      return new _Template._internal(tokens);
+    }
     StringBuffer buf = new StringBuffer();
     String searchFor = '{';
     for (int i = 0; i < template.length; i++) {
@@ -71,6 +75,9 @@ class _Template {
   _Template._internal(this.list);
     
   String renderWith(MustacheContext ctx, [Function partial]) {
+    if (list.head == null) {
+      return '';
+    }
     return list.head.render(ctx, null, partial);
   }
   
