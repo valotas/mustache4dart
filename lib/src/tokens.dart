@@ -183,7 +183,6 @@ class _PartialToken extends _ExpressionToken {
   _PartialToken(this.partial, String val, String source) : super.withSource(val, source);
   
   apply(MustacheContext ctx) {
-    print("$ctx, $partial");
     if (partial != null) {
       return render(partial(_val), ctx, partial);      
     }
