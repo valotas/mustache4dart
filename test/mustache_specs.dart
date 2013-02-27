@@ -30,15 +30,16 @@ main() {
               var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
               testDescription.write(" When rendering '''$templateOnline''' with '$data'");
               var expected = t['expected'];
+              var partials = t['partials'];
               var partial = (String name) {
-                var partials = t['partials'];
                 if (partials == null) {
                   return null;
                 }
-                var p = partials[name];
-                
-                return p;
+                return partials[name];
               };
+              if (partials != null) {
+                testDescription.write(" and partials: $partials");
+              }
               test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
           });
