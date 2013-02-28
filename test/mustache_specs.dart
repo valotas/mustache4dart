@@ -26,7 +26,7 @@ main() {
               var template = t['template'];
               var data = t['data'];
               var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
-              testDescription.write(" When rendering '''$templateOnline''' with '$data'");
+              testDescription.write(" When rendering '''$templateOnline'''");
               var expected = t['expected'];
               var partials = t['partials'];
               var partial = (String name) {
@@ -39,7 +39,12 @@ main() {
                 testDescription.write(" and partials: $partials");
               }
               if (data['lambda'] != null) {
-                data['lambda'] = lambdas[t['name']];
+                var l = lambdas[t['name']];
+                data['lambda'] = l;
+                testDescription.write(" with '$l'");
+              }
+              else {
+                testDescription.write(" with '$data'");
               }
               test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
@@ -60,11 +65,11 @@ bool shouldRun(String filename) {
 //Until we'll find a way to load a piece of code dynamically,
 //we provide the lambdas at the test here
 var lambdas = {
-               'Interpolation' : () => 'world',
-               'Interpolation - Expansion': () => '{{planet}}',
-               'Interpolation - Alternate Delimiters': () => "|planet| => {{planet}}",
-               'Interpolation - Multiple Calls': () => 'Not implemented', //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
-               'Escaping': () => '>',
+               'Interpolation' : (t) => 'world',
+               'Interpolation - Expansion': (t) => '{{planet}}',
+               'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
+               'Interpolation - Multiple Calls': (t) => 'Not implemented', //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+               'Escaping': (t) => '>',
                'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
                'Section - Expansion': (txt) => "$txt{{planet}}$txt",
                'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
