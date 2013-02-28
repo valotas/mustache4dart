@@ -181,6 +181,9 @@ class _ExpressionToken extends _Token {
     if (val == null) {
       return '';
     }
+    if (val is Function) {
+      return val(null);
+    }
     return val;
   }
   
