@@ -40,6 +40,9 @@ main() {
               if (partials != null) {
                 testDescription.write(" and partials: $partials");
               }
+              if (data['lambda'] != null) {
+                data['lambda'] = (var) => 'Lambda that has not been implemnted yet!';
+              }
               test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
           });
