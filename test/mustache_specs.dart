@@ -5,8 +5,6 @@ import 'dart:json';
 import 'package:/unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
-final List<String> EXCLUDES = ['~~lambdas.json']; 
-
 main() {
   print("Running mustache specs");
   var specs_dir = new Directory('spec/specs');
@@ -56,9 +54,7 @@ bool shouldRun(String filename) {
   if (!filename.endsWith('.json')) {
     return false;
   }
-  String name = filename.substring(filename.lastIndexOf('/') + 1);
-  // do not include the exluded test
-  return !EXCLUDES.contains(name);
+  return true;
 }
 
 //Until we'll find a way to load a piece of code dynamically,
