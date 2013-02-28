@@ -23,6 +23,7 @@ void main() {
     test('Simple comment', () => expect(render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
     test('Comment with a property that looks like it', () => expect(render('{{!comment}}\nΈνα φανταστικό template', {'!comment' : 'This should not be shown'}), '\nΈνα φανταστικό template'));
     test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), '{{! ignore this}}none!!!'));
+    test('Hello lambda', () => expect(render('Hello {{lambda}}!', {'lambda': (t) => "George"}), 'Hello George!'));
     
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
     var salut = compile(salutTemplate);
