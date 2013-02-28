@@ -41,7 +41,7 @@ main() {
                 testDescription.write(" and partials: $partials");
               }
               if (data['lambda'] != null) {
-                data['lambda'] = (val) => 'Lambda that has not been implemnted yet!';
+                data['lambda'] = lambdas[t['name']];
               }
               test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
@@ -60,3 +60,23 @@ bool shouldRun(String filename) {
   // do not include the exluded test
   return !EXCLUDES.contains(name);
 }
+
+//Until we'll find a way to load a piece of code dynamically,
+//we provide the lambdas at the test here
+var lambdas = {
+               'Interpolation' : () => 'world',
+               'Interpolation - Expansion': () => '{{planet}}',
+               'Interpolation - Alternate Delimiters': () => "|planet| => {{planet}}",
+               'Interpolation - Multiple Calls': () => 'Not implemented', //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+               'Escaping': () => '>',
+               'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
+               'Section - Expansion': (txt) => "$txt{{planet}}$txt",
+               'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
+               'Section - Multiple Calls': (t) {
+                 var s = new StringBuffer("__$t");
+                 s.write('__');
+                 return s.toString();
+               },
+               'Inverted Section': (txt) => false
+               
+};
