@@ -182,7 +182,8 @@ class _ExpressionToken extends _Token {
       return '';
     }
     if (val is Function) {
-      return val(null);
+      //A lambda's return value should be parsed
+      return render(val(null), ctx);
     }
     return val;
   }
@@ -254,7 +255,8 @@ class _StartSectionToken extends _ExpressionToken {
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
-      return val(str.toString());
+      //A lambda's return value should be parsed
+      return render(val(str.toString()), ctx);
     }
     if (val is MustacheContext) { //apply the new context to each of the tokens until the end
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(val)));

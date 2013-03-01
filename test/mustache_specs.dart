@@ -41,11 +41,8 @@ main() {
               if (data['lambda'] != null) {
                 var l = lambdas[t['name']];
                 data['lambda'] = l;
-                testDescription.write(" with '$l'");
               }
-              else {
-                testDescription.write(" with '$data'");
-              }
+              testDescription.write(" with '$data'");
               test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
             });            
           });
