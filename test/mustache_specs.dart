@@ -26,7 +26,7 @@ main() {
               var template = t['template'];
               var data = t['data'];
               var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
-              testDescription.write(" When rendering '''$templateOnline'''");
+              var reason = new StringBuffer("Could not render right '''$templateOnline'''");
               var expected = t['expected'];
               var partials = t['partials'];
               var partial = (String name) {
@@ -35,15 +35,15 @@ main() {
                 }
                 return partials[name];
               };
-              if (partials != null) {
-                testDescription.write(" and partials: $partials");
-              }
               if (data['lambda'] != null) {
                 var l = lambdas[t['name']];
                 data['lambda'] = l;
               }
-              testDescription.write(" with '$data'");
-              test(testDescription.toString(), () => expect(render(template, data, partial), expected)); 
+              reason.write(" with '$data'");
+              if (partials != null) {
+                reason.write(" and partial: $partials");
+              }
+              test(testDescription.toString(), () => expect(render(template, data, partial), expected, reason: reason)); 
             });            
           });
         });
