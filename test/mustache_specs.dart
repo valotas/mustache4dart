@@ -61,11 +61,12 @@ bool shouldRun(String filename) {
 
 //Until we'll find a way to load a piece of code dynamically,
 //we provide the lambdas at the test here
+var callCounter = 1;
 var lambdas = {
                'Interpolation' : (t) => 'world',
                'Interpolation - Expansion': (t) => '{{planet}}',
                'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
-               'Interpolation - Multiple Calls': (t) => 'Not implemented', //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+               'Interpolation - Multiple Calls': (t) => (callCounter++).toString(), //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
                'Escaping': (t) => '>',
                'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
                'Section - Expansion': (txt) => "$txt{{planet}}$txt",
