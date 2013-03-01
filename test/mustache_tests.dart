@@ -18,11 +18,11 @@ void main() {
     test('Simple existing section', () => expect(render('Shown: {{#person}}Yes, there is a person{{/person}}', {'person': true}), 'Shown: Yes, there is a person'));
     test('Existing section with list', () => expect(render('Persons: {{#persons}}{{name}},{{/persons}}', {'persons': [{'name': 'name1'}, {'name': 'name2'}] }), 'Persons: name1,name2,'));
     test('Inverted section', () => expect(render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}none!{{/persons}}', {}), 'Persons: none!'));
-    test('Simple lambda value', () => expect(render('{{#ff}}{{name}} is awesome{{/ff}}', {'name': 'George', 'ff': (t) => "$t!!!"}), '{{name}} is awesome!!!'));
+    test('Simple lambda value', () => expect(render('{{#ff}}{{name}} is awesome{{/ff}}', {'name': 'George', 'ff': (t) => "$t!!!"}), 'George is awesome!!!'));
     test('Inverted section with lambda content', () => expect(render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}{{#format}}none{{/format}}{{/persons}}', {'format': (t) => "$t!!!"}), 'Persons: none!!!'));
     test('Simple comment', () => expect(render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
     test('Comment with a property that looks like it', () => expect(render('{{!comment}}\nΈνα φανταστικό template', {'!comment' : 'This should not be shown'}), '\nΈνα φανταστικό template'));
-    test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), '{{! ignore this}}none!!!'));
+    test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), 'none!!!'));
     test('Hello lambda', () => expect(render('Hello {{lambda}}!', {'lambda': (t) => "George"}), 'Hello George!'));
     
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
