@@ -28,7 +28,7 @@ it to a function using the toplevel function compile:
 Running the tests
 -----------------
 At the moment the project is under heavy development and pass all comment, interpolation,
-inverted, comments and sections specs. If you want to run the tests yourself, the following 
+inverted, comments, lambdas and sections specs. If you want to run the tests yourself, the following 
 commands should be enough
 
 	git clone git://github.com/valotas/mustache4dart.git
