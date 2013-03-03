@@ -210,7 +210,26 @@ class _CommentToken extends _ExpressionToken {
   
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx) => '';
+  apply(MustacheContext ctx) {
+   if (standalone) {
+     next.rendable = false;
+   }
+   return '';
+  }
+  
+  bool get standalone {
+    if (next._val != '\n') {
+      return false;
+    }
+    var p = prev;
+    while (p._val == ' ') {
+      p = p.prev;
+    }
+    if (p._val != '\n') {
+      return false;
+    }
+    return true;
+  }
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
