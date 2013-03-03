@@ -111,7 +111,7 @@ class _SpecialCharToken extends _StringToken {
     int tokensMarked = 0;
     bool foundSection = false;
     while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken || n is _CommentToken) {
+      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken || n is _CommentToken || n is _DelimiterToken) {
         n.rendable = false;
         tokensMarked++;
         n = n.next;
