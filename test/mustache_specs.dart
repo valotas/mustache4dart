@@ -43,7 +43,7 @@ main() {
               if (partials != null) {
                 reason.write(" and partial: $partials");
               }
-              test(testDescription.toString(), () => expect(render(template, data, partial), expected, reason: reason.toString())); 
+              test(testDescription.toString(), () => expect(render(template, data, partial: partial), expected, reason: reason.toString())); 
             });            
           });
         });

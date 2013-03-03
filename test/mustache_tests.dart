@@ -45,7 +45,7 @@ void main() {
     test('Simple nested context', () => expect(render('{{#a}}\n<{{one}}-{{#b}}|{{one}}{{two}}|{{/b}}>{{/a}}', {'a': {'one': 1}, 'b': {'two': 2}}), '<1-|12|>'));
     test('Deep nested context with new lines', () => expect(render('{{#a}}\n{{one}}\n{{#b}}\n{{one}}{{two}}\n{{/b}}\n{{/a}}', {'a': {'one': 1}, 'b': {'two': 2}}), '1\n12\n'));
     test('\\n\\r should be treated as new line', () => expect(render('|\r\n{{#boolean}}\r\n{{/boolean}}\r\n|', {'boolean' : true}), '|\r\n|'));
-    test('Partial with recursion', () => expect(render('{{> node}}', {'content': 'X', 'nodes': [{'content': 'Y', 'nodes': []}]}, (partialName) => '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>'), 'X<Y<>>'));
-    test('Render with a delimiter', () => expect(render('(|text|)', {'text': 'Hi'}, null, new Delimiter('|', '|')), '(Hi)'));
+    test('Partial with recursion', () => expect(render('{{> node}}', {'content': 'X', 'nodes': [{'content': 'Y', 'nodes': []}]}, partial: (partialName) => '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>'), 'X<Y<>>'));
+    test('Render with a delimiter', () => expect(render('(|text|)', {'text': 'Hi'}, delimiter: new Delimiter('|', '|')), '(Hi)'));
   });
 }

@@ -216,7 +216,7 @@ class _PartialToken extends _ExpressionToken {
   
   apply(MustacheContext ctx) {
     if (partial != null) {
-      return render(partial(_val), ctx, partial);      
+      return render(partial(_val), ctx, partial: partial);      
     }
     return '';
   }
@@ -275,7 +275,7 @@ class _StartSectionToken extends _ExpressionToken {
     if (val is Function) { //apply the source to the given function
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
       //A lambda's return value should be parsed
-      return render(val(str.toString()), ctx, null, delimiter);
+      return render(val(str.toString()), ctx, delimiter: delimiter);
     }
     if (val is MustacheContext) { //apply the new context to each of the tokens until the end
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
