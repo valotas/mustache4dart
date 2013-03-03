@@ -6,14 +6,14 @@ part of mustache4dart;
 
 abstract class _Token { 
   final String _source;
-  final _Delimiter _delimiter;
+  final Delimiter _delimiter;
   _Token prev;
   _Token _next;
   bool rendable = true;
   
   _Token.withSource(this._source, this._delimiter);
  
-  factory _Token(String token, Function partial, _Delimiter d) {
+  factory _Token(String token, Function partial, Delimiter d) {
     if (token == '' || token == null) {
       return null;
     }
@@ -59,7 +59,7 @@ abstract class _Token {
   
   _Token get next => _next;
   
-  _Delimiter get delimiter => _delimiter;
+  Delimiter get delimiter => _delimiter;
 
   /**
    * Two tokens are the same if their _val are the same.
@@ -81,7 +81,7 @@ abstract class _Token {
  */
 class _StringToken extends _Token {
 
-  _StringToken(_val, _Delimiter d) : super.withSource(_val, d);
+  _StringToken(_val, Delimiter d) : super.withSource(_val, d);
   
   apply(context) => _val;
   
@@ -91,7 +91,7 @@ class _StringToken extends _Token {
 }
 
 class _SpecialCharToken extends _StringToken {
-  _SpecialCharToken(_val, _Delimiter d) : super(_val, d);
+  _SpecialCharToken(_val, Delimiter d) : super(_val, d);
   
   apply(context) {
     if (_val == '\n' || _val =='\r\n' || _val == '') {
@@ -149,7 +149,7 @@ class _SpecialCharToken extends _StringToken {
 class _ExpressionToken extends _Token {
   final String _val;
 
-  factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial, _Delimiter delimiter) {
+  factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial, Delimiter delimiter) {
     val = val.trim();
     if (escapeHtml && val.startsWith('&')) {
       escapeHtml = false;
@@ -198,23 +198,23 @@ class _ExpressionToken extends _Token {
 
 class _DelimiterToken extends _ExpressionToken {
   
-  _DelimiterToken(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _DelimiterToken(String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) => '';
   
   bool get rendable => false;
   
-  _Delimiter get delimiter {
+  Delimiter get delimiter {
     List delimiters = _val
         .substring(0, _val.length - 1)
         .split(' ');
-    return new _Delimiter(delimiters[0], delimiters[1]);
+    return new Delimiter(delimiters[0], delimiters[1]);
   }
 }
 
 class _PartialToken extends _ExpressionToken {
   final Function partial;
-  _PartialToken(this.partial, String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _PartialToken(this.partial, String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) {
     if (partial != null) {
@@ -229,13 +229,13 @@ class _PartialToken extends _ExpressionToken {
 class _CommentToken extends _ExpressionToken {
   _Token _computedNext;
   
-  _CommentToken.withSource(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _CommentToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) => '';
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
-  _EscapeHtmlToken.withSource(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _EscapeHtmlToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
 
   apply(MustacheContext ctx) {
     var val = super.apply(ctx);
@@ -257,7 +257,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 class _StartSectionToken extends _ExpressionToken {
   _Token _computedNext;
   
-  _StartSectionToken.withSource(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _StartSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
 
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
@@ -321,7 +321,7 @@ class _StartSectionToken extends _ExpressionToken {
 }
 
 class _EndSectionToken extends _ExpressionToken {
-  _EndSectionToken.withSource(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _EndSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
 
   apply(MustacheContext ctx, [partial]) => '';
   
@@ -329,7 +329,7 @@ class _EndSectionToken extends _ExpressionToken {
 }
 
 class _InvertedSectionToken extends _StartSectionToken {
-  _InvertedSectionToken.withSource(String val, String source, _Delimiter del) : super.withSource(val, source, del);
+  _InvertedSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) {
     var val = ctx[_val];

@@ -5,7 +5,7 @@ class _Template {
   
   factory _Template(String template, [Function partial]) {
     _TokenList tokens = new _TokenList();
-    _Delimiter d = tokens.delimiter;
+    Delimiter d = tokens.delimiter;
     if (template == null) {
       tokens.add(new _Token('', null, d));
       return new _Template._internal(tokens);
@@ -97,7 +97,7 @@ class _TokenList {
   
   _TokenList() {
     //Our template should start as an empty string token
-    head = new _SpecialCharToken('', new _Delimiter('{{', '}}'));
+    head = new _SpecialCharToken('', new Delimiter('{{', '}}'));
     tail = head;
   }
 
@@ -109,7 +109,7 @@ class _TokenList {
     tail = other;
   }
   
-  _Delimiter get delimiter => tail.delimiter;
+  Delimiter get delimiter => tail.delimiter;
 
   String toString() {
     StringBuffer str = new StringBuffer("TokenList(");
@@ -127,12 +127,12 @@ class _TokenList {
   }
 }
 
-class _Delimiter {
+class Delimiter {
   final String opening;
   final String _closing;
   String realClosingTag;
   
-  _Delimiter(this.opening, this._closing);
+  Delimiter(this.opening, this._closing);
   
   bool isSingleCharToken(String char, bool opening) {
     if (!opening) {
