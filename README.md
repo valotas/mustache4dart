@@ -36,7 +36,7 @@ following commands should be enough
 	pub install
 	test/run.sh
 
-At the moment mustache4dart can pass all interpolation, inverted and sections specs.
+At the moment mustache4dart can pass all comments, interpolation, inverted and sections specs.
 
 Versioning
 ----------
