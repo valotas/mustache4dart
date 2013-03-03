@@ -5,50 +5,53 @@ class _Template {
   
   factory _Template(String template, [Function partial]) {
     _TokenList tokens = new _TokenList();
+    _Delimiter d = new _Delimiter('{{', '}}');
     if (template == null) {
-      tokens.add(new _Token('', null));
+      tokens.add(new _Token('', null, d));
       return new _Template._internal(tokens);
     }
+    
     StringBuffer buf = new StringBuffer();
-    String searchFor = '{';
+    bool searchForOpening = true;
     for (int i = 0; i < template.length; i++) {
       String char = template[i];
-      if (char == searchFor) {
-        if (char == '{' && template[i+1] == '{') {
+      if (d.isDelimiter(template, i, searchForOpening)) {
+        if (searchForOpening) { //opening delimiter
           if (buf.length > 0) {
-            tokens.add(new _Token(buf.toString(), partial));
+            tokens.add(new _Token(buf.toString(), partial, d));
             buf = new StringBuffer(); //resut our buffer: new token starts
           }
-          searchFor = '}';
+          searchForOpening = false;
         }
-        else if (char == '}' && template[i-1] == '}' && (i + 1 == template.length || template[i+1] != '}')) {
-          buf.write(char);
-          tokens.add(new _Token(buf.toString(), partial));
+        else { //closing delimiter
+          buf.write(d.closing); //add the closing delimiter
+          tokens.add(new _Token(buf.toString(), partial, d)); //add the token
           buf = new StringBuffer(); //resut our buffer: new token starts
-          searchFor = '{';
+          i = i + d.closingLength - 1;
+          searchForOpening = true;
           continue;
         }
       }
-      else if (isSingleCharToken(char, searchFor)) {
+      else if (d.isSingleCharToken(char, searchForOpening)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial));
+          tokens.add(new _Token(buf.toString(), partial, d));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token(char, partial));
+        tokens.add(new _Token(char, partial, d));
         continue;
       }
       else if (isSpecialNewLine(template, i)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial));
+          tokens.add(new _Token(buf.toString(), partial, d));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token('\r\n', partial));
+        tokens.add(new _Token('\r\n', partial, d));
         i++;
         continue;
       }
       buf.write(char);
     }
-    tokens.add(new _Token(buf.toString(), partial));
+    tokens.add(new _Token(buf.toString(), partial, d));
 
     return new _Template._internal(tokens);
   }
@@ -117,4 +120,51 @@ class _TokenList {
     str.write(")");
     return str.toString();
   }
+}
+
+class _Delimiter {
+  final String opening;
+  final String _closing;
+  String realClosingTag;
+  
+  _Delimiter(this.opening, this._closing);
+  
+  bool isSingleCharToken(String char, bool opening) {
+    if (!opening) {
+      return false;
+    }
+    if (char == '\n') {
+      return true;
+    }
+    if (char == ' ') {
+      return true;
+    }
+    return false;
+  }
+  
+  bool isDelimiter(String template, int position, bool opening) {
+    String d = opening ? this.opening : this._closing;
+    int endIndex = position + d.length;
+    if (endIndex >= template.length) {
+      return false;
+    }
+    String dd = template.substring(position, endIndex);
+    if (d != dd) {
+      return false;
+    }
+    //A hack to support tripple brackets
+    if (!opening && _closing == '}}' && template[endIndex] == '}') {
+      realClosingTag = '}}}';
+    }
+    else {
+      realClosingTag = null;
+    }
+    return true;
+  }
+  
+  String get closing => realClosingTag != null ? realClosingTag : _closing;
+  
+  int get closingLength => closing.length;
+  
+  toString() => "Delimiter($opening, $closing)";
 }

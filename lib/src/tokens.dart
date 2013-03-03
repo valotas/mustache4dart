@@ -12,14 +12,14 @@ abstract class _Token {
   
   _Token.withSource(this._source);
  
-  factory _Token(String token, Function partial) {
+  factory _Token(String token, Function partial, _Delimiter d) {
     if (token == '' || token == null) {
       return null;
     }
-    if (token.startsWith('{{{')) {
+    if (token.startsWith('{{{') && d.opening == '{{') {
       return new _ExpressionToken(token.substring(3, token.length - 3), false, token, partial);
     } 
-    else if (token.startsWith('{{')) {
+    else if (token.startsWith(d.opening)) {
       return new _ExpressionToken(token.substring(2, token.length - 2), true, token, partial);
     }
     else if (token == ' ' || token == '\n' || token == '\r\n') {
