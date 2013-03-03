@@ -27,16 +27,15 @@ it to a function using the toplevel function compile:
 
 Running the tests
 -----------------
-At the moment the project is under heavy development. If you want to run the tests the
-following commands should be enough
+At the moment the project is under heavy development and pass all comment, interpolation,
+inverted, comments and sections specs. If you want to run the tests yourself, the following 
+commands should be enough
 
 	git clone git://github.com/valotas/mustache4dart.git
 	git submodule init
 	git submodule update 
 	pub install
 	test/run.sh
-
-At the moment mustache4dart can pass all comments, interpolation, inverted and sections specs.
 
 Versioning
 ----------
