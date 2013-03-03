@@ -7,7 +7,6 @@ part of mustache4dart;
 abstract class _Token { 
   final String _source;
   final Delimiter _delimiter;
-  _Token prev;
   _Token _next;
   bool rendable = true;
   
@@ -54,7 +53,6 @@ abstract class _Token {
   
   void set next (_Token n) {
     _next = n;
-    n.prev = this;
   }
   
   _Token get next => _next;
