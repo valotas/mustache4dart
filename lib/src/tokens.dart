@@ -108,7 +108,7 @@ class _SpecialCharToken extends _StringToken {
     int tokensMarked = 0;
     bool foundSection = false;
     while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken) {
+      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken || n is _CommentToken) {
         n.rendable = false;
         tokensMarked++;
         n = n.next;
@@ -210,26 +210,7 @@ class _CommentToken extends _ExpressionToken {
   
   _CommentToken.withSource(String val, String source) : super.withSource(val, source);
   
-  apply(MustacheContext ctx) {
-   if (standalone) {
-     next.rendable = false;
-   }
-   return '';
-  }
-  
-  bool get standalone {
-    if (next._val != '\n') {
-      return false;
-    }
-    var p = prev;
-    while (p._val == ' ') {
-      p = p.prev;
-    }
-    if (p._val != '\n') {
-      return false;
-    }
-    return true;
-  }
+  apply(MustacheContext ctx) => '';
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
