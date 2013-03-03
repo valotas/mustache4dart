@@ -5,7 +5,7 @@ class _Template {
   
   factory _Template(String template, [Function partial]) {
     _TokenList tokens = new _TokenList();
-    _Delimiter d = new _Delimiter('{{', '}}');
+    _Delimiter d = tokens.delimiter;
     if (template == null) {
       tokens.add(new _Token('', null, d));
       return new _Template._internal(tokens);
@@ -25,9 +25,11 @@ class _Template {
         }
         else { //closing delimiter
           buf.write(d.closing); //add the closing delimiter
-          tokens.add(new _Token(buf.toString(), partial, d)); //add the token
+          var t = new _Token(buf.toString(), partial, d);
+          tokens.add(t); //add the token
           buf = new StringBuffer(); //resut our buffer: new token starts
           i = i + d.closingLength - 1;
+          d = t.delimiter; //get the next delimiter to use
           searchForOpening = true;
           continue;
         }
@@ -92,19 +94,22 @@ class _Template {
 class _TokenList {
   _Token head;
   _Token tail;
+  
+  _TokenList() {
+    //Our template should start as an empty string token
+    head = new _SpecialCharToken('', new _Delimiter('{{', '}}'));
+    tail = head;
+  }
 
   void add(_Token other) {
     if (other == null) {
       return;
     }
-    if (head == null) {
-      //Our template should start as an empty string token
-      head = new _SpecialCharToken('');
-      tail = head;
-    }
     tail.next = other;
     tail = other;
   }
+  
+  _Delimiter get delimiter => tail.delimiter;
 
   String toString() {
     StringBuffer str = new StringBuffer("TokenList(");
