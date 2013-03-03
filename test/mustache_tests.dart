@@ -21,7 +21,7 @@ void main() {
     test('Simple lambda value', () => expect(render('{{#ff}}{{name}} is awesome{{/ff}}', {'name': 'George', 'ff': (t) => "$t!!!"}), 'George is awesome!!!'));
     test('Inverted section with lambda content', () => expect(render('Persons: {{#persons}}{{name}},{{/persons}}{{^persons}}{{#format}}none{{/format}}{{/persons}}', {'format': (t) => "$t!!!"}), 'Persons: none!!!'));
     test('Simple comment', () => expect(render('{{! this is a comment}}Ένα φανταστικό template', null), 'Ένα φανταστικό template'));
-    test('Comment with a property that looks like it', () => expect(render('{{!comment}}\nΈνα φανταστικό template', {'!comment' : 'This should not be shown'}), '\nΈνα φανταστικό template'));
+    test('Comment with a property that looks like it', () => expect(render('{{!comment}}\nΈνα φανταστικό template', {'!comment' : 'This should not be shown'}), 'Ένα φανταστικό template'));
     test('Comment with in a lambda', () => expect(render('{{#format}}{{! ignore this}}none{{/format}}', {'format': (t) => "$t!!!"}), 'none!!!'));
     test('Hello lambda', () => expect(render('Hello {{lambda}}!', {'lambda': (t) => "George"}), 'Hello George!'));
     
