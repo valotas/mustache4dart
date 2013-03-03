@@ -20,7 +20,7 @@ abstract class _Token {
       return new _ExpressionToken(token.substring(3, token.length - 3), false, token, partial, d);
     } 
     else if (token.startsWith(d.opening)) {
-      return new _ExpressionToken(token.substring(2, token.length - 2), true, token, partial, d);
+      return new _ExpressionToken(token.substring(d.openingLength, token.length - d.closingLength), true, token, partial, d);
     }
     else if (token == ' ' || token == '\n' || token == '\r\n') {
       return new _SpecialCharToken(token, d);

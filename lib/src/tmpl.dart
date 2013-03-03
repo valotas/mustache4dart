@@ -174,5 +174,7 @@ class Delimiter {
   
   int get closingLength => closing.length;
   
+  int get openingLength => opening.length;
+  
   toString() => "Delimiter($opening, $closing)";
 }
