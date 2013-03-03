@@ -3,10 +3,10 @@ part of mustache4dart;
 class _Template {
   final _TokenList list;
   
-  factory _Template(String template, Delimiter del, [Function partial]) {
-    _TokenList tokens = new _TokenList(del);
+  factory _Template(String template, Delimiter del, String ident, [Function partial]) {
+    _TokenList tokens = new _TokenList(del, ident);
     if (template == null) {
-      tokens.add(new _Token('', null, del));
+      tokens.add(new _Token('', null, del, ident));
       return new _Template._internal(tokens);
     }
     
@@ -17,14 +17,14 @@ class _Template {
       if (del.isDelimiter(template, i, searchForOpening)) {
         if (searchForOpening) { //opening delimiter
           if (buf.length > 0) {
-            tokens.add(new _Token(buf.toString(), partial, del));
+            tokens.add(new _Token(buf.toString(), partial, del, ident));
             buf = new StringBuffer(); //resut our buffer: new token starts
           }
           searchForOpening = false;
         }
         else { //closing delimiter
           buf.write(del.closing); //add the closing delimiter
-          var t = new _Token(buf.toString(), partial, del);
+          var t = new _Token(buf.toString(), partial, del, ident);
           tokens.add(t); //add the token
           buf = new StringBuffer(); //resut our buffer: new token starts
           i = i + del.closingLength - 1;
@@ -35,24 +35,24 @@ class _Template {
       }
       else if (del.isSingleCharToken(char, searchForOpening)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial, del));
+          tokens.add(new _Token(buf.toString(), partial, del, ident));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token(char, partial, del));
+        tokens.add(new _Token(char, partial, del, ident));
         continue;
       }
       else if (isSpecialNewLine(template, i)) {
         if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial, del));
+          tokens.add(new _Token(buf.toString(), partial, del, ident));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token('\r\n', partial, del));
+        tokens.add(new _Token('\r\n', partial, del, ident));
         i++;
         continue;
       }
       buf.write(char);
     }
-    tokens.add(new _Token(buf.toString(), partial, del));
+    tokens.add(new _Token(buf.toString(), partial, del, ident));
 
     return new _Template._internal(tokens);
   }
@@ -94,9 +94,9 @@ class _TokenList {
   _Token head;
   _Token tail;
   
-  _TokenList(Delimiter delimiter) {
+  _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
-    head = new _SpecialCharToken('', delimiter);
+    head = new _SpecialCharToken('', delimiter, ident);
     tail = head;
   }
 

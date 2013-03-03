@@ -7,12 +7,13 @@ part of mustache4dart;
 abstract class _Token { 
   final String _source;
   final Delimiter _delimiter;
+
   _Token _next;
   bool rendable = true;
   
   _Token.withSource(this._source, this._delimiter);
  
-  factory _Token(String token, Function partial, Delimiter d) {
+  factory _Token(String token, Function partial, Delimiter d, String ident) {
     if (token == '' || token == null) {
       return null;
     }
@@ -23,7 +24,7 @@ abstract class _Token {
       return new _ExpressionToken(token.substring(d.openingLength, token.length - d.closingLength), true, token, partial, d);
     }
     else if (token == ' ' || token == '\n' || token == '\r\n') {
-      return new _SpecialCharToken(token, d);
+      return new _SpecialCharToken(token, d, ident);
     }
     else {
       return new _StringToken(token, d);
@@ -89,16 +90,19 @@ class _StringToken extends _Token {
 }
 
 class _SpecialCharToken extends _StringToken {
-  _SpecialCharToken(_val, Delimiter d) : super(_val, d);
+  final String ident;
+  
+  _SpecialCharToken(_val, Delimiter d, [this.ident = '']) : super(_val, d);
   
   apply(context) {
-    if (_val == '\n' || _val =='\r\n' || _val == '') {
+    if (_isNewLineOrEmpty) {
       _markNextStandAloneLineIfAny();      
     }
     if (!rendable) {
       return '';
     }
-    return super.apply(context);
+    
+    return _isNewLineOrEmpty ? "$ident${super.apply(context)}" : super.apply(context);
   }
   
   _markNextStandAloneLineIfAny() {
@@ -133,6 +137,10 @@ class _SpecialCharToken extends _StringToken {
       n = n.next;
     }
   }
+  
+  bool get _isNewLineOrEmpty => _isNewLine || _val == '';
+  
+  bool get _isNewLine => _val == '\n' || _val == '\r\n'; 
   
   String toString() {
     var val = _val.replaceAll('\r', '\\r').replaceAll('\n', '\\n');

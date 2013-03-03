@@ -47,6 +47,6 @@ void main() {
     test('\\n\\r should be treated as new line', () => expect(render('|\r\n{{#boolean}}\r\n{{/boolean}}\r\n|', {'boolean' : true}), '|\r\n|'));
     test('Partial with recursion', () => expect(render('{{> node}}', {'content': 'X', 'nodes': [{'content': 'Y', 'nodes': []}]}, partial: (partialName) => '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>'), 'X<Y<>>'));
     test('Render with a delimiter', () => expect(render('(|text|)', {'text': 'Hi'}, delimiter: new Delimiter('|', '|')), '(Hi)'));
-    test('Idented rendering', () => expect(render('Yeah!\nbaby!', null, ident: '--'), '--Yeah!\n--baby'));
+    test('Idented rendering', () => expect(render('Yeah!\nbaby!', null, ident: '--'), '--Yeah!\n--baby!'));
   });
 }
