@@ -48,5 +48,6 @@ void main() {
     test('Partial with recursion', () => expect(render('{{> node}}', {'content': 'X', 'nodes': [{'content': 'Y', 'nodes': []}]}, partial: (partialName) => '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>'), 'X<Y<>>'));
     test('Render with a delimiter', () => expect(render('(|text|)', {'text': 'Hi'}, delimiter: new Delimiter('|', '|')), '(Hi)'));
     test('Idented rendering', () => expect(render('Yeah!\nbaby!', null, ident: '--'), '--Yeah!\n--baby!'));
+    test('Partial with ident', () => expect(render('|\n  {{>p}}', {'content': '<\n->'}, partial: (txt) => '|\n{{{content}}}\n|'), '|\n  |\n  <\n->\n  |'));
   });
 }
