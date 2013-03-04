@@ -27,22 +27,12 @@ it to a function using the toplevel function compile:
 
 Running the tests
 -----------------
-At the moment the project is under heavy development and pass all comment, interpolation,
-inverted, comments, lambdas and sections specs. If you want to run the tests yourself, the following 
-commands should be enough
+[![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
+At the moment the project is under heavy development but pass all mustache specs. 
+If you want to run the tests yourself, the following commands should be enough
 
 	git clone git://github.com/valotas/mustache4dart.git
 	git submodule init
 	git submodule update 
 	pub install
 	test/run.sh
-
-Versioning
-----------
-Until a stable release the versioning of the project will be 0.0.[NUM] where NUM should be
-the number of groups of the mustache specs that pass.
-
-Build status
-------------
-[![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
-You can watch the project failing live by clicking at the status badge :-)
