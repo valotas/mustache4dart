@@ -104,7 +104,7 @@ class _SpecialCharToken extends _StringToken {
       return '';
     }
     
-    return _isNewLineOrEmpty ? "${super.apply(context)}$ident" : super.apply(context);
+    return _isNewLine ? "${super.apply(context)}$ident" : super.apply(context);
   }
   
   _markNextStandAloneLineIfAny() {
@@ -118,7 +118,7 @@ class _SpecialCharToken extends _StringToken {
       if ((n._val == ' ' && !foundSection) 
           || n is _StartSectionToken 
           || n is _EndSectionToken 
-          || (n is _PartialToken && _val != '') 
+          || (n is _PartialToken && _val != '' && n.next != null && n.next._val != '') 
           || n is _CommentToken 
           || n is _DelimiterToken) {
         n.rendable = false;
@@ -230,10 +230,27 @@ class _PartialToken extends _ExpressionToken {
   _PartialToken(this.partial, String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) {
+    if (standAloneWithoutPreviousLine) {
+      next.rendable = false;
+    }
     if (partial != null) {
       return render(partial(_val), ctx, partial: partial, ident: ident);      
     }
     return '';
+  }
+  
+  bool get standAloneWithoutPreviousLine {
+    if (next == null || next._val != '\n') {
+      return false;
+    }
+    _Token p = prev;
+    while (p != null) {
+      if (p._val != ' ' && p._val != '') {
+        return false;
+      }
+      p = p.prev;
+    }
+    return true;
   }
   
   String get ident {
@@ -243,7 +260,7 @@ class _PartialToken extends _ExpressionToken {
       ident.write(' ');
       p = p.prev;
     }
-    if (p._val == '\n') {
+    if (p._val == '\n' || p._val == '') {
       return ident.toString();      
     }
     else {

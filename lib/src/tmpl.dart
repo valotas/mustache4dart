@@ -53,6 +53,9 @@ class _Template {
       buf.write(char);
     }
     tokens.add(new _Token(buf.toString(), partial, del, ident));
+    if (buf.length > 0) {
+      tokens.add(new _Token('', partial, del, ident)); //to mark the end of the template  
+    }
 
     return new _Template._internal(tokens);
   }
