@@ -25,8 +25,8 @@ main() {
               testDescription.write(t['desc']);
               var template = t['template'];
               var data = t['data'];
-              var templateOnline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
-              var reason = new StringBuffer("Could not render right '''$templateOnline'''");
+              var templateOneline = template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
+              var reason = new StringBuffer("Could not render right '''$templateOneline'''");
               var expected = t['expected'];
               var partials = t['partials'];
               var partial = (String name) {
