@@ -70,8 +70,11 @@ abstract class _Token {
      _Token st = other;
      return _val == st._val;
     }
+    if (other is String) {
+      return _val == other;
+    }
     return false;
-  }
+  }  
   
   int get hashCode => _val.hashCode;
 }
@@ -104,7 +107,13 @@ class _SpecialCharToken extends _StringToken {
       return '';
     }
     
-    return _isNewLine ? "${super.apply(context)}$ident" : super.apply(context);
+    if (next == null) {
+      return super.apply(context);
+    }
+    if (_isNewLine) {
+      return "${super.apply(context)}$ident";
+    }
+    return super.apply(context);
   }
   
   _markNextStandAloneLineIfAny() {
@@ -118,7 +127,6 @@ class _SpecialCharToken extends _StringToken {
       if ((n._val == ' ' && !foundSection) 
           || n is _StartSectionToken 
           || n is _EndSectionToken 
-          || (n is _PartialToken && _val != '' && n.next != null && n.next._val != '') 
           || n is _CommentToken 
           || n is _DelimiterToken) {
         n.rendable = false;
@@ -230,7 +238,7 @@ class _PartialToken extends _ExpressionToken {
   _PartialToken(this.partial, String val, String source, Delimiter del) : super.withSource(val, source, del);
   
   apply(MustacheContext ctx) {
-    if (standAloneWithoutPreviousLine) {
+    if (standAlone) {
       next.rendable = false;
     }
     if (partial != null) {
@@ -239,18 +247,26 @@ class _PartialToken extends _ExpressionToken {
     return '';
   }
   
-  bool get standAloneWithoutPreviousLine {
-    if (next == null || next._val != '\n') {
+  bool get standAlone {
+    if (next == null) {
       return false;
     }
-    _Token p = prev;
-    while (p != null) {
-      if (p._val != ' ' && p._val != '') {
-        return false;
+    if (next == '\n' || next == '\r\n') {
+      _Token p = prev;
+      while (p != '\r\n' && p != '\n') {
+        if (p == '') {
+          return true;
+        }
+        if (p != ' ') {
+          return false;
+        }
+        p = p.prev;
       }
-      p = p.prev;
+      return true;
     }
-    return true;
+    else {
+      return false;
+    }
   }
   
   String get ident {
