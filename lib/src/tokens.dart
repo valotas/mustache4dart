@@ -9,6 +9,7 @@ abstract class _Token {
   final Delimiter _delimiter;
 
   _Token _next;
+  _Token prev;
   bool rendable = true;
   
   _Token.withSource(this._source, this._delimiter);
@@ -54,6 +55,7 @@ abstract class _Token {
   
   void set next (_Token n) {
     _next = n;
+    n.prev = this;
   }
   
   _Token get next => _next;
@@ -113,7 +115,12 @@ class _SpecialCharToken extends _StringToken {
     int tokensMarked = 0;
     bool foundSection = false;
     while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if ((n._val == ' ' && !foundSection) || n is _StartSectionToken || n is _EndSectionToken || n is _PartialToken || n is _CommentToken || n is _DelimiterToken) {
+      if ((n._val == ' ' && !foundSection) 
+          || n is _StartSectionToken 
+          || n is _EndSectionToken 
+          || (n is _PartialToken && _val != '') 
+          || n is _CommentToken 
+          || n is _DelimiterToken) {
         n.rendable = false;
         tokensMarked++;
         n = n.next;
@@ -224,9 +231,24 @@ class _PartialToken extends _ExpressionToken {
   
   apply(MustacheContext ctx) {
     if (partial != null) {
-      return render(partial(_val), ctx, partial: partial);      
+      return render(partial(_val), ctx, partial: partial, ident: ident);      
     }
     return '';
+  }
+  
+  String get ident {
+    StringBuffer ident = new StringBuffer();
+    _Token p = this.prev;
+    while (p._val == ' ') {
+      ident.write(' ');
+      p = p.prev;
+    }
+    if (p._val == '\n') {
+      return ident.toString();      
+    }
+    else {
+      return '';
+    }
   }
   
   bool get rendable => true;
