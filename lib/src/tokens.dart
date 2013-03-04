@@ -102,7 +102,7 @@ class _SpecialCharToken extends _StringToken {
       return '';
     }
     
-    return _isNewLineOrEmpty ? "$ident${super.apply(context)}" : super.apply(context);
+    return _isNewLineOrEmpty ? "${super.apply(context)}$ident" : super.apply(context);
   }
   
   _markNextStandAloneLineIfAny() {
