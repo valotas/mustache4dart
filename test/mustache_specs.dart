@@ -11,7 +11,7 @@ main() {
   specs_dir
     .listSync()
     .forEach((f) {
-      var filename = f.name;
+      var filename = f.path;
       if (shouldRun(filename)) {
         f.readAsString(Encoding.UTF_8)
         .then((text) {
