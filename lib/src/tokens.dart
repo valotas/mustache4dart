@@ -190,7 +190,7 @@ class _ExpressionToken extends _Token {
     } else if ('^' == control) {
       return new _InvertedSectionToken.withSource(newVal, source, delimiter);
     } else if ('!' == control) {
-      return new _CommentToken.withSource(newVal, source, delimiter);
+      return new _CommentToken(delimiter);
     } else if ('>' == control) {
       return new _PartialToken(partial, newVal, source, delimiter);
     } else if ('=' == control) {
@@ -288,9 +288,8 @@ class _PartialToken extends _ExpressionToken {
 }
 
 class _CommentToken extends _ExpressionToken {
-  _Token _computedNext;
   
-  _CommentToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _CommentToken(Delimiter del) : super.withSource(EMPTY_STRING, EMPTY_STRING, del);
   
   apply(MustacheContext ctx) => EMPTY_STRING;
 }
