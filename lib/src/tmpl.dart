@@ -33,7 +33,7 @@ class _Template {
           continue;
         }
       }
-      else if (del.isSingleCharToken(char, searchForOpening)) {
+      else if (isSingleCharToken(char, searchForOpening)) {
         if (buf.length > 0) {
           tokens.add(new _Token(buf.toString(), partial, del, ident));
           buf = new StringBuffer();
@@ -60,14 +60,17 @@ class _Template {
     return new _Template._internal(tokens);
   }
   
-  static bool isSingleCharToken(String char, String searchFor) {
-   if (char == '\n' && searchFor != '}') {
-     return true;
-   }
-   if (char == ' ' && searchFor == '{') {
-     return true;
-   }
-   return false; 
+  static bool isSingleCharToken(String char, bool opening) {
+    if (!opening) {
+      return false;
+    }
+    if (char == '\n') {
+      return true;
+    }
+    if (char == ' ') {
+      return true;
+    }
+    return false;
   }
   
   static bool isSpecialNewLine(String template, int position) {
@@ -135,19 +138,6 @@ class Delimiter {
   String realClosingTag;
   
   Delimiter(this.opening, this._closing);
-  
-  bool isSingleCharToken(String char, bool opening) {
-    if (!opening) {
-      return false;
-    }
-    if (char == '\n') {
-      return true;
-    }
-    if (char == ' ') {
-      return true;
-    }
-    return false;
-  }
   
   bool isDelimiter(String template, int position, bool opening) {
     String d = opening ? this.opening : this._closing;
