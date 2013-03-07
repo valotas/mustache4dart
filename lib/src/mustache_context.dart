@@ -1,7 +1,7 @@
 part of mustache4dart;
 
 class MustacheContext {
-  static final String DOT = '\.';
+  static const String DOT = '\.';
   final ctx;
   MustacheContext other;
 

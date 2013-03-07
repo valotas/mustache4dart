@@ -15,7 +15,7 @@ abstract class _Token {
   _Token.withSource(this._source, this._delimiter);
  
   factory _Token(String token, Function partial, Delimiter d, String ident) {
-    if (token == '' || token == null) {
+    if (token == EMPTY_STRING || token == null) {
       return null;
     }
     if (token.startsWith('{{{') && d.opening == '{{') {
@@ -24,7 +24,7 @@ abstract class _Token {
     else if (token.startsWith(d.opening)) {
       return new _ExpressionToken(token.substring(d.openingLength, token.length - d.closingLength), true, token, partial, d);
     }
-    else if (token == ' ' || token == '\n' || token == '\r\n') {
+    else if (token == SPACE || token == NL || token == CRNL) {
       return new _SpecialCharToken(token, d, ident);
     }
     else {
@@ -97,14 +97,14 @@ class _StringToken extends _Token {
 class _SpecialCharToken extends _StringToken {
   final String ident;
   
-  _SpecialCharToken(_val, Delimiter d, [this.ident = '']) : super(_val, d);
+  _SpecialCharToken(_val, Delimiter d, [this.ident = EMPTY_STRING]) : super(_val, d);
   
   apply(context) {
     if (_isNewLineOrEmpty) {
       _markNextStandAloneLineIfAny();      
     }
     if (!rendable) {
-      return '';
+      return EMPTY_STRING;
     }
     
     if (next == null) {
@@ -123,8 +123,8 @@ class _SpecialCharToken extends _StringToken {
     }
     int tokensMarked = 0;
     bool foundSection = false;
-    while (n != null && n._val != '\n' && n._val != '\r\n') { //find the next endline
-      if ((n._val == ' ' && !foundSection) 
+    while (n != null && n._val != NL && n._val != CRNL) { //find the next endline
+      if ((n._val == SPACE && !foundSection) 
           || n is _StartSectionToken 
           || n is _EndSectionToken 
           || n is _CommentToken 
@@ -153,12 +153,12 @@ class _SpecialCharToken extends _StringToken {
     }
   }
   
-  bool get _isNewLineOrEmpty => _isNewLine || _val == '';
+  bool get _isNewLineOrEmpty => _isNewLine || _val == EMPTY_STRING;
   
-  bool get _isNewLine => _val == '\n' || _val == '\r\n'; 
+  bool get _isNewLine => _val == NL || _val == CRNL; 
   
   String toString() {
-    var val = _val.replaceAll('\r', '\\r').replaceAll('\n', '\\n');
+    var val = _val.replaceAll('\r', '\\r').replaceAll(NL, '\\n');
     return "SpecialCharToken($val)";
   }
 }
@@ -205,7 +205,7 @@ class _ExpressionToken extends _Token {
   apply(MustacheContext ctx) {
     var val = ctx[_val];
     if (val == null) {
-      return '';
+      return EMPTY_STRING;
     }
     if (val is Function) {
       //A lambda's return value should be parsed
@@ -221,14 +221,14 @@ class _DelimiterToken extends _ExpressionToken {
   
   _DelimiterToken(String val, String source, Delimiter del) : super.withSource(val, source, del);
   
-  apply(MustacheContext ctx) => '';
+  apply(MustacheContext ctx) => EMPTY_STRING;
   
   bool get rendable => false;
   
   Delimiter get delimiter {
     List delimiters = _val
         .substring(0, _val.length - 1)
-        .split(' ');
+        .split(SPACE);
     return new Delimiter(delimiters[0], delimiters[1]);
   }
 }
@@ -244,20 +244,20 @@ class _PartialToken extends _ExpressionToken {
     if (partial != null) {
       return render(partial(_val), ctx, partial: partial, ident: ident);      
     }
-    return '';
+    return EMPTY_STRING;
   }
   
   bool get standAlone {
     if (next == null) {
       return false;
     }
-    if (next == '\n' || next == '\r\n') {
+    if (next == NL || next == CRNL) {
       _Token p = prev;
-      while (p != '\r\n' && p != '\n') {
-        if (p == '') {
+      while (p != CRNL && p != NL) {
+        if (p == EMPTY_STRING) {
           return true;
         }
-        if (p != ' ') {
+        if (p != SPACE) {
           return false;
         }
         p = p.prev;
@@ -272,15 +272,15 @@ class _PartialToken extends _ExpressionToken {
   String get ident {
     StringBuffer ident = new StringBuffer();
     _Token p = this.prev;
-    while (p._val == ' ') {
-      ident.write(' ');
+    while (p._val == SPACE) {
+      ident.write(SPACE);
       p = p.prev;
     }
-    if (p._val == '\n' || p._val == '') {
+    if (p._val == NL || p._val == EMPTY_STRING) {
       return ident.toString();      
     }
     else {
-      return '';
+      return EMPTY_STRING;
     }
   }
   
@@ -292,7 +292,7 @@ class _CommentToken extends _ExpressionToken {
   
   _CommentToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
   
-  apply(MustacheContext ctx) => '';
+  apply(MustacheContext ctx) => EMPTY_STRING;
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
@@ -328,11 +328,11 @@ class _StartSectionToken extends _ExpressionToken {
     if (val == true) {
       // we do not have to find the end section and apply
       //it's content here
-      return '';
+      return EMPTY_STRING;
     }
     if (val == null) {
       _computedNext = forEachUntilEndSection(null);
-      return '';
+      return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
@@ -384,7 +384,7 @@ class _StartSectionToken extends _ExpressionToken {
 class _EndSectionToken extends _ExpressionToken {
   _EndSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
 
-  apply(MustacheContext ctx, [partial]) => '';
+  apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
   
   String toString() => "EndSectionToken($_val)";
 }
@@ -404,7 +404,7 @@ class _InvertedSectionToken extends _StartSectionToken {
     }
     //else just return an empty string
     _computedNext = forEachUntilEndSection(null);
-    return '';
+    return EMPTY_STRING;
   }
 }
 

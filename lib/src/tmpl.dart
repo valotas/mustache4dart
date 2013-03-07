@@ -6,7 +6,7 @@ class _Template {
   factory _Template(String template, Delimiter del, String ident, [Function partial]) {
     _TokenList tokens = new _TokenList(del, ident);
     if (template == null) {
-      tokens.add(new _Token('', null, del, ident));
+      tokens.add(new _Token(EMPTY_STRING, null, del, ident));
       return new _Template._internal(tokens);
     }
     
@@ -46,7 +46,7 @@ class _Template {
           tokens.add(new _Token(buf.toString(), partial, del, ident));
           buf = new StringBuffer();
         }
-        tokens.add(new _Token('\r\n', partial, del, ident));
+        tokens.add(new _Token(CRNL, partial, del, ident));
         i++;
         continue;
       }
@@ -54,7 +54,7 @@ class _Template {
     }
     tokens.add(new _Token(buf.toString(), partial, del, ident));
     if (buf.length > 0) {
-      tokens.add(new _Token('', partial, del, ident)); //to mark the end of the template  
+      tokens.add(new _Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template  
     }
 
     return new _Template._internal(tokens);
@@ -64,10 +64,10 @@ class _Template {
     if (!opening) {
       return false;
     }
-    if (char == '\n') {
+    if (char == NL) {
       return true;
     }
-    if (char == ' ') {
+    if (char == SPACE) {
       return true;
     }
     return false;
@@ -79,14 +79,14 @@ class _Template {
     }
     var char = template[position];
     var nextChar = template[position + 1];
-    return char == '\r' && nextChar == '\n'; 
+    return char == '\r' && nextChar == NL; 
   }
   
   _Template._internal(this.list);
     
   String renderWith(MustacheContext ctx) {
     if (list.head == null) {
-      return '';
+      return EMPTY_STRING;
     }
     return list.head.render(ctx, null);
   }
@@ -102,7 +102,7 @@ class _TokenList {
   
   _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
-    head = new _SpecialCharToken('', delimiter, ident);
+    head = new _SpecialCharToken(EMPTY_STRING, delimiter, ident);
     tail = head;
   }
 
