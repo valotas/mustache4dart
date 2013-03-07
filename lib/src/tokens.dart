@@ -353,10 +353,9 @@ class _StartSectionToken extends _ExpressionToken {
   }
 
   forEachUntilEndSection(void f(_Token)) {
-    Iterator<_Token> it = new _TokenIterator(super.next);
     int counter = 1;
-    while (it.moveNext()) {
-      _Token n = it.current;
+    _Token n = super.next;
+    while (n != null) {
       if (n._val == _val) {
         if (n is _StartSectionToken) {
           counter++;
@@ -371,6 +370,7 @@ class _StartSectionToken extends _ExpressionToken {
       if (f != null) {
         f(n);
       }
+      n = n.next;
     }
     return null;
   }
@@ -408,20 +408,3 @@ class _InvertedSectionToken extends _StartSectionToken {
   }
 }
 
-class _TokenIterator implements Iterator<_Token> {
-  _Token start;
-  _Token current;
-
-  _TokenIterator(this.start);
-
-  bool moveNext() {
-    if (current == null && start != null) {
-      current = start;
-      start = null;
-    }
-    else {
-      current = current.next;
-    }
-    return current != null;
-  }
-}
