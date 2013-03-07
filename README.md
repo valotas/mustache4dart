@@ -37,6 +37,11 @@ If you want to run the tests yourself, the following commands should be enough
 	pub install
 	test/run.sh
 	
+Versioning
+----------
+The library will follow dart's versioning (x.x.x) and until a final release of the language will be 
+followed by the latest dart language it has been tested against. For example 0.0.7+0.4.1.0 means that
+the libraries version is 0.0.7 and has been tested against dart version 0.4.1.0
 	
 [mustache]: http://mustache.github.com/
 [dart]: http://www.dartlang.org/
