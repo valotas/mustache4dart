@@ -29,7 +29,7 @@ void main() {
     var ctmpl = compile(tmpl);
     var d2 = duration(100, () => ctmpl(map));
     
-    test('Compiled templates should be at least 7 times faster', () => expect(d2 < (d/7), isTrue));
+    test('Compiled templates should be at least 2 times faster', () => expect(d2 < (d/2), isTrue));
   });
 }
 

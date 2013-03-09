@@ -23,8 +23,7 @@ class MustacheContext {
       return ctx;
     }
     if (key.contains(DOT)) {
-      List<String> keys = key.split(DOT);
-      Iterator<String> k = keys.iterator;
+      Iterator<String> k = key.split(DOT).iterator;
       var val = this;
       while(k.moveNext()) {
         val = val._getContext(k.current);
