@@ -84,7 +84,7 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      _getValueWithReflection(key);
+      return _getValueWithReflection(key);
     } 
   }
 
