@@ -11,7 +11,7 @@ class MustacheContext {
   operator [](String key) {
     var result = cache[key];
     if (result == null) {
-      result = _compute(key);
+      result = _getInThisOrOtherContext(key);
       if (result != null) {
         cache[key] = result;
       }
@@ -19,8 +19,10 @@ class MustacheContext {
     return result;
   }
   
-  _compute(String key) {
+  _getInThisOrOtherContext(String key) {
     var result = _get(key);
+    
+    //if the result is null, try the other context
     if (result == null && other != null) {
       result = other[key];
       if (result != null && result is MustacheContext) {
@@ -38,7 +40,7 @@ class MustacheContext {
       Iterator<String> k = key.split(DOT).iterator;
       var val = this;
       while(k.moveNext()) {
-        val = val._getContext(k.current);
+        val = val._getValidValueOrContext(k.current);
         if (val == null) {
           return null;
         }
@@ -46,10 +48,10 @@ class MustacheContext {
       return val;
     }
     //else
-    return _getContext(key);
+    return _getValidValueOrContext(key);
   }
   
-  _getContext(String key) {
+  _getValidValueOrContext(String key) {
     var v = _getValue(key);
     if (v == null) {
       return null;
@@ -80,41 +82,44 @@ class MustacheContext {
   
   _getValue(String key) {
     try {
-      var val = ctx[key];
-      return val;
+      return ctx[key];
     } catch (NoSuchMethodError) {
-      //There is no sync API as I see: http://code.google.com/p/dart/issues/detail?id=4633 
-      //As I do not feel switching everything to Future at the moment, we use the 
-      //deprecatedFutureValue as seen at 
-      //http://code.google.com/p/dart/source/browse/experimental/lib_v2/dart/sdk/lib/_internal/dartdoc/lib/src/json_serializer.dart?spec=svn16262&r=16262
-      var m = mirror;
-      var membersMirror = _findMemberMirror(m, key);
-
-      if (membersMirror == null) {
-        return null;
-      }
-      
-      var fim = null;
-      if (membersMirror is VariableMirror) {
-        fim = m.getField(key);
-      }
-      else if (membersMirror is MethodMirror && membersMirror.isGetter) {
-        fim = m.getField(key);
-      }
-      else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
-        fim = m.invoke(membersMirror.simpleName, []);
-      }
-      else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
-        return _toFuncion(m, membersMirror.simpleName); 
-      }
-      if (fim != null) {
-        var im = deprecatedFutureValue(fim);
-        if (im is InstanceMirror) {
-          return im.reflectee;
-        }
-      }
-      return null;
+      _getValueWithReflection(key);
     } 
+  }
+
+  _getValueWithReflection(String key) {
+    //There is no sync API as I see: http://code.google.com/p/dart/issues/detail?id=4633 
+    //As I do not feel switching everything to Future at the moment, we use the 
+    //deprecatedFutureValue as seen at 
+    //http://code.google.com/p/dart/source/browse/experimental/lib_v2/dart/sdk/lib/_internal/dartdoc/lib/src/json_serializer.dart?spec=svn16262&r=16262
+    var m = mirror;
+    var membersMirror = _findMemberMirror(m, key);
+    
+    if (membersMirror == null) {
+      return null;
+    }
+    
+    var fim = null;
+    if (membersMirror is VariableMirror) {
+      fim = m.getField(key);
+    }
+    else if (membersMirror is MethodMirror && membersMirror.isGetter) {
+      fim = m.getField(key);
+    }
+    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
+      fim = m.invoke(membersMirror.simpleName, []);
+    }
+    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
+      return _toFuncion(m, membersMirror.simpleName); 
+    }
+    if (fim != null) {
+      var im = deprecatedFutureValue(fim);
+      if (im is InstanceMirror) {
+        return im.reflectee;
+      }
+    }
+    return null;
   }
   
   InstanceMirror get mirror => reflect(ctx);
