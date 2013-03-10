@@ -2,12 +2,24 @@ part of mustache4dart;
 
 class MustacheContext {
   static const String DOT = '\.';
+  final Map cache = {}; 
   final ctx;
   MustacheContext other;
 
   MustacheContext(this.ctx, [MustacheContext this.other]);
 
   operator [](String key) {
+    var result = cache[key];
+    if (result == null) {
+      result = _compute(key);
+      if (result != null) {
+        cache[key] = result;
+      }
+    }
+    return result;
+  }
+  
+  _compute(String key) {
     var result = _get(key);
     if (result == null && other != null) {
       result = other[key];
