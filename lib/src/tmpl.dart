@@ -102,7 +102,7 @@ class _TokenList {
   
   _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
-    head = new _SpecialCharToken(EMPTY_STRING, delimiter, ident);
+    head = new _SpecialCharToken(EMPTY_STRING, ident);
     tail = head;
     _nextDelimiter = delimiter;
   }

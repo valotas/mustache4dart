@@ -24,7 +24,7 @@ abstract class _Token {
       return new _ExpressionToken(token.substring(d.openingLength, token.length - d.closingLength), true, token, partial, d);
     }
     else if (token == SPACE || token == NL || token == CRNL) {
-      return new _SpecialCharToken(token, d, ident);
+      return new _SpecialCharToken(token, ident);
     }
     else {
       return new _StringToken(token);
@@ -94,7 +94,7 @@ class _StringToken extends _Token {
 class _SpecialCharToken extends _StringToken {
   final String ident;
   
-  _SpecialCharToken(_val, Delimiter d, [this.ident = EMPTY_STRING]) : super(_val);
+  _SpecialCharToken(_val, [this.ident = EMPTY_STRING]) : super(_val);
   
   apply(context) {
     if (_isNewLineOrEmpty) {
@@ -174,7 +174,7 @@ class _ExpressionToken extends _Token {
       val = val.substring(1).trim();
     }
     if (!escapeHtml) {
-      return new _ExpressionToken.withSource(val, source, delimiter);
+      return new _ExpressionToken.withSource(val, source);
     }
 
     String control = val.substring(0, 1);
@@ -187,7 +187,7 @@ class _ExpressionToken extends _Token {
     } else if ('^' == control) {
       return new _InvertedSectionToken.withSource(newVal, source, delimiter);
     } else if ('!' == control) {
-      return new _CommentToken(delimiter);
+      return new _CommentToken();
     } else if ('>' == control) {
       return new _PartialToken(partial, newVal, source);
     } else if ('=' == control) {
@@ -197,7 +197,7 @@ class _ExpressionToken extends _Token {
     }
   }
 
-  _ExpressionToken.withSource(this.name, source, delimiter) : super.withSource(source);
+  _ExpressionToken.withSource(this.name, source) : super.withSource(source);
   
   apply(MustacheContext ctx) {
     var val = ctx[name];
@@ -216,7 +216,7 @@ class _ExpressionToken extends _Token {
 
 class _DelimiterToken extends _ExpressionToken {
   
-  _DelimiterToken(String val) : super.withSource(val, null, null);
+  _DelimiterToken(String val) : super.withSource(val, null);
   
   apply(MustacheContext ctx) => EMPTY_STRING;
   
@@ -232,7 +232,7 @@ class _DelimiterToken extends _ExpressionToken {
 
 class _PartialToken extends _ExpressionToken {
   final Function partial;
-  _PartialToken(this.partial, String val, String source) : super.withSource(val, source, null);
+  _PartialToken(this.partial, String val, String source) : super.withSource(val, source);
   
   apply(MustacheContext ctx) {
     if (standAlone) {
@@ -286,13 +286,13 @@ class _PartialToken extends _ExpressionToken {
 
 class _CommentToken extends _ExpressionToken {
   
-  _CommentToken(Delimiter del) : super.withSource(EMPTY_STRING, EMPTY_STRING, del);
+  _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
   
   apply(MustacheContext ctx) => EMPTY_STRING;
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
-  _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source, null);
+  _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx) {
     var val = super.apply(ctx);
@@ -315,7 +315,7 @@ class _StartSectionToken extends _ExpressionToken {
   final Delimiter delimiter;
   _Token _computedNext;
   
-  _StartSectionToken.withSource(String val, String source, this.delimiter) : super.withSource(val, source, null);
+  _StartSectionToken.withSource(String val, String source, this.delimiter) : super.withSource(val, source);
 
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
@@ -379,7 +379,7 @@ class _StartSectionToken extends _ExpressionToken {
 }
 
 class _EndSectionToken extends _ExpressionToken {
-  _EndSectionToken.withSource(String val, String source) : super.withSource(val, source, null);
+  _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
   
