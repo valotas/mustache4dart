@@ -186,17 +186,17 @@ class _ExpressionToken extends _Token {
     if ('#' == control) {
       return new _StartSectionToken.withSource(newVal, source, delimiter);
     } else if ('/' == control) {
-      return new _EndSectionToken.withSource(newVal, source, delimiter);
+      return new _EndSectionToken.withSource(newVal, source);
     } else if ('^' == control) {
       return new _InvertedSectionToken.withSource(newVal, source, delimiter);
     } else if ('!' == control) {
       return new _CommentToken(delimiter);
     } else if ('>' == control) {
-      return new _PartialToken(partial, newVal, source, delimiter);
+      return new _PartialToken(partial, newVal, source);
     } else if ('=' == control) {
       return new _DelimiterToken(newVal);
     } else {
-      return new _EscapeHtmlToken.withSource(val, source, delimiter);
+      return new _EscapeHtmlToken.withSource(val, source);
     }
   }
 
@@ -235,7 +235,7 @@ class _DelimiterToken extends _ExpressionToken {
 
 class _PartialToken extends _ExpressionToken {
   final Function partial;
-  _PartialToken(this.partial, String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _PartialToken(this.partial, String val, String source) : super.withSource(val, source, null);
   
   apply(MustacheContext ctx) {
     if (standAlone) {
@@ -295,7 +295,7 @@ class _CommentToken extends _ExpressionToken {
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
-  _EscapeHtmlToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source, null);
 
   apply(MustacheContext ctx) {
     var val = super.apply(ctx);
@@ -381,7 +381,7 @@ class _StartSectionToken extends _ExpressionToken {
 }
 
 class _EndSectionToken extends _ExpressionToken {
-  _EndSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _EndSectionToken.withSource(String val, String source) : super.withSource(val, source, null);
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
   
