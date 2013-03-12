@@ -194,7 +194,7 @@ class _ExpressionToken extends _Token {
     } else if ('>' == control) {
       return new _PartialToken(partial, newVal, source, delimiter);
     } else if ('=' == control) {
-      return new _DelimiterToken(newVal, source, delimiter);
+      return new _DelimiterToken(newVal);
     } else {
       return new _EscapeHtmlToken.withSource(val, source, delimiter);
     }
@@ -219,7 +219,7 @@ class _ExpressionToken extends _Token {
 
 class _DelimiterToken extends _ExpressionToken {
   
-  _DelimiterToken(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _DelimiterToken(String val) : super.withSource(val, null, null);
   
   apply(MustacheContext ctx) => EMPTY_STRING;
   

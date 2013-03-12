@@ -24,11 +24,10 @@ class _Template {
         }
         else { //closing delimiter
           buf.write(del.closing); //add the closing delimiter
-          var t = new _Token(buf.toString(), partial, del, ident);
-          tokens.add(t); //add the token
+          tokens.add(new _Token(buf.toString(), partial, del, ident)); //add the token
           buf = new StringBuffer(); //resut our buffer: new token starts
           i = i + del.closingLength - 1;
-          del = t.delimiter; //get the next delimiter to use
+          del = tokens.nextDelimiter; //get the next delimiter to use
           searchForOpening = true;
           continue;
         }
@@ -99,22 +98,27 @@ class _Template {
 class _TokenList {
   _Token head;
   _Token tail;
+  Delimiter _nextDelimiter;
   
   _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
     head = new _SpecialCharToken(EMPTY_STRING, delimiter, ident);
     tail = head;
+    _nextDelimiter = delimiter;
   }
 
   void add(_Token other) {
     if (other == null) {
       return;
     }
+    if (other is _DelimiterToken) {
+      _nextDelimiter = other.delimiter;
+    }
     tail.next = other;
     tail = other;
   }
   
-  Delimiter get delimiter => tail.delimiter;
+  Delimiter get nextDelimiter => _nextDelimiter;
 
   String toString() {
     StringBuffer str = new StringBuffer("TokenList(");
