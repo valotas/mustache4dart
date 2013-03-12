@@ -222,7 +222,7 @@ class _DelimiterToken extends _ExpressionToken {
   
   bool get rendable => false;
   
-  Delimiter get delimiter {
+  Delimiter get newDelimiter {
     List delimiters = name
         .substring(0, name.length - 1)
         .split(SPACE);
@@ -235,16 +235,16 @@ class _PartialToken extends _ExpressionToken {
   _PartialToken(this.partial, String val, String source) : super.withSource(val, source);
   
   apply(MustacheContext ctx) {
-    if (standAlone) {
+    if (_standAlone) {
       next.rendable = false;
     }
     if (partial != null) {
-      return render(partial(name), ctx, partial: partial, ident: ident);      
+      return render(partial(name), ctx, partial: partial, ident: _ident);      
     }
     return EMPTY_STRING;
   }
   
-  bool get standAlone {
+  bool get _standAlone {
     if (next == null) {
       return false;
     }
@@ -266,7 +266,7 @@ class _PartialToken extends _ExpressionToken {
     }
   }
   
-  String get ident {
+  String get _ident {
     StringBuffer ident = new StringBuffer();
     _Token p = this.prev;
     while (p.name == SPACE) {

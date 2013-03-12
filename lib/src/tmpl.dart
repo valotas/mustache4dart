@@ -112,7 +112,7 @@ class _TokenList {
       return;
     }
     if (other is _DelimiterToken) {
-      _nextDelimiter = other.delimiter;
+      _nextDelimiter = other.newDelimiter;
     }
     tail.next = other;
     tail = other;
