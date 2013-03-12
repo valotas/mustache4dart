@@ -6,13 +6,12 @@ part of mustache4dart;
 
 abstract class _Token { 
   final String _source;
-  final Delimiter _delimiter;
 
   _Token _next;
   _Token prev;
   bool rendable = true;
   
-  _Token.withSource(this._source, this._delimiter);
+  _Token.withSource(this._source);
  
   factory _Token(String token, Function partial, Delimiter d, String ident) {
     if (token == EMPTY_STRING || token == null) {
@@ -28,7 +27,7 @@ abstract class _Token {
       return new _SpecialCharToken(token, d, ident);
     }
     else {
-      return new _StringToken(token, d);
+      return new _StringToken(token);
     }
   }
   
@@ -60,8 +59,6 @@ abstract class _Token {
   
   _Token get next => _next;
   
-  Delimiter get delimiter => _delimiter;
-
   /**
    * Two tokens are the same if their _val are the same.
    */
@@ -85,7 +82,7 @@ abstract class _Token {
  */
 class _StringToken extends _Token {
 
-  _StringToken(_val, Delimiter d) : super.withSource(_val, d);
+  _StringToken(_val) : super.withSource(_val);
   
   apply(context) => name;
   
@@ -97,7 +94,7 @@ class _StringToken extends _Token {
 class _SpecialCharToken extends _StringToken {
   final String ident;
   
-  _SpecialCharToken(_val, Delimiter d, [this.ident = EMPTY_STRING]) : super(_val, d);
+  _SpecialCharToken(_val, Delimiter d, [this.ident = EMPTY_STRING]) : super(_val);
   
   apply(context) {
     if (_isNewLineOrEmpty) {
@@ -200,7 +197,7 @@ class _ExpressionToken extends _Token {
     }
   }
 
-  _ExpressionToken.withSource(this.name, source, delimiter) : super.withSource(source, delimiter);
+  _ExpressionToken.withSource(this.name, source, delimiter) : super.withSource(source);
   
   apply(MustacheContext ctx) {
     var val = ctx[name];
@@ -315,9 +312,10 @@ class _EscapeHtmlToken extends _ExpressionToken {
 }
 
 class _StartSectionToken extends _ExpressionToken {
+  final Delimiter delimiter;
   _Token _computedNext;
   
-  _StartSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _StartSectionToken.withSource(String val, String source, this.delimiter) : super.withSource(val, source, null);
 
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
