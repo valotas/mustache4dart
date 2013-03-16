@@ -17,6 +17,13 @@ For example:
 
 	var salutation = render('Hello {{name}}!', {name: 'Bob'});
 	print(salutation); //shoud print Hello Bob!
+	
+### Partials
+mustache4dart support partials but it needs somehow to know how to find a partial. You can
+do that by providing a function that returns a template given a name:
+
+	String partialProvider(String partialName) => "this is the partial with name: ${partialName}";
+	expect(render('[{{>p}}]', null, partial: partialProvider), '[this is the partial with name: p]'));
 
 ### Compiling to functions
 If you have a template that you are going to reuse with different contextes you can compile
