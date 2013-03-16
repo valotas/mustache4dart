@@ -76,6 +76,10 @@ abstract class _Token {
   int get hashCode => name.hashCode;
 }
 
+abstract class _StandAloneLineCapable {
+  
+}
+
 /**
  * The simplest implementation of a token is the _StringToken which is any string that is not within
  * an opening and closing mustache.
@@ -122,10 +126,7 @@ class _SpecialCharToken extends _StringToken {
     bool foundSection = false;
     while (n != null && n.name != NL && n.name != CRNL) { //find the next endline
       if ((n.name == SPACE && !foundSection) 
-          || n is _StartSectionToken 
-          || n is _EndSectionToken 
-          || n is _CommentToken 
-          || n is _DelimiterToken) {
+          || n is _StandAloneLineCapable) {
         n.rendable = false;
         tokensMarked++;
         n = n.next;
@@ -214,7 +215,7 @@ class _ExpressionToken extends _Token {
   String toString() => "ExpressionToken($name)";
 }
 
-class _DelimiterToken extends _ExpressionToken {
+class _DelimiterToken extends _ExpressionToken implements _StandAloneLineCapable {
   
   _DelimiterToken(String val) : super.withSource(val, null);
   
@@ -284,7 +285,7 @@ class _PartialToken extends _ExpressionToken {
   bool get rendable => true;
 }
 
-class _CommentToken extends _ExpressionToken {
+class _CommentToken extends _ExpressionToken implements _StandAloneLineCapable {
   
   _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
   
@@ -311,7 +312,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
   String toString() => "EscapeHtmlToken($name)";
 }
 
-class _StartSectionToken extends _ExpressionToken {
+class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
   final Delimiter delimiter;
   _Token _computedNext;
   
@@ -378,7 +379,7 @@ class _StartSectionToken extends _ExpressionToken {
   String toString() => "StartSectionToken($name)";
 }
 
-class _EndSectionToken extends _ExpressionToken {
+class _EndSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
   _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
