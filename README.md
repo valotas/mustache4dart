@@ -1,5 +1,5 @@
-Mustache for Dart
-=================
+Mustache for Dart [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
+===========================================================================================================================================================
 A simple implementation of [Mustache][mustache] for the [Dart language][dart]. 
 At the moment this project serves as an excuse to better explore the language. 
 Although it is still in development you can have a look at what is capable of 
@@ -34,7 +34,6 @@ it to a function using the toplevel function compile:
 
 Running the tests
 -----------------
-[![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
 At the moment the project is under heavy development but pass all the [Mustache specs][specs]. 
 If you want to run the tests yourself, the following commands should be enough
 
