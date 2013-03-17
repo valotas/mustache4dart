@@ -1,9 +1,10 @@
 Mustache for Dart [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
 ===========================================================================================================================================================
-A simple implementation of [Mustache][mustache] for the [Dart language][dart]. 
-At the moment this project serves as an excuse to better explore the language. 
-Although it is still in development you can have a look at what is capable of 
-at the [tests][tests]
+A simple implementation of [Mustache][mustache] for the [Dart language][dart].
+This project started as an excuse for exploring the language itself, but the 
+final result, passes happily all the [mustache specs][specs]. If you want to 
+have a look at how it works, just check the [tests][tests]. For more info, 
+just read further.
 
 Using it
 --------
