@@ -58,6 +58,12 @@ If you want to run the tests yourself, the following commands should be enough
 	pub install
 	test/run.sh
 	
+Contributing
+------------
+If you found a bug, just create a [new issue][new_issue] or even better fork and issue a
+pull request with you fix.
+
+	
 Versioning
 ----------
 The library will follow dart's versioning (x.x.x) and until a final release of the language will be 
@@ -68,3 +74,4 @@ the libraries version is 0.0.7 and has been tested against dart version 0.4.1.0
 [dart]: http://www.dartlang.org/
 [tests]: http://github.com/valotas/mustache4dart/blob/master/test/mustache_tests.dart
 [specs]: http://github.com/mustache/spec
+[new_issue]: https://github.com/valotas/mustache4dart/issues/new
