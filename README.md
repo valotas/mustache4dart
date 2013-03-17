@@ -23,7 +23,7 @@ For example:
 mustache4dart will look at your given object for operators, fields or methods. For example,
 if you give the template `{{firstname}}` for rendering, mustache4dart will try the followings
 
-1. use the [] operator with `firstname` as the parameter
+1. use the `[]` operator with `firstname` as the parameter
 2. search for a field named `firstname`
 3. search for a getter named `firstname`
 4. search for a method named `firstname`
