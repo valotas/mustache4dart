@@ -4,12 +4,9 @@ String render(String template, Object context, {Function partial: null, Delimite
   return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context);
 }
 
-Function compile(String template, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {
+compile(String template, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {
   if (delimiter == null) {
     delimiter = new Delimiter('{{', '}}');
   }
-  _Template tmpl = new _Template(template, delimiter, ident, partial);
-  return (context) {
-    return tmpl.renderWith(new MustacheContext(context));
-  };
+  return new _Template(template, delimiter, ident, partial);
 }

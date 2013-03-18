@@ -83,9 +83,12 @@ class _Template {
   
   _Template._internal(this.list);
     
-  String renderWith(MustacheContext ctx) {
+  String call(ctx) {
     if (list.head == null) {
       return EMPTY_STRING;
+    }
+    if (!(ctx is MustacheContext)) {
+      ctx = new MustacheContext(ctx);
     }
     return list.head.render(ctx, null);
   }
