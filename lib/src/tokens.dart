@@ -194,7 +194,7 @@ class _ExpressionToken extends _Token {
     } else if ('=' == control) {
       return new _DelimiterToken(newVal);
     } else {
-      return new _EscapeHtmlToken.withSource(val, source);
+      return new _EscapeHtmlToken(val, source);
     }
   }
 
@@ -293,7 +293,7 @@ class _CommentToken extends _ExpressionToken implements _StandAloneLineCapable {
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
-  _EscapeHtmlToken.withSource(String val, String source) : super.withSource(val, source);
+  _EscapeHtmlToken(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx) {
     var val = super.apply(ctx);
