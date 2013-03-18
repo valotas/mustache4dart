@@ -182,11 +182,11 @@ class _ExpressionToken extends _Token {
     String newVal = val.substring(1).trim();
 
     if ('#' == control) {
-      return new _StartSectionToken.withSource(newVal, source, delimiter);
+      return new _StartSectionToken(newVal, source, delimiter);
     } else if ('/' == control) {
       return new _EndSectionToken.withSource(newVal, source);
     } else if ('^' == control) {
-      return new _InvertedSectionToken.withSource(newVal, source, delimiter);
+      return new _InvertedSectionToken(newVal, source, delimiter);
     } else if ('!' == control) {
       return new _CommentToken();
     } else if ('>' == control) {
@@ -316,7 +316,7 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   final Delimiter delimiter;
   _Token _computedNext;
   
-  _StartSectionToken.withSource(String val, String source, this.delimiter) : super.withSource(val, source);
+  _StartSectionToken(String val, String source, this.delimiter) : super.withSource(val, source);
 
   //Override the next getter
   _Token get next => _computedNext != null ? _computedNext : super.next;
@@ -388,7 +388,7 @@ class _EndSectionToken extends _ExpressionToken implements _StandAloneLineCapabl
 }
 
 class _InvertedSectionToken extends _StartSectionToken {
-  _InvertedSectionToken.withSource(String val, String source, Delimiter del) : super.withSource(val, source, del);
+  _InvertedSectionToken(String val, String source, Delimiter del) : super(val, source, del);
   
   apply(MustacheContext ctx) {
     var val = ctx[name];
