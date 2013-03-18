@@ -190,7 +190,7 @@ class _ExpressionToken extends _Token {
     } else if ('!' == control) {
       return new _CommentToken();
     } else if ('>' == control) {
-      return new _PartialToken(partial, newVal, source);
+      return new _PartialToken(partial, newVal);
     } else if ('=' == control) {
       return new _DelimiterToken(newVal);
     } else {
@@ -233,7 +233,7 @@ class _DelimiterToken extends _ExpressionToken implements _StandAloneLineCapable
 
 class _PartialToken extends _ExpressionToken {
   final Function partial;
-  _PartialToken(this.partial, String val, String source) : super.withSource(val, source);
+  _PartialToken(this.partial, String val) : super.withSource(val, null);
   
   apply(MustacheContext ctx) {
     if (_standAlone) {
