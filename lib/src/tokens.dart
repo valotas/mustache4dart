@@ -184,7 +184,7 @@ class _ExpressionToken extends _Token {
     if ('#' == control) {
       return new _StartSectionToken(newVal, source, delimiter);
     } else if ('/' == control) {
-      return new _EndSectionToken.withSource(newVal, source);
+      return new _EndSectionToken(newVal, source);
     } else if ('^' == control) {
       return new _InvertedSectionToken(newVal, source, delimiter);
     } else if ('!' == control) {
@@ -380,7 +380,7 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
 }
 
 class _EndSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
-  _EndSectionToken.withSource(String val, String source) : super.withSource(val, source);
+  _EndSectionToken(String val, String source) : super.withSource(val, source);
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
   
