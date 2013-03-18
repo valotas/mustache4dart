@@ -129,16 +129,9 @@ class MustacheContext {
     var membersMirror = members[memberName];
     if (membersMirror == null) {
       //try out a getter:
-      membersMirror = members[_getterName(memberName)];
+      membersMirror = members["get${memberName[0].toUpperCase()}${memberName.substring(1)}"];
     }
     return membersMirror;
-  }
-  
-  static String _getterName(String name) {
-    StringBuffer out = new StringBuffer('get');
-    out.write(name[0].toUpperCase());
-    out.write(name.substring(1));
-    return out.toString();
   }
   
   static Function _toFuncion(InstanceMirror mirror, String method) {
