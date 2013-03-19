@@ -6,26 +6,21 @@ class _Template {
   factory _Template(String template, Delimiter del, String ident, [Function partial]) {
     _TokenList tokens = new _TokenList(del, ident);
     if (template == null) {
-      tokens.add(new _Token(EMPTY_STRING, null, del, ident));
+      tokens.addToken(EMPTY_STRING, del, ident, null);
       return new _Template._internal(tokens);
     }
     
-    StringBuffer buf = new StringBuffer();
     bool searchForOpening = true;
     for (int i = 0; i < template.length; i++) {
       String char = template[i];
       if (del.isDelimiter(template, i, searchForOpening)) {
         if (searchForOpening) { //opening delimiter
-          if (buf.length > 0) {
-            tokens.add(new _Token(buf.toString(), partial, del, ident));
-            buf = new StringBuffer(); //resut our buffer: new token starts
-          }
+          tokens.addTokenWithBuffer(del, ident, partial);
           searchForOpening = false;
         }
         else { //closing delimiter
-          buf.write(del.closing); //add the closing delimiter
-          tokens.add(new _Token(buf.toString(), partial, del, ident)); //add the token
-          buf = new StringBuffer(); //resut our buffer: new token starts
+          tokens.write(del.closing); //add the closing delimiter
+          tokens.addTokenWithBuffer(del, ident, partial);
           i = i + del.closingLength - 1;
           del = tokens.nextDelimiter; //get the next delimiter to use
           searchForOpening = true;
@@ -33,28 +28,19 @@ class _Template {
         }
       }
       else if (isSingleCharToken(char, searchForOpening)) {
-        if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial, del, ident));
-          buf = new StringBuffer();
-        }
-        tokens.add(new _Token(char, partial, del, ident));
+        tokens.addTokenWithBuffer(del, ident, partial);
+        tokens.addToken(char, del, ident, partial);
         continue;
       }
       else if (isSpecialNewLine(template, i)) {
-        if (buf.length > 0) {
-          tokens.add(new _Token(buf.toString(), partial, del, ident));
-          buf = new StringBuffer();
-        }
-        tokens.add(new _Token(CRNL, partial, del, ident));
+        tokens.addTokenWithBuffer(del, ident, partial);
+        tokens.addToken(CRNL, del, ident, partial);
         i++;
         continue;
       }
-      buf.write(char);
+      tokens.write(char);
     }
-    tokens.add(new _Token(buf.toString(), partial, del, ident));
-    if (buf.length > 0) {
-      tokens.add(new _Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template  
-    }
+    tokens.addTokenWithBuffer(del, ident, partial, last: true);
 
     return new _Template._internal(tokens);
   }
@@ -99,6 +85,7 @@ class _Template {
 }
 
 class _TokenList {
+  StringBuffer buffer;
   _Token head;
   _Token tail;
   Delimiter _nextDelimiter;
@@ -108,9 +95,24 @@ class _TokenList {
     head = new _SpecialCharToken(EMPTY_STRING, ident);
     tail = head;
     _nextDelimiter = delimiter;
+    buffer = new StringBuffer();
   }
-
-  void add(_Token other) {
+  
+  void addTokenWithBuffer(Delimiter del, String ident, Function partial, {last: false}) {
+    if (buffer.length > 0) {
+      addToken(buffer.toString(), del, ident, partial, last: last);
+      buffer = new StringBuffer();      
+    }
+  }
+  
+  void addToken(String str, Delimiter del, String ident, Function partial, {last: false}) {
+    _add(new _Token(str, partial, del, ident));
+    if (last && buffer.length > 0) {
+      _add(new _Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template
+    }
+  }
+  
+  void _add(_Token other) {
     if (other == null) {
       return;
     }
@@ -120,8 +122,12 @@ class _TokenList {
     tail.next = other;
     tail = other;
   }
-  
+    
   Delimiter get nextDelimiter => _nextDelimiter;
+  
+  void write(String txt) {
+    buffer.write(txt);
+  }
 
   String toString() {
     StringBuffer str = new StringBuffer("TokenList(");
