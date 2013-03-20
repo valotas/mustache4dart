@@ -3,7 +3,7 @@ part of mustache4dart;
 class _Template {
   final _TokenList list;
   
-  factory _Template(String template, Delimiter del, String ident, [Function partial]) {
+  factory _Template({String template, Delimiter del, String ident, Function partial}) {
     _TokenList tokens = new _TokenList(del, ident);
     if (template == null) {
       tokens.addToken(EMPTY_STRING, del, ident, null);
