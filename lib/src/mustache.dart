@@ -8,5 +8,5 @@ compile(String template, {Function partial: null, Delimiter delimiter: null, Str
   if (delimiter == null) {
     delimiter = new Delimiter('{{', '}}');
   }
-  return new _Template(template: template, del: delimiter, ident: ident, partial: partial);
+  return new _Template(template: template, delimiter: delimiter, ident: ident, partial: partial);
 }

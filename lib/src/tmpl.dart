@@ -3,44 +3,44 @@ part of mustache4dart;
 class _Template {
   final _TokenList list;
   
-  factory _Template({String template, Delimiter del, String ident, Function partial}) {
-    _TokenList tokens = new _TokenList(del, ident);
+  factory _Template({String template, Delimiter delimiter, String ident, Function partial}) {
+    _TokenList tokens = new _TokenList(delimiter, ident);
     if (template == null) {
-      tokens.addToken(EMPTY_STRING, del, ident, null);
+      tokens.addToken(EMPTY_STRING, delimiter, ident, null);
       return new _Template._internal(tokens);
     }
     
     bool searchForOpening = true;
     for (int i = 0; i < template.length; i++) {
       String char = template[i];
-      if (del.isDelimiter(template, i, searchForOpening)) {
+      if (delimiter.isDelimiter(template, i, searchForOpening)) {
         if (searchForOpening) { //opening delimiter
-          tokens.addTokenWithBuffer(del, ident, partial);
+          tokens.addTokenWithBuffer(delimiter, ident, partial);
           searchForOpening = false;
         }
         else { //closing delimiter
-          tokens.write(del.closing); //add the closing delimiter
-          tokens.addTokenWithBuffer(del, ident, partial);
-          i = i + del.closingLength - 1;
-          del = tokens.nextDelimiter; //get the next delimiter to use
+          tokens.write(delimiter.closing); //add the closing delimiter
+          tokens.addTokenWithBuffer(delimiter, ident, partial);
+          i = i + delimiter.closingLength - 1;
+          delimiter = tokens.nextDelimiter; //get the next delimiter to use
           searchForOpening = true;
           continue;
         }
       }
       else if (isSingleCharToken(char, searchForOpening)) {
-        tokens.addTokenWithBuffer(del, ident, partial);
-        tokens.addToken(char, del, ident, partial);
+        tokens.addTokenWithBuffer(delimiter, ident, partial);
+        tokens.addToken(char, delimiter, ident, partial);
         continue;
       }
       else if (isSpecialNewLine(template, i)) {
-        tokens.addTokenWithBuffer(del, ident, partial);
-        tokens.addToken(CRNL, del, ident, partial);
+        tokens.addTokenWithBuffer(delimiter, ident, partial);
+        tokens.addToken(CRNL, delimiter, ident, partial);
         i++;
         continue;
       }
       tokens.write(char);
     }
-    tokens.addTokenWithBuffer(del, ident, partial, last: true);
+    tokens.addTokenWithBuffer(delimiter, ident, partial, last: true);
 
     return new _Template._internal(tokens);
   }
