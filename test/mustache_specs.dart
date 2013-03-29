@@ -10,10 +10,10 @@ main() {
   var specs_dir = new Directory('spec/specs');
   specs_dir
     .listSync()
-    .forEach((f) {
+    .forEach((File f) {
       var filename = f.path;
       if (shouldRun(filename)) {
-        f.readAsString(Encoding.UTF_8)
+        f.readAsString(encoding: Encoding.UTF_8)
         .then((text) {
           var json = parse(text);
           var tests = json['tests'];
