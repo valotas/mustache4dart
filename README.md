@@ -1,6 +1,6 @@
 Mustache for Dart [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
 ===========================================================================================================================================================
-A simple implementation of [Mustache][mustache] for the [Dart language][dart].
+A simple implementation of [Mustache][mustache] for the [Dart language][dartlang].
 This project started as an excuse for exploring the language itself, but the 
 final result, passes happily all the [mustache specs][specs]. If you want to 
 have a look at how it works, just check the [tests][tests]. For more info, 
@@ -66,12 +66,18 @@ pull request with you fix.
 	
 Versioning
 ----------
-The library will follow dart's versioning (x.x.x) and until a final release of the language will be 
+The library will follow a [semantic versioning][semver] and until a final release of the language will be 
 followed by the latest dart language it has been tested against. For example 0.0.7+0.4.1.0 means that
 the libraries version is 0.0.7 and has been tested against dart version 0.4.1.0
-	
+
+TODO
+----
+- Introduce mixins in order to simplify some parts of the code
+- Make or add to the api an asynchronous mode
+
 [mustache]: http://mustache.github.com/
-[dart]: http://www.dartlang.org/
+[dartlang]: http://www.dartlang.org/
 [tests]: http://github.com/valotas/mustache4dart/blob/master/test/mustache_tests.dart
 [specs]: http://github.com/mustache/spec
 [new_issue]: https://github.com/valotas/mustache4dart/issues/new
+[semver]: http://semver.org/
