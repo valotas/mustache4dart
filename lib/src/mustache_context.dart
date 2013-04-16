@@ -102,13 +102,13 @@ class MustacheContext {
     
     var fim = null;
     if (membersMirror is VariableMirror) {
-      fim = m.getField(key);
+      fim = m.getFieldAsync(membersMirror.simpleName);
     }
     else if (membersMirror is MethodMirror && membersMirror.isGetter) {
-      fim = m.getField(key);
+      fim = m.getFieldAsync(membersMirror.simpleName);
     }
     else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
-      fim = m.invoke(membersMirror.simpleName, []);
+      fim = m.invokeAsync(membersMirror.simpleName, []);
     }
     else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
       return _toFuncion(m, membersMirror.simpleName); 
@@ -126,17 +126,19 @@ class MustacheContext {
   
   static _findMemberMirror(InstanceMirror m, String memberName) {
     var members = m.type.members;
-    var membersMirror = members[memberName];
+    //members.forEach( (s, v) => print("${s} - ${v}"));
+    var membersMirror = members[new Symbol(memberName)];
     if (membersMirror == null) {
       //try out a getter:
-      membersMirror = members["get${memberName[0].toUpperCase()}${memberName.substring(1)}"];
+      memberName = "get${memberName[0].toUpperCase()}${memberName.substring(1)}";
+      membersMirror = members[new Symbol(memberName)];
     }
     return membersMirror;
   }
   
-  static Function _toFuncion(InstanceMirror mirror, String method) {
+  static Function _toFuncion(InstanceMirror mirror, Symbol method) {
     return (val) {
-      var fim = mirror.invoke(method, [val]);
+      var fim = mirror.invokeAsync(method, [val]);
       var im = deprecatedFutureValue(fim);
       if (im is InstanceMirror) {
         var r = im.reflectee;
