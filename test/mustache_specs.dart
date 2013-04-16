@@ -2,7 +2,7 @@ library mustache_specs;
 
 import 'dart:io';
 import 'dart:json';
-import 'package:/unittest/unittest.dart';
+import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 main() {

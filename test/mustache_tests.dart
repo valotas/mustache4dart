@@ -1,6 +1,6 @@
 library mustache_tests;
 
-import 'package:/unittest/unittest.dart';
+import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
