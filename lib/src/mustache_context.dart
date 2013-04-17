@@ -153,7 +153,7 @@ class MustacheContext {
   String toString() => "MustacheContext($ctx, $other)";
 }
 
-class _IterableMustacheContextDecorator extends Iterable<MustacheContext> {
+class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
   final Iterable delegate;
   final MustacheContext other;
   
