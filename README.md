@@ -27,11 +27,12 @@ if you give the template `{{firstname}}` for rendering, mustache4dart will try t
 2. search for a field named `firstname`
 3. search for a getter named `firstname`
 4. search for a method named `firstname`
+5. search for a method named `getFirstname`
 
 in each case the first valid value will be used.
 
 As a sidenote, you will get the best performance if you provide a proper implementation of
-the [] operator.
+the `[]` operator.
 
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a partial. You can
