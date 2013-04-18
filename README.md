@@ -1,5 +1,5 @@
-Mustache for Dart [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
-===========================================================================================================================================================
+Mustache for the dartlang [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
+===================================================================================================================================================================
 A simple implementation of [Mustache][mustache] for the [Dart language][dartlang].
 This project started as an excuse for exploring the language itself, but the 
 final result, passes happily all the [mustache specs][specs]. If you want to 
@@ -75,6 +75,7 @@ TODO
 ----
 - Introduce mixins in order to simplify some parts of the code
 - Make or add to the api an asynchronous mode
+- Introduce exceptions in case of a miss formated mustache source
 
 [mustache]: http://mustache.github.com/
 [dartlang]: http://www.dartlang.org/
