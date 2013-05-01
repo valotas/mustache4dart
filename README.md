@@ -71,6 +71,11 @@ The library will follow a [semantic versioning][semver] and until a final releas
 followed by the latest dart language it has been tested against. For example 0.0.7+0.4.1.0 means that
 the libraries version is 0.0.7 and has been tested against dart version 0.4.1.0
 
+Relevant projects
+-----------------
+You can find most of the mustache implementations at the mustache [homepage][mustache]. Apart from them, 
+there is another implementation for the dartlang that can be found at https://github.com/xxgreg/mustache
+
 TODO
 ----
 - Introduce mixins in order to simplify some parts of the code
