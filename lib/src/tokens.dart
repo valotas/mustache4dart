@@ -327,11 +327,6 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
       _computedNext = forEachUntilEndSection(null);
       return EMPTY_STRING;
     }
-    if (val == true) {
-      // we do not have to find the end section and apply
-      //it's content here
-      return EMPTY_STRING;
-    }
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
       _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
@@ -348,6 +343,8 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
       });
       return str;
     }
+    //in any other case
+    return EMPTY_STRING;
   }
 
   forEachUntilEndSection(void f(_Token)) {
