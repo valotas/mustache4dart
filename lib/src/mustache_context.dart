@@ -132,8 +132,7 @@ class MustacheContext {
   
   static Function _toFuncion(InstanceMirror mirror, Symbol method) {
     return (val) {
-      var fim = mirror.invokeAsync(method, [val]);
-      var im = deprecatedFutureValue(fim);
+      var im = mirror.invoke(method, [val]);
       if (im is InstanceMirror) {
         var r = im.reflectee;
         return r;
