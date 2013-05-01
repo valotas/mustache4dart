@@ -86,10 +86,6 @@ class MustacheContext {
   }
 
   _getValueWithReflection(String key) {
-    //There is no sync API as I see: http://code.google.com/p/dart/issues/detail?id=4633 
-    //As I do not feel switching everything to Future at the moment, we use the 
-    //deprecatedFutureValue as seen at 
-    //http://code.google.com/p/dart/source/browse/experimental/lib_v2/dart/sdk/lib/_internal/dartdoc/lib/src/json_serializer.dart?spec=svn16262&r=16262
     var m = mirror;
     var membersMirror = _findMemberMirror(m, key);
     
