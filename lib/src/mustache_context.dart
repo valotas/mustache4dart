@@ -93,6 +93,12 @@ class MustacheContext {
       return null;
     }
     
+    if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
+      //this is the case of a lambda value
+      return _toFuncion(m, membersMirror.simpleName); 
+    }
+    
+    //Now we try to find out a field or a getter named after the given name
     var im = null;
     if (membersMirror is VariableMirror) {
       im = m.getField(membersMirror.simpleName);
@@ -102,9 +108,6 @@ class MustacheContext {
     }
     else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
       im = m.invoke(membersMirror.simpleName, []);
-    }
-    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
-      return _toFuncion(m, membersMirror.simpleName); 
     }
     if (im != null && im is InstanceMirror) {
       return im.reflectee;
