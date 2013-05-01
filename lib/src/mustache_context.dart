@@ -97,24 +97,21 @@ class MustacheContext {
       return null;
     }
     
-    var fim = null;
+    var im = null;
     if (membersMirror is VariableMirror) {
-      fim = m.getFieldAsync(membersMirror.simpleName);
+      im = m.getField(membersMirror.simpleName);
     }
     else if (membersMirror is MethodMirror && membersMirror.isGetter) {
-      fim = m.getFieldAsync(membersMirror.simpleName);
+      im = m.getField(membersMirror.simpleName);
     }
     else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
-      fim = m.invokeAsync(membersMirror.simpleName, []);
+      im = m.invoke(membersMirror.simpleName, []);
     }
     else if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
       return _toFuncion(m, membersMirror.simpleName); 
     }
-    if (fim != null) {
-      var im = deprecatedFutureValue(fim);
-      if (im is InstanceMirror) {
-        return im.reflectee;
-      }
+    if (im != null && im is InstanceMirror) {
+      return im.reflectee;
     }
     return null;
   }
