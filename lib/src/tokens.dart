@@ -323,13 +323,13 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
 
   apply(MustacheContext ctx) {
     var val = ctx[name];
+    if (val == null) {
+      _computedNext = forEachUntilEndSection(null);
+      return EMPTY_STRING;
+    }
     if (val == true) {
       // we do not have to find the end section and apply
       //it's content here
-      return EMPTY_STRING;
-    }
-    if (val == null) {
-      _computedNext = forEachUntilEndSection(null);
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
