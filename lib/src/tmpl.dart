@@ -4,12 +4,11 @@ class _Template {
   final _TokenList list;
   
   factory _Template({String template, Delimiter delimiter, String ident, Function partial}) {
-    _TokenList tokens = new _TokenList(delimiter, ident);
     if (template == null) {
-      tokens.addToken(EMPTY_STRING, delimiter, ident, null);
-      return new _Template._internal(tokens);
+      throw new FormatException("The given template is null");
     }
-    
+    _TokenList tokens = new _TokenList(delimiter, ident);
+
     bool searchForOpening = true;
     for (int i = 0; i < template.length; i++) {
       String char = template[i];

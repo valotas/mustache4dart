@@ -240,7 +240,10 @@ class _PartialToken extends _ExpressionToken {
       next.rendable = false;
     }
     if (partial != null) {
-      return render(partial(name), ctx, partial: partial, ident: _ident);      
+      var partialTemplate = partial(name);
+      if (partialTemplate != null) {
+        return render(partial(name), ctx, partial: partial, ident: _ident);        
+      }
     }
     return EMPTY_STRING;
   }
