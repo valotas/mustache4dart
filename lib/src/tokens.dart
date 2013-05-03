@@ -55,6 +55,13 @@ abstract class _Token {
   void set next (_Token n) {
     _next = n;
     n.prev = this;
+    notifyAdded(n);
+  }
+  
+  void notifyAdded(_Token t) {
+    if (prev != null) {
+      prev.notifyAdded(t);
+    }
   }
   
   _Token get next => _next;
@@ -375,7 +382,15 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   
   //The token itself is always rendable
   bool get rendable => true;
-  
+
+  void notifyAdded(_Token t) {
+    if (t is _EndSectionToken && t.name != this.name) {
+      throw new FormatException("Expected {{/${this.name}}} but got {{/${t.name}}}");
+    } else {
+      super.notifyAdded(t);
+    }
+  }
+
   String toString() => "StartSectionToken($name)";
 }
 
