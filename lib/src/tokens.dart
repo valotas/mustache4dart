@@ -325,6 +325,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
   final Delimiter delimiter;
   _Token _computedNext;
+  _EndSectionToken end;
   
   _StartSectionToken(String val, this.delimiter) : super.withSource(val, null);
 
@@ -384,8 +385,12 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   bool get rendable => true;
 
   void notifyAdded(_Token t) {
-    if (t is _EndSectionToken && t.name != this.name) {
-      throw new FormatException("Expected {{/${this.name}}} but got {{/${t.name}}}");
+    if (end == null && t is _EndSectionToken) {
+      if (t.name != this.name) {
+        throw new FormatException("Expected {{/${this.name}}} but got {{/${t.name}}}");         
+      } else {
+        end = t;
+      }
     } else {
       super.notifyAdded(t);
     }
