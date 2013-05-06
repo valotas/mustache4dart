@@ -141,6 +141,7 @@ class _TokenList {
       throw new FormatException("Expected {{/${lastStarting.name}}} but got {{/${t.name}}}");
     }
     else {
+      lastStarting.endSection = t;
       startingTokens.remove(lastStarting);
     }
   }

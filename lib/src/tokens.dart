@@ -314,33 +314,31 @@ class _EscapeHtmlToken extends _ExpressionToken {
 
 class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
   final Delimiter delimiter;
-  _Token _computedNext;
-  _EndSectionToken end;
+  _EndSectionToken endSection;
   
   _StartSectionToken(String val, this.delimiter) : super.withSource(val, null);
 
   //Override the next getter
-  _Token get next => _computedNext != null ? _computedNext : super.next;
+  _Token get next => endSection.next;
 
   apply(MustacheContext ctx) {
     var val = ctx[name];
     if (val == null) {
-      _computedNext = forEachUntilEndSection(null);
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
-      _computedNext = forEachUntilEndSection((_Token t) => str.write(t._source));
+      forEachUntilEndSection((_Token t) => str.write(t._source));
       //A lambda's return value should be parsed
       return render(val(str.toString()), ctx, delimiter: delimiter);
     }
     if (val is MustacheContext) { //apply the new context to each of the tokens until the end
-      _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
+      forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
       return str;
     }
     if (val is Iterable) {
       val.forEach((v) {
-        _computedNext = forEachUntilEndSection((_Token t) => str.write(t.apply(v)));
+        forEachUntilEndSection((_Token t) => str.write(t.apply(v)));
       });
       return str;
     }
@@ -351,18 +349,7 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   forEachUntilEndSection(void f(_Token)) {
     int counter = 1;
     _Token n = super.next;
-    while (n != null) {
-      if (n.name == name) {
-        if (n is _StartSectionToken) {
-          counter++;
-        }
-        if (n is _EndSectionToken) {
-          counter--;
-        }
-        if (counter == 0) {
-          return n;          
-        }
-      }
+    while (n != endSection) {
       if (f != null) {
         f(n);
       }
@@ -392,14 +379,13 @@ class _InvertedSectionToken extends _StartSectionToken {
     var val = ctx[name];
     if (val == null) {
       StringBuffer buf = new StringBuffer();
-      _computedNext = forEachUntilEndSection((_Token t) {
+      forEachUntilEndSection((_Token t) {
         var val2 = t.apply(ctx);
         buf.write(val2);
       });
       return buf.toString();
     }
     //else just return an empty string
-    _computedNext = forEachUntilEndSection(null);
     return EMPTY_STRING;
   }
 }
