@@ -75,7 +75,9 @@ class _Template {
     if (!(ctx is MustacheContext)) {
       ctx = new MustacheContext(ctx);
     }
-    return list.head.render(ctx, null);
+    StringSink out = new StringBuffer();
+    list.head.render(ctx, out);
+    return out.toString();
   }
   
   String toString() {

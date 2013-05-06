@@ -31,18 +31,15 @@ abstract class _Token {
     }
   }
   
-  String render(MustacheContext context, [StringBuffer buf]) {
+  void render(MustacheContext context, StringSink out) {
+    if (out == null) throw new Exception("Need an output to write the rendered result");
     var string = apply(context);
-    if (buf == null) {
-      buf = new StringBuffer();
-    }
     if (rendable) {
-      buf.write(string);
+      out.write(string);
     }
     if (next != null) {
-      next.render(context, buf);
+      next.render(context, out);
     }
-    return buf.toString();
   }
   
   StringBuffer apply(MustacheContext context);
