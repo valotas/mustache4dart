@@ -142,7 +142,7 @@ class _TokenList {
     }
     else {
       lastStarting.endSection = t;
-      startingTokens.remove(lastStarting);
+      startingTokens.removeLast();
     }
   }
     
