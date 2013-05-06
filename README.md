@@ -16,9 +16,11 @@ In order to use the library, just add it to your pubspec.yalm as a dependency
 and you are good to go. You can use the render toplevel function to render your template.
 For example:
 
+```dart
 	var salutation = render('Hello {{name}}!', {name: 'Bob'});
 	print(salutation); //shoud print Hello Bob!
-	
+```
+
 ### Context objects
 mustache4dart will look at your given object for operators, fields or methods. For example,
 if you give the template `{{firstname}}` for rendering, mustache4dart will try the followings
@@ -38,27 +40,33 @@ the `[]` operator.
 mustache4dart support partials but it needs somehow to know how to find a partial. You can
 do that by providing a function that returns a template given a name:
 
+```dart
 	String partialProvider(String partialName) => "this is the partial with name: ${partialName}";
 	expect(render('[{{>p}}]', null, partial: partialProvider), '[this is the partial with name: p]'));
+```
 
 ### Compiling to functions
 If you have a template that you are going to reuse with different contextes you can compile
 it to a function using the toplevel function compile:
 
+```dart
 	var salut = compile('Hello {{name}}!');
-	print(salut('Alice')); //should print Hello Alice! 
+	print(salut('Alice')); //should print Hello Alice!
+``` 
 
 Running the tests
 -----------------
 At the moment the project is under heavy development but pass all the [Mustache specs][specs]. 
 If you want to run the tests yourself, the following commands should be enough
 
+```sh
 	git clone git://github.com/valotas/mustache4dart.git
 	git submodule init
 	git submodule update 
 	pub install
 	test/run.sh
-	
+```
+
 Contributing
 ------------
 If you found a bug, just create a [new issue][new_issue] or even better fork and issue a
