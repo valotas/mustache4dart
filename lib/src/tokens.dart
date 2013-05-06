@@ -315,28 +315,33 @@ class _EscapeHtmlToken extends _ExpressionToken {
 class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
   final Delimiter delimiter;
   _EndSectionToken endSection;
+  _Token _computedNext;
   
   _StartSectionToken(String val, this.delimiter) : super.withSource(val, null);
 
   //Override the next getter
-  _Token get next => endSection.next;
+  _Token get next => _computedNext != null ? _computedNext.next : super.next;
 
   apply(MustacheContext ctx) {
     var val = ctx[name];
     if (val == null) {
+      _computedNext = endSection;
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
+      _computedNext = endSection;
       forEachUntilEndSection((_Token t) => str.write(t._source));
       //A lambda's return value should be parsed
       return render(val(str.toString()), ctx, delimiter: delimiter);
     }
     if (val is MustacheContext) { //apply the new context to each of the tokens until the end
+      _computedNext = endSection;
       forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
       return str;
     }
     if (val is Iterable) {
+      _computedNext = endSection;
       val.forEach((v) {
         forEachUntilEndSection((_Token t) => str.write(t.apply(v)));
       });
@@ -347,7 +352,6 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   }
 
   forEachUntilEndSection(void f(_Token)) {
-    int counter = 1;
     _Token n = super.next;
     while (n != endSection) {
       if (f != null) {
@@ -377,6 +381,7 @@ class _InvertedSectionToken extends _StartSectionToken {
   
   apply(MustacheContext ctx) {
     var val = ctx[name];
+    _computedNext = endSection;
     if (val == null) {
       StringBuffer buf = new StringBuffer();
       forEachUntilEndSection((_Token t) {
