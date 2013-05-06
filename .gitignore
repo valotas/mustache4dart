@@ -1,3 +1,4 @@
 bin/
 packages/
 packages
+*.swp
