@@ -206,7 +206,7 @@ class _ExpressionToken extends _Token {
       //A lambda's return value should be parsed
       return render(val(null), ctx);
     }
-    return val;
+    return val.asString();
   }
   
   String toString() => "ExpressionToken($name)";
