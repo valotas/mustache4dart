@@ -8,6 +8,8 @@ class MustacheContext {
 
   MustacheContext(this.ctx, [MustacheContext this.other]);
 
+  String asString() => ctx.toString();
+
   operator [](String key) {
     var result = cache[key];
     if (result == null) {
@@ -68,13 +70,7 @@ class MustacheContext {
     if (v is Function) {
       return v;
     }
-    if (v is num) {
-      return "$v";
-    }
-    if (!(v is String)) {
-      return new MustacheContext(v, this);
-    }
-    return v;
+    return new MustacheContext(v, this);
   }
   
   _getValue(String key) {
