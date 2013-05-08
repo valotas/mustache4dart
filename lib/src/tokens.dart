@@ -98,9 +98,6 @@ class _SpecialCharToken extends _StringToken implements _StandAloneLineCapable {
   _SpecialCharToken(_val, [this.ident = EMPTY_STRING]) : super(_val);
   
   apply(context) {
-    if (_isNewLineOrEmpty) {
-      _markNextStandAloneLineIfAny();      
-    }
     if (!rendable) {
       return EMPTY_STRING;
     }
@@ -112,40 +109,6 @@ class _SpecialCharToken extends _StringToken implements _StandAloneLineCapable {
       return "${super.apply(context)}$ident";
     }
     return super.apply(context);
-  }
-  
-  _markNextStandAloneLineIfAny() {
-    var n = next;
-    if (n == null) {
-      return;
-    }
-    int tokensMarked = 0;
-    bool foundSection = false;
-    while (n != null && n.name != NL && n.name != CRNL) { //find the next endline
-      if ((n.name == SPACE && !foundSection) 
-          || n is _StandAloneLineCapable) {
-        n.rendable = false;
-        tokensMarked++;
-        n = n.next;
-        foundSection = n is _StartSectionToken || n is _EndSectionToken;
-      }
-      else {
-        _resetNext(tokensMarked);
-        return;
-      }
-      
-    }
-    if (tokensMarked > 0 && n != null) {
-      n.rendable = false;
-    }
-  }
-
-  _resetNext(int counter) {
-    var n = next;
-    while (counter -- >= 0) {
-      n.rendable = true;
-      n = n.next;
-    }
   }
   
   bool get _isNewLineOrEmpty => _isNewLine || name == EMPTY_STRING;
