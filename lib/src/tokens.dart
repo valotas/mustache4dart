@@ -92,7 +92,7 @@ class _StringToken extends _Token {
   String toString() => "StringToken($name)";
 }
 
-class _SpecialCharToken extends _StringToken {
+class _SpecialCharToken extends _StringToken implements _StandAloneLineCapable {
   final String ident;
   
   _SpecialCharToken(_val, [this.ident = EMPTY_STRING]) : super(_val);
@@ -233,9 +233,9 @@ class _PartialToken extends _ExpressionToken {
   _PartialToken(this.partial, String val) : super.withSource(val, null);
   
   apply(MustacheContext ctx) {
-    if (_standAlone) {
-      next.rendable = false;
-    }
+    //if (_standAlone) {
+    //  next.rendable = false;
+    //}
     if (partial != null) {
       var partialTemplate = partial(name);
       if (partialTemplate != null) {
@@ -243,28 +243,6 @@ class _PartialToken extends _ExpressionToken {
       }
     }
     return EMPTY_STRING;
-  }
-  
-  bool get _standAlone {
-    if (next == null) {
-      return false;
-    }
-    if (next == NL || next == CRNL) {
-      _Token p = prev;
-      while (p != CRNL && p != NL) {
-        if (p == EMPTY_STRING) {
-          return true;
-        }
-        if (p != SPACE) {
-          return false;
-        }
-        p = p.prev;
-      }
-      return true;
-    }
-    else {
-      return false;
-    }
   }
   
   String get _ident {
