@@ -6,8 +6,6 @@ void main() {
   group('mustache4dart Line', () {
     var del = new Delimiter('{{', '}}');
 
-    //test('Should throw an argument error when trying to initialize it with a space', () => expect(() => new Line(new Token(SPACE, null, del, null)), throwsArgumentError));
-
     test('Should not accept more tokens when it is full', () {
       var l = new Line(new Token('Random text', null, del, null));
       l.add(new Token('Random text2', null, del, null));
@@ -26,6 +24,13 @@ void main() {
     test('Should not be standalone if it contains a string token', () {
       var l = new Line(new Token('Some text!', null, del, null));
       expect(l.standAlone, isFalse);
+    });
+
+    test("Expression tokens should be considered stand alone capable", () {
+      var l = new Line(new Token(' ', null, del, null));
+      l.add(new Token(' ', null, del, null));
+      l.add(new Token('{{/xxx}}', null, del, null));
+      expect(l.standAlone, isTrue);
     });
   });
 }
