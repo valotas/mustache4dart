@@ -129,6 +129,8 @@ class _TokenList {
       _addEndingToken(other);
     }
     
+    _addToLine(other);
+
     tail.next = other;
     tail = other;
   }
@@ -144,6 +146,17 @@ class _TokenList {
     }
     else {
       lastStarting.endSection = t;
+    }
+  }
+
+  void _addToLine(Token t) {
+    if (t == NL || t == CRNL || t == EMPTY_STRING) {
+      lastLine
+        .each((Token t) => t.rendable = false)
+        .clear();
+    }
+    if (!lastLine.isEmpty) {
+      
     }
   }
     
@@ -209,3 +222,12 @@ class Delimiter {
   toString() => "Delimiter($opening, $closing)";
 }
 
+class Line {
+  final List<Token> tokens = [];
+
+  Line(Token t) {
+    if (t != NL && t != CRNL && t != EMPTY_STRING) {
+      throw new Exception("New line can not start with $t");
+    } 
+  }
+}
