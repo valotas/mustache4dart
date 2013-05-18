@@ -19,6 +19,7 @@ void main() {
     test('Simple context test', () => expect(render('{{#a}}{{one}}{{/a}}', map), '1'));
     test('Deeper context test', () => expect(render('{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{/c}}{{/b}}{{/a}}', map), '1-12-123'));
     test('Idented rendering', () => expect(render('Yeah!\nbaby!', null, ident: '--'), 'Yeah!\n--baby!'));
+    test('Standalone without new line', () => expect(render('#{{#a}}\n/\n  {{/a}}', map), '#\n/\n'));
   });
   
   group('Performance tests', () {

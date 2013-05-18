@@ -109,13 +109,13 @@ class _TokenList {
   }
   
   void addToken(String str, Delimiter del, String ident, Function partial, {last: false}) {
-    _add(new Token(str, partial, del, ident));
+    _add(new Token(str, partial, del, ident), last);
     if (last && buffer.length > 0) {
       _add(new Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template
     }
   }
   
-  void _add(Token other) {
+  void _add(Token other, [bool last]) {
     if (other == null) {
       return;
     }
@@ -129,7 +129,7 @@ class _TokenList {
       _addEndingToken(other);
     }
     
-    _addToLine(other);
+    _addToLine(other, last);
 
     tail.next = other;
     tail = other;
@@ -149,12 +149,12 @@ class _TokenList {
     }
   }
 
-  void _addToLine(Token t) {
+  void _addToLine(Token t, [bool last]) {
     if (line == null) {
       line = new Line(t);
     }
     else {
-      line = line.add(t);
+      line = line.add(t, last);
     }
   }
     
@@ -228,11 +228,11 @@ class Line {
 
   Line(Token t) {
     if (t != null) {
-      add(t);
+      add(t, false);
     }
   }
 
-  Line add(Token t) {
+  Line add(Token t, [bool eof]) {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
@@ -241,15 +241,19 @@ class Line {
       standAlone = false;
     }
     tokens.add(t);
-    if (_isEndOfLine(t)) {
-      _markStandAloneLineTokens();
-      full = true;
-      Line newLine = new Line(null);
-      newLine.prev = this;
-      return newLine;
+    if (_isEndOfLine(t) || eof) {
+      return _eol();
     }
     //in any other case:
     return this;
+  }
+
+  Line _eol() {
+    _markStandAloneLineTokens();
+    full = true;
+    Line newLine = new Line(null);
+    newLine.prev = this;
+    return newLine;
   }
 
   bool _isStandAloneToken(Token t) {
@@ -265,4 +269,5 @@ class Line {
       tokens.forEach((t) => t.rendable = false);
     }
   }
+
 }

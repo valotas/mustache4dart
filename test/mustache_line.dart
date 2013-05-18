@@ -45,17 +45,20 @@ void main() {
       expect(l.standAlone, isTrue);
     });
 
-    test("Should not be standalone if it contains a comment with text", () {
-      var l = new Line(newToken(' '))
+    test("Last line should not end with a new line", () {
+      var l = new Line(newToken('#'))
+        .add(newToken('{{#a}}'));
+      var l2 = l.add(newToken(NL))
+        .add(newToken('/'));
+      var l3 = l2.add(newToken(NL))
         .add(newToken(' '))
-        .add(newToken('12'))
-        .add(newToken(' '))
-        .add(newToken('{{! 12 }}'))
         .add(newToken(' '));
-      var l2 = l.add(newToken(NL));
 
       expect(l2, isNot(same(l)));
+      expect(l3, isNot(same(l2)));
       expect(l.standAlone, isFalse);
+      expect(l2.standAlone, isFalse);
+      expect(l3.standAlone, isTrue);
     });
 
   });
