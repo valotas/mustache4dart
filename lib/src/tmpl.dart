@@ -236,7 +236,8 @@ class Line {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
-    if (_isStandAloneToken(t)) {
+    //print("$t: ${_isStandAloneToken(t)}");
+    if (!_isStandAloneToken(t) && standAlone) {
       standAlone = false;
     }
     tokens.add(t);
@@ -252,11 +253,7 @@ class Line {
   }
 
   bool _isStandAloneToken(Token t) {
-    if (t == EMPTY_STRING || t == NL || t == CRNL) {
-      return true;
-    }
-    //In any other case
-    return false;
+    return t is StandAloneLineCapable;
   }
 
   bool _isEndOfLine(Token t) {
@@ -268,7 +265,7 @@ class Line {
 
   _markStandAloneLineTokens() {
     if (standAlone) {
-      tokens.each((t) => t.rendable = false);
+      tokens.forEach((t) => t.rendable = false);
     }
   }
 }
