@@ -73,7 +73,7 @@ abstract class Token {
   int get hashCode => name.hashCode;
 }
 
-abstract class _StandAloneLineCapable {
+abstract class StandAloneLineCapable {
   
 }
 
@@ -92,7 +92,7 @@ class _StringToken extends Token {
   String toString() => "StringToken($name)";
 }
 
-class _SpecialCharToken extends _StringToken implements _StandAloneLineCapable {
+class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
   final String ident;
   
   _SpecialCharToken(_val, [this.ident = EMPTY_STRING]) : super(_val);
@@ -175,7 +175,7 @@ class _ExpressionToken extends Token {
   String toString() => "ExpressionToken($name)";
 }
 
-class _DelimiterToken extends _ExpressionToken implements _StandAloneLineCapable {
+class _DelimiterToken extends _ExpressionToken implements StandAloneLineCapable {
   
   _DelimiterToken(String val) : super.withSource(val, null);
   
@@ -226,7 +226,7 @@ class _PartialToken extends _ExpressionToken {
   bool get rendable => true;
 }
 
-class _CommentToken extends _ExpressionToken implements _StandAloneLineCapable {
+class _CommentToken extends _ExpressionToken implements StandAloneLineCapable {
   
   _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
   
@@ -253,7 +253,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
   String toString() => "EscapeHtmlToken($name)";
 }
 
-class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
+class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapable {
   final Delimiter delimiter;
   _EndSectionToken endSection;
   
@@ -304,7 +304,7 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   String toString() => "StartSectionToken($name)";
 }
 
-class _EndSectionToken extends _ExpressionToken implements _StandAloneLineCapable {
+class _EndSectionToken extends _ExpressionToken implements StandAloneLineCapable {
   _EndSectionToken(String val) : super.withSource(val, null);
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
