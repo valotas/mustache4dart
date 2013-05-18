@@ -231,6 +231,8 @@ class _CommentToken extends _ExpressionToken implements StandAloneLineCapable {
   _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
   
   apply(MustacheContext ctx) => EMPTY_STRING;
+
+  String toString() => "_CommentsToken()";
 }
 
 class _EscapeHtmlToken extends _ExpressionToken {
