@@ -4,16 +4,16 @@ part of mustache4dart;
  * This is the main class describing a compiled token.
  */
 
-abstract class _Token { 
+abstract class Token { 
   final String _source;
 
-  _Token _next;
-  _Token prev;
+  Token _next;
+  Token prev;
   bool rendable = true;
   
-  _Token.withSource(this._source);
+  Token.withSource(this._source);
  
-  factory _Token(String token, Function partial, Delimiter d, String ident) {
+  factory Token(String token, Function partial, Delimiter d, String ident) {
     if (token == EMPTY_STRING || token == null) {
       return null;
     }
@@ -49,19 +49,19 @@ abstract class _Token {
    */
   String get name;
   
-  void set next (_Token n) {
+  void set next (Token n) {
     _next = n;
     n.prev = this;
   }
   
-  _Token get next => _next;
+  Token get next => _next;
   
   /**
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
-    if (other is _Token) {
-     _Token st = other;
+    if (other is Token) {
+     Token st = other;
      return name == st.name;
     }
     if (other is String) {
@@ -81,7 +81,7 @@ abstract class _StandAloneLineCapable {
  * The simplest implementation of a token is the _StringToken which is any string that is not within
  * an opening and closing mustache.
  */
-class _StringToken extends _Token {
+class _StringToken extends Token {
 
   _StringToken(_val) : super.withSource(_val);
   
@@ -125,7 +125,7 @@ class _SpecialCharToken extends _StringToken implements _StandAloneLineCapable {
  * This is a token that represends a mustache expression. That is anything between an opening and
  * closing mustache.
  */
-class _ExpressionToken extends _Token {
+class _ExpressionToken extends Token {
   final String name;
 
   factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial, Delimiter delimiter) {
@@ -210,7 +210,7 @@ class _PartialToken extends _ExpressionToken {
   
   String get _ident {
     StringBuffer ident = new StringBuffer();
-    _Token p = this.prev;
+    Token p = this.prev;
     while (p.name == SPACE) {
       ident.write(SPACE);
       p = p.prev;
@@ -260,7 +260,7 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
   _StartSectionToken(String val, this.delimiter) : super.withSource(val, null);
 
   //Override the next getter
-  _Token get next =>  endSection.next;
+  Token get next =>  endSection.next;
 
   apply(MustacheContext ctx) {
     var val = ctx[name];
@@ -269,17 +269,17 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
     }
     StringBuffer str = new StringBuffer();
     if (val is Function) { //apply the source to the given function
-      forEachUntilEndSection((_Token t) => str.write(t._source));
+      forEachUntilEndSection((Token t) => str.write(t._source));
       //A lambda's return value should be parsed
       return render(val(str.toString()), ctx, delimiter: delimiter);
     }
     if (val is MustacheContext) { //apply the new context to each of the tokens until the end
-      forEachUntilEndSection((_Token t) => str.write(t.apply(val)));
+      forEachUntilEndSection((Token t) => str.write(t.apply(val)));
       return str;
     }
     if (val is Iterable) {
       val.forEach((v) {
-        forEachUntilEndSection((_Token t) => str.write(t.apply(v)));
+        forEachUntilEndSection((Token t) => str.write(t.apply(v)));
       });
       return str;
     }
@@ -287,8 +287,8 @@ class _StartSectionToken extends _ExpressionToken implements _StandAloneLineCapa
     return EMPTY_STRING;
   }
 
-  forEachUntilEndSection(void f(_Token)) {
-    _Token n = super.next;
+  forEachUntilEndSection(void f(Token)) {
+    Token n = super.next;
     while (n !== endSection) {
       if (f != null) {
         f(n);
@@ -318,7 +318,7 @@ class _InvertedSectionToken extends _StartSectionToken {
   apply(MustacheContext ctx) {
     if (ctx[name] == null) {
       StringBuffer buf = new StringBuffer();
-      forEachUntilEndSection((_Token t) {
+      forEachUntilEndSection((Token t) {
         var val2 = t.apply(ctx);
         buf.write(val2);
       });

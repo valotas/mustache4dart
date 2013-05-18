@@ -87,10 +87,11 @@ class _Template {
 
 class _TokenList {
   StringBuffer buffer;
-  _Token head;
-  _Token tail;
+  Token head;
+  Token tail;
   Delimiter _nextDelimiter;
   final List<_StartSectionToken> startingTokens = [];
+  final List<_StandAloneLineCapable> lastLine = [];
   
   _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
@@ -108,13 +109,13 @@ class _TokenList {
   }
   
   void addToken(String str, Delimiter del, String ident, Function partial, {last: false}) {
-    _add(new _Token(str, partial, del, ident));
+    _add(new Token(str, partial, del, ident));
     if (last && buffer.length > 0) {
-      _add(new _Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template
+      _add(new Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template
     }
   }
   
-  void _add(_Token other) {
+  void _add(Token other) {
     if (other == null) {
       return;
     }
@@ -127,6 +128,7 @@ class _TokenList {
     else if (other is _EndSectionToken) {
       _addEndingToken(other);
     }
+    
     tail.next = other;
     tail = other;
   }
@@ -206,3 +208,4 @@ class Delimiter {
   
   toString() => "Delimiter($opening, $closing)";
 }
+
