@@ -90,8 +90,8 @@ class _TokenList {
   Token head;
   Token tail;
   Delimiter _nextDelimiter;
+  Line line;
   final List<_StartSectionToken> startingTokens = [];
-  final List<_StandAloneLineCapable> lastLine = [];
   
   _TokenList(Delimiter delimiter, String ident) {
     //Our template should start as an empty string token
@@ -150,13 +150,11 @@ class _TokenList {
   }
 
   void _addToLine(Token t) {
-    if (t == NL || t == CRNL || t == EMPTY_STRING) {
-      lastLine
-        .each((Token t) => t.rendable = false)
-        .clear();
+    if (line == null) {
+      line = new Line(t);
     }
-    if (!lastLine.isEmpty) {
-      
+    else {
+      line = line.add(t);
     }
   }
     
@@ -225,22 +223,26 @@ class Delimiter {
 class Line {
   final List<Token> tokens = [];
   bool full = false;
-
+  Line prev = null;
 
   Line(Token t) {
-    if (t != NL && t != CRNL && t != EMPTY_STRING) {
-      throw new ArgumentError("New line can not start with $t");
+    if (t != null) {
+      add(t);
     }
-    tokens.add(t);
   }
 
-  void add(Token t) {
+  Line add(Token t) {
     if (full) {
-      throw new StateError("Line is full. Can not add anything else to it.");
-    }
-    if (t == NL || t == CRNL) {
-      full = true;
+      throw new StateError("Line is full. Can not add $t to it.");
     }
     tokens.add(t);
+    if (t == NL || t == CRNL) {
+      full = true;
+      Line newLine = new Line(null);
+      newLine.prev = this;
+      return newLine;
+    }
+    //in any other case:
+    return this;
   }
 }
