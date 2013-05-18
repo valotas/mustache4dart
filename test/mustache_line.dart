@@ -22,5 +22,10 @@ void main() {
       var nl = l.add(new Token(NL, null, del, null));
       expect(nl, isNot(same(l)));
     });
+
+    test('Should not be standalone if it contains a string token', () {
+      var l = new Line(new Token('Some text!', null, del, null));
+      expect(l.standAlone, isFalse);
+    });
   });
 }

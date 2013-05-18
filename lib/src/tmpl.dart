@@ -223,6 +223,7 @@ class Delimiter {
 class Line {
   final List<Token> tokens = [];
   bool full = false;
+  bool standAlone = true;
   Line prev = null;
 
   Line(Token t) {
@@ -235,8 +236,12 @@ class Line {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
+    if (t != EMPTY_STRING && t != NL && t != CRNL) {
+      standAlone = false;
+    }
     tokens.add(t);
-    if (t == NL || t == CRNL) {
+    if (_isEndOfLine(t)) {
+      _markStandAloneLineTokens();
       full = true;
       Line newLine = new Line(null);
       newLine.prev = this;
@@ -244,5 +249,18 @@ class Line {
     }
     //in any other case:
     return this;
+  }
+
+  bool _isEndOfLine(Token t) {
+    if (t == NL || t == CRNL || t == EMPTY_STRING) {
+      return true;
+    }
+    return false;
+  }
+
+  _markStandAloneLineTokens() {
+    if (standAlone) {
+      tokens.each((t) => t.rendable = false);
+    }
   }
 }
