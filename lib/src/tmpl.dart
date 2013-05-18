@@ -236,7 +236,7 @@ class Line {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
-    if (t != EMPTY_STRING && t != NL && t != CRNL) {
+    if (_isStandAloneToken(t)) {
       standAlone = false;
     }
     tokens.add(t);
@@ -249,6 +249,14 @@ class Line {
     }
     //in any other case:
     return this;
+  }
+
+  bool _isStandAloneToken(Token t) {
+    if (t == EMPTY_STRING || t == NL || t == CRNL) {
+      return true;
+    }
+    //In any other case
+    return false;
   }
 
   bool _isEndOfLine(Token t) {
