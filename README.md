@@ -57,7 +57,7 @@ print(salut('Alice')); //should print Hello Alice!
 Running the tests
 -----------------
 At the moment the project is under heavy development but pass all the [Mustache specs][specs]. 
-If you want to run the tests yourself, just do what [drone.io does][https://drone.io/github.com/valotas/mustache4dart/admin],
+If you want to run the tests yourself, just do what [drone.io does](https://drone.io/github.com/valotas/mustache4dart/admin),
 or to put it by another way, do the following:
 
 ```sh
