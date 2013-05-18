@@ -236,7 +236,7 @@ class Line {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
-    //print("$t: ${_isStandAloneToken(t)}");
+    //print("$hashCode $t: ${_isStandAloneToken(t)}");
     if (!_isStandAloneToken(t) && standAlone) {
       standAlone = false;
     }
@@ -257,10 +257,7 @@ class Line {
   }
 
   bool _isEndOfLine(Token t) {
-    if (t == NL || t == CRNL || t == EMPTY_STRING) {
-      return true;
-    }
-    return false;
+    return t == NL || t == CRNL;
   }
 
   _markStandAloneLineTokens() {

@@ -34,5 +34,29 @@ void main() {
       l.add(newToken('{{/xxx}}'));
       expect(l.standAlone, isTrue);
     });
+
+    test("Last line with an expression only should be considered standalone", () {
+      var l = new Line(newToken(' '));
+      l = l.add(newToken(NL))
+        .add(newToken(' '))
+        .add(newToken(' '))
+        .add(newToken('{{/ending}}'));
+
+      expect(l.standAlone, isTrue);
+    });
+
+    test("Should not be standalone if it contains a comment with text", () {
+      var l = new Line(newToken(' '))
+        .add(newToken(' '))
+        .add(newToken('12'))
+        .add(newToken(' '))
+        .add(newToken('{{! 12 }}'))
+        .add(newToken(' '));
+      var l2 = l.add(newToken(NL));
+
+      expect(l2, isNot(same(l)));
+      expect(l.standAlone, isFalse);
+    });
+
   });
 }
