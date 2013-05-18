@@ -224,10 +224,23 @@ class Delimiter {
 
 class Line {
   final List<Token> tokens = [];
+  bool full = false;
+
 
   Line(Token t) {
     if (t != NL && t != CRNL && t != EMPTY_STRING) {
-      throw new Exception("New line can not start with $t");
-    } 
+      throw new ArgumentError("New line can not start with $t");
+    }
+    tokens.add(t);
+  }
+
+  void add(Token t) {
+    if (full) {
+      throw new StateError("Line is full. Can not add anything else to it.");
+    }
+    if (t == NL || t == CRNL) {
+      full = true;
+    }
+    tokens.add(t);
   }
 }
