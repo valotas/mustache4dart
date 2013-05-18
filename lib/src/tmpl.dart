@@ -221,7 +221,7 @@ class Delimiter {
 }
 
 class Line {
-  final List<Token> tokens = [];
+  final tokens = [];
   bool full = false;
   bool standAlone = true;
   Line prev = null;
