@@ -61,5 +61,28 @@ void main() {
       expect(l3.standAlone, isTrue);
     });
 
+    test("Stand empty line should not be considered standAlone", () {
+      //{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n
+      var l_a = new Line(newToken('{{#a}}'));
+      var l_one = l_a.add(newToken(NL))
+        .add(newToken('{{one}}'));
+      var l_a_end = l_one.add(newToken(NL))
+        .add(newToken('{{/a}}'));
+      var l_empty = l_a_end.add(newToken(NL));
+      var l_b = l_empty.add(newToken(NL))
+        .add(newToken('{{b.two}}'));
+      var l_last = l_b.add(newToken(NL));
+
+      expect(l_a.standAlone, isTrue);
+      expect(l_one.standAlone, isFalse);
+      expect(l_a_end.standAlone, isTrue);
+
+      //Make sure that the empty line is actuall an empty line. It only contains a NL char
+      expect(l_empty.tokens.length, 1);
+      expect(l_empty.tokens[0], newToken(NL));
+      expect(l_empty.standAlone, isFalse, reason: 'empty line is part of the template and should not be considered as a standAlone one');
+
+      expect(l_b.standAlone, isFalse);
+    });
   });
 }

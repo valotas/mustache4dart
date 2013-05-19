@@ -236,7 +236,6 @@ class Line {
     if (full) {
       throw new StateError("Line is full. Can not add $t to it.");
     }
-    //print("$hashCode $t: ${_isStandAloneToken(t)}");
     if (!_isStandAloneToken(t) && standAlone) {
       standAlone = false;
     }
@@ -265,6 +264,9 @@ class Line {
   }
 
   _markStandAloneLineTokens() {
+    if (tokens.length == 1) {
+      standAlone = false;
+    }
     if (standAlone) {
       tokens.forEach((t) => t.rendable = false);
     }

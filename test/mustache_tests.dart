@@ -20,6 +20,7 @@ void main() {
     test('Deeper context test', () => expect(render('{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{/c}}{{/b}}{{/a}}', map), '1-12-123'));
     test('Idented rendering', () => expect(render('Yeah!\nbaby!', null, ident: '--'), 'Yeah!\n--baby!'));
     test('Standalone without new line', () => expect(render('#{{#a}}\n/\n  {{/a}}', map), '#\n/\n'));
+    test('Should render emtpy lines', () => expect(render('{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n', map), '1\n\n2\n'));
   });
   
   group('Performance tests', () {
