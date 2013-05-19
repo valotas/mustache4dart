@@ -84,5 +84,14 @@ void main() {
 
       expect(l_b.standAlone, isFalse);
     });
+
+    test("Should cosider partial tag followed by a newline as an standAlone line", () {
+      var l = new Line(newToken('|'))
+        .add(newToken(CRNL))
+        .add(newToken('{{> p}}'));
+      var l2 = l.add(newToken(CRNL))
+        .add('|');
+      expect(l.standAlone, isTrue);
+    });
   });
 }

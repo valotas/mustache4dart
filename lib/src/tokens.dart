@@ -191,14 +191,11 @@ class _DelimiterToken extends _ExpressionToken implements StandAloneLineCapable 
   }
 }
 
-class _PartialToken extends _ExpressionToken {
+class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
   final Function partial;
   _PartialToken(this.partial, String val) : super.withSource(val, null);
   
   apply(MustacheContext ctx) {
-    //if (_standAlone) {
-    //  next.rendable = false;
-    //}
     if (partial != null) {
       var partialTemplate = partial(name);
       if (partialTemplate != null) {
