@@ -105,7 +105,7 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
     if (next == null) {
       return super.apply(context);
     }
-    if (_isNewLine) {
+    if (_isNewLineOrEmpty) {
       return "${super.apply(context)}$ident";
     }
     return super.apply(context);
