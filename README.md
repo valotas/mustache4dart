@@ -17,7 +17,7 @@ and you are good to go. You can use the render toplevel function to render your 
 For example:
 
 ```dart
-var salutation = render('Hello {{name}}!', {name: 'Bob'});
+var salutation = render('Hello {{name}}!', {'name': 'Bob'});
 print(salutation); //shoud print Hello Bob!
 ```
 
@@ -51,7 +51,7 @@ it to a function using the toplevel function compile:
 
 ```dart
 var salut = compile('Hello {{name}}!');
-print(salut('Alice')); //should print Hello Alice!
+print(salut({'name': 'Alice'})); //should print Hello Alice!
 ``` 
 
 Running the tests
