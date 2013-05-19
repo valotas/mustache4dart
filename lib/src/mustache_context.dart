@@ -36,7 +36,7 @@ class MustacheContext {
   
   _get(String key) {
     if (key == DOT) {
-      return ctx;
+      return this;
     }
     if (key.contains(DOT)) {
       Iterator<String> k = key.split(DOT).iterator;

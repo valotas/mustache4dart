@@ -109,6 +109,13 @@ void main() {
       expect(ctx['a']['b']['c']['two'].asString(), '2', reason: "a.b.c.two == b.two when using $map");
       expect(ctx['a']['b']['c']['three'].asString(), '3');
     });
+
+    test('Direct interpolation', () {
+      var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
+      expect(ctx['n1']['.'].asString(), '1');
+      expect(ctx['n2']['.'].asString(), '2.0'); 
+      expect(ctx['s']['.'].asString(), 'some string'); 
+    });
   });
 }
 
