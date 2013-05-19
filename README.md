@@ -17,7 +17,7 @@ and you are good to go. You can use the render toplevel function to render your 
 For example:
 
 ```dart
-var salutation = render('Hello {{name}}!', {name: 'Bob'});
+var salutation = render('Hello {{name}}!', {'name': 'Bob'});
 print(salutation); //shoud print Hello Bob!
 ```
 
@@ -51,13 +51,14 @@ it to a function using the toplevel function compile:
 
 ```dart
 var salut = compile('Hello {{name}}!');
-print(salut('Alice')); //should print Hello Alice!
+print(salut({'name': 'Alice'})); //should print Hello Alice!
 ``` 
 
 Running the tests
 -----------------
 At the moment the project is under heavy development but pass all the [Mustache specs][specs]. 
-If you want to run the tests yourself, the following commands should be enough
+If you want to run the tests yourself, just do what [drone.io does](https://drone.io/github.com/valotas/mustache4dart/admin),
+or to put it by another way, do the following:
 
 ```sh
 git clone git://github.com/valotas/mustache4dart.git
