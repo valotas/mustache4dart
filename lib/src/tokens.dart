@@ -287,14 +287,14 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
   }
 
   forEachUntilEndSection(void f(Token)) {
+    if (f == null) {
+      throw new Exception('Can not apply a null function!');
+    }
     Token n = super.next;
     while (!identical(n, endSection)) {
-      if (f != null) {
-        f(n);
-      }
+      f(n);
       n = n.next;
     }
-    return null;
   }
   
   //The token itself is always rendable
