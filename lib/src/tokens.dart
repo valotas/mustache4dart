@@ -288,7 +288,7 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
 
   forEachUntilEndSection(void f(Token)) {
     Token n = super.next;
-    while (n !== endSection) {
+    while (!identical(n, endSection)) {
       if (f != null) {
         f(n);
       }
