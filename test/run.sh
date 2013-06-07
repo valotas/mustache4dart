@@ -10,8 +10,7 @@ set -e
 # canonicalization.
 #pushd $DIR/..
 #echo Analyzing library for warnings or type errors
-#dart_analyzer --fatal-warnings --fatal-type-errors lib/*.dart \
+dartanalyzer --fatal-warnings --fatal-type-errors lib/*.dart
 #  || echo -e "Ignoring analyzer errors (rtbug.com/8132r
 #pd
-
 dart --enable-type-checks --enable-asserts test/run_all.dart $@
