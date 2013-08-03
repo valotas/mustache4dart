@@ -9,6 +9,6 @@ import 'mustache_issues.dart' as issues;
 main() {
   mustache_context_tests.main();
   mustache_tests.main();
-  specs.main();
+  //specs.main();
   issues.main();
 }
