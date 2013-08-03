@@ -10,5 +10,5 @@ main() {
   mustache_context_tests.main();
   mustache_tests.main();
   //specs.main();
-  issues.main();
+  //issues.main();
 }
