@@ -1,4 +1,4 @@
-library mustache_tests;
+library mustache_issues;
 
 import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
