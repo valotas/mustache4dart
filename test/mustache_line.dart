@@ -90,7 +90,7 @@ void main() {
         .add(newToken(CRNL))
         .add(newToken('{{> p}}'));
       var l2 = l.add(newToken(CRNL))
-        .add('|');
+        .add(newToken('|'));
       expect(l.standAlone, isTrue);
     });
   });
