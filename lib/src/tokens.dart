@@ -326,5 +326,7 @@ class _InvertedSectionToken extends _StartSectionToken {
     //else just return an empty string
     return EMPTY_STRING;
   }
+  
+  String toString() => "InvertedSectionToken($name)";
 }
 
