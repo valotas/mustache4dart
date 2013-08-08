@@ -11,6 +11,7 @@ class MustacheContext {
   String asString() => ctx.toString();
 
   operator [](String key) {
+    if (ctx == null) return null;
     var result = cache[key];
     if (result == null) {
       result = _getInThisOrOtherContext(key);
