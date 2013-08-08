@@ -110,9 +110,6 @@ class _TokenList {
   
   void addToken(String str, Delimiter del, String ident, Function partial, {last: false}) {
     _add(new Token(str, partial, del, ident), last);
-    //if (last && buffer.length > 0) {
-    //  _add(new Token(EMPTY_STRING, partial, del, ident)); //to mark the end of the template
-    //}
   }
   
   void _add(Token other, [bool last]) {
