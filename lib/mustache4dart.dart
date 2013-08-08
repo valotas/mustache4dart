@@ -2,7 +2,6 @@ library mustache4dart;
 
 import 'dart:core';
 import 'dart:mirrors';
-import 'dart:async';
 import 'dart:collection';
 
 part 'src/mustache.dart';
