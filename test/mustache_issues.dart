@@ -8,5 +8,6 @@ void main() {
     test('#9', () => expect(render("{{#sec}}[{{var}}]{{/sec}}", {'sec': 42}), '[]'));
     test('#10', () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
     test('#11', () => expect(() => render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}), throwsFormatException));
+    test('#16', () => expect(render('{{^x}}x{{/x}}!!!', null), 'x'));
   });
 }
