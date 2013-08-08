@@ -8,6 +8,13 @@ void main() {
     test('#9', () => expect(render("{{#sec}}[{{var}}]{{/sec}}", {'sec': 42}), '[]'));
     test('#10', () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
     test('#11', () => expect(() => render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}), throwsFormatException));
-    test('#16', () => expect(render('{{^x}}x{{/x}}!!!', null), 'x'));
+    test('#16', () => expect(render('{{^x}}x{{/x}}!!!', null), 'x!!!'));
+    test('#16 root cause: For null objects the value of any property should be null', () {
+      var ctx = new MustacheContext(null);
+      expect(ctx['xxx'], null);
+      expect(ctx['123'], null);
+      expect(ctx[''], null);
+      expect(ctx[null], null);
+    });
   });
 }
