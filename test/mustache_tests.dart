@@ -13,8 +13,7 @@ void main() {
     test('Compiled function with non existing context same with render', () => expect(salut({}), render(salutTemplate, {})));
     
     test('Contextless one letter template', () => expect(render('!', null), '!'));
-    //TODO: investigate why this is causing a Segmentation fault
-    //test('Template with string context after closing one', () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
+    test('Template with string context after closing one', () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
     
     var map = {'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}};
     test('Simple context test', () => expect(render('{{#a}}{{one}}{{/a}}', map), '1'));
