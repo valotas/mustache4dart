@@ -1,5 +1,5 @@
 name: mustache4dart
-version: 0.0.18+0.6.15.3
+version: 0.0.19+0.6.21.3
 author: Georgios Valotasios <valotas@gmail.com>
 description: A mustache implementation for the Dart language
 homepage: https://github.com/valotas/mustache4dart
