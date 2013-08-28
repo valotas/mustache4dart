@@ -4,16 +4,16 @@ packages:
   meta:
     description: meta
     source: hosted
-    version: "0.6.19"
+    version: "0.6.21+3"
   path:
     description: path
     source: hosted
-    version: "0.6.19"
+    version: "0.6.21+3"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.6.19"
+    version: "0.6.21+3"
   unittest:
     description: unittest
     source: hosted
-    version: "0.6.19"
+    version: "0.6.21+3"
