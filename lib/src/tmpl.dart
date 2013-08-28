@@ -117,7 +117,7 @@ class _TokenList {
       return;
     }
     if (other is _DelimiterToken) {
-      _nextDelimiter = other.newDelimiter;
+      _nextDelimiter = (other as _DelimiterToken).newDelimiter;
     }
     else if (other is _StartSectionToken) {
       _addStartingToken(other);
