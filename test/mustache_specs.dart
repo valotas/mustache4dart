@@ -1,6 +1,7 @@
 library mustache_specs;
 
 import 'dart:io';
+import 'dart:convert';
 import 'dart:json';
 import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
@@ -13,7 +14,7 @@ main() {
     .forEach((File f) {
       var filename = f.path;
       if (shouldRun(filename)) {
-        f.readAsString(encoding: Encoding.UTF_8)
+        f.readAsString(encoding: UTF8)
         .then((text) {
           var json = parse(text);
           var tests = json['tests'];
