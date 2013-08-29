@@ -21,6 +21,6 @@ Well, \${{taxed_value}}, after taxes.
 
    //Print something to a StringSink
    var out = new StringBuffer();
-   render(template, obj, {out: out});
+   render(template, obj, out: out);
    print(out);
 }
