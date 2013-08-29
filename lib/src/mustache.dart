@@ -1,7 +1,7 @@
 part of mustache4dart;
 
-String render(String template, Object context, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {
-  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context);
+String render(String template, Object context, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING, StringSink out: null}) {
+  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context, out: out);
 }
 
 compile(String template, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {
