@@ -68,16 +68,28 @@ class _Template {
   
   _Template._internal(this.list);
     
-  String call(ctx) {
+  call(ctx, {StringSink out: null}) {
+    StringSink o = out == null ? new StringBuffer() : out;
+    _write(ctx, o);
+    
+    //If we provide a StringSink, write there and return it as
+    //the response of the funtion. Otherwise make our library
+    //easier to use by returning the string representation of
+    //the template
+    if (out == null) {
+      return o.toString();
+    }
+    return o;
+  }
+  
+  void _write(ctx, StringSink out) {
     if (list.head == null) {
       return EMPTY_STRING;
     }
     if (!(ctx is MustacheContext)) {
       ctx = new MustacheContext(ctx);
     }
-    StringSink out = new StringBuffer();
     list.head.render(ctx, out);
-    return out.toString();
   }
   
   String toString() {
