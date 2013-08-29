@@ -69,7 +69,7 @@ class _Template {
   _Template._internal(this.list);
     
   call(ctx, {StringSink out: null}) {
-    StringSink o = out == null ? new StringBuffer() : null;
+    StringSink o = out == null ? new StringBuffer() : out;
     _write(ctx, o);
     
     //If we provide a StringSink, write there and return it as
