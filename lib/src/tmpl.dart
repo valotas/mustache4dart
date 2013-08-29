@@ -68,13 +68,21 @@ class _Template {
   
   _Template._internal(this.list);
     
-  String call(ctx) {
-    StringSink out = new StringBuffer();
-    write(ctx, out);
-    return out.toString();
+  call(ctx, {StringSink out: null}) {
+    StringSink o = out == null ? new StringBuffer() : null;
+    _write(ctx, o);
+    
+    //If we provide a StringSink, write there and return it as
+    //the response of the funtion. Otherwise make our library
+    //easier to use by returning the string representation of
+    //the template
+    if (out == null) {
+      return o.toString();
+    }
+    return o;
   }
   
-  void write(ctx, StringSink out) {
+  void _write(ctx, StringSink out) {
     if (list.head == null) {
       return EMPTY_STRING;
     }
