@@ -22,5 +22,15 @@ void main() {
       expect(ctx[''], null);
       expect(ctx[null], null);
     });
+    test('#17', () {
+      expect(render('''
+{{#a}}
+<div>
+    {{{a}}}
+    {{b}}
+</div>
+{{/a}}''', {'a': 'aa', 'b': 'bb'}),
+        '<div>\n    aa\n</div>\n');
+    });
   });
 }
