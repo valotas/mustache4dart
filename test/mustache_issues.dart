@@ -22,5 +22,14 @@ void main() {
       expect(ctx[''], null);
       expect(ctx[null], null);
     });
+    test('#17', () => expect(render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {'a': 'aa', 'b': 'bb'}),'[aa|bb]'));
+    test('#17 root cause: setting the same context as a subcontext', () {
+      var ctx = new MustacheContext({'a': 'aa', 'b': 'bb'});
+      expect(ctx, isNotNull);
+      expect(ctx['a'].toString(), isNotNull);
+      
+      //Here lies a problem if the subaa.other == suba 
+      expect(ctx['a']['a'].toString(), isNotNull);
+    });
   });
 }

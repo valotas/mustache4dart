@@ -28,7 +28,7 @@ class MustacheContext {
     //if the result is null, try the other context
     if (result == null && other != null) {
       result = other[key];
-      if (result != null && result is MustacheContext) {
+      if (result != null && result is MustacheContext && !identical(result, this)) {
         result.other = this;
       }
     }
