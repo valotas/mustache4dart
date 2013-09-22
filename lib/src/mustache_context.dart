@@ -11,6 +11,8 @@ class MustacheContext {
   bool get isLambda => ctx is Function;
 
   String asString() => ctx.toString();
+  
+  call(arg) => isLambda ? ctx(arg) : null;
 
   operator [](String key) {
     if (ctx == null) return null;
