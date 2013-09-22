@@ -7,6 +7,8 @@ class MustacheContext {
   MustacheContext parent;
 
   MustacheContext(this.ctx, [MustacheContext this.parent]);
+  
+  bool get isLambda => ctx is Function;
 
   String asString() => ctx.toString();
 
@@ -68,9 +70,9 @@ class MustacheContext {
     if (v == false) {
       return null;
     }
-    if (v is Function) {
-      return v;
-    }
+    //if (v is Function) {
+    //  return v;
+    //}
     return new MustacheContext(v, this);
   }
   
