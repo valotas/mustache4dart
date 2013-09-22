@@ -10,9 +10,7 @@ class MustacheContext {
   
   bool get isLambda => ctx is Function;
 
-  String asString() => ctx.toString();
-  
-  call(arg) => isLambda ? ctx(arg) : null;
+  call([arg]) => isLambda ? ctx(arg) : ctx.toString();
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -72,9 +70,6 @@ class MustacheContext {
     if (v == false) {
       return null;
     }
-    //if (v is Function) {
-    //  return v;
-    //}
     return new MustacheContext(v, this);
   }
   

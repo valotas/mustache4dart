@@ -7,19 +7,19 @@ void main() {
   group ('Mustache contexts', () {
     test('Simple context with map', () {
       var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
-      expect(ctx['k1'].asString(), 'value1');
-      expect(ctx['k2'].asString(), 'value2');
+      expect(ctx['k1'](), 'value1');
+      expect(ctx['k2'](), 'value2');
       expect(ctx['k3'], null);
     });
     
     test('Simple context with object', () {
       var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
-      expect(ctx['name'].asString(), 'Γιώργος');
-      expect(ctx['lastname'].asString(), 'Βαλοτάσιος');
+      expect(ctx['name'](), 'Γιώργος');
+      expect(ctx['lastname'](), 'Βαλοτάσιος');
       expect(ctx['last'], null);
-      expect(ctx['fullname'].asString(), 'Γιώργος Βαλοτάσιος');
-      expect(ctx['reversedName'].asString(), 'ςογρώιΓ');
-      expect(ctx['reversedLastName'].asString(), 'ςοισάτολαΒ');
+      expect(ctx['fullname'](), 'Γιώργος Βαλοτάσιος');
+      expect(ctx['reversedName'](), 'ςογρώιΓ');
+      expect(ctx['reversedLastName'](), 'ςοισάτολαΒ');
     });
     
     test('Simple map with list of maps', () {
@@ -47,7 +47,7 @@ void main() {
       p.contactInfos.add(new _ContactInfo('skype', 'some1'));
       var ctx = new MustacheContext(p);
       expect(ctx['contactInfos'].length, 2);
-      expect(ctx['contactInfos'].first['value']['Num'].asString(), '31');
+      expect(ctx['contactInfos'].first['value']['Num'](), '31');
     });
     
     test('Deep search with object', () {
@@ -59,9 +59,9 @@ void main() {
       
       
       MustacheContext ctx = new MustacheContext(p);
-      expect(ctx['name'].asString(), 'name1');
-      expect(ctx['parent']['lastname'].asString(), 'lastname2');
-      expect(ctx['parent']['parent']['fullname'].asString(), 'name3 lastname3');
+      expect(ctx['name'](), 'name1');
+      expect(ctx['parent']['lastname'](), 'lastname2');
+      expect(ctx['parent']['parent']['fullname'](), 'name3 lastname3');
     });
     
     test('simple MustacheFunction value', () {
@@ -84,37 +84,37 @@ void main() {
     
     test('Dotted names', () {
       var ctx = new MustacheContext({'person': new _Person('George', 'Valotasios')});
-      expect(ctx['person.name'].asString(), 'George');
+      expect(ctx['person.name'](), 'George');
     });
     
     test('Context with another context', () {
       var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
-      expect(ctx['name'].asString(), 'George');
-      expect(ctx['a']['one'].asString(), '1');
-      expect(ctx['b']['two'].asString(), '2');
+      expect(ctx['name'](), 'George');
+      expect(ctx['a']['one'](), '1');
+      expect(ctx['b']['two'](), '2');
     });
     
     test('Deep subcontext test', () {
       var map = {'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}};
       var ctx = new MustacheContext({'a': {'one': 1}, 'b': {'two': 2}, 'c': {'three': 3}});
       expect(ctx['a'], isNotNull, reason: "a should exists when using $map");
-      expect(ctx['a']['one'].asString(), '1');
+      expect(ctx['a']['one'](), '1');
       expect(ctx['a']['two'], isNull);
       expect(ctx['a']['b'], isNotNull, reason: "a.b should exists when using $map");
-      expect(ctx['a']['b']['one'].asString(), '1', reason: "a.b.one == a.own when using $map");
-      expect(ctx['a']['b']['two'].asString(), '2', reason: "a.b.two == b.two when using $map");
+      expect(ctx['a']['b']['one'](), '1', reason: "a.b.one == a.own when using $map");
+      expect(ctx['a']['b']['two'](), '2', reason: "a.b.two == b.two when using $map");
       expect(ctx['a']['b']['three'], isNull);
       expect(ctx['a']['b']['c'], isNotNull, reason: "a.b.c should not be null when using $map");
-      expect(ctx['a']['b']['c']['one'].asString(), '1', reason: "a.b.c.one == a.one when using $map");
-      expect(ctx['a']['b']['c']['two'].asString(), '2', reason: "a.b.c.two == b.two when using $map");
-      expect(ctx['a']['b']['c']['three'].asString(), '3');
+      expect(ctx['a']['b']['c']['one'](), '1', reason: "a.b.c.one == a.one when using $map");
+      expect(ctx['a']['b']['c']['two'](), '2', reason: "a.b.c.two == b.two when using $map");
+      expect(ctx['a']['b']['c']['three'](), '3');
     });
 
     test('Direct interpolation', () {
       var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
-      expect(ctx['n1']['.'].asString(), '1');
-      expect(ctx['n2']['.'].asString(), '2.0'); 
-      expect(ctx['s']['.'].asString(), 'some string'); 
+      expect(ctx['n1']['.'](), '1');
+      expect(ctx['n2']['.'](), '2.0'); 
+      expect(ctx['s']['.'](), 'some string'); 
     });
   });
 }
