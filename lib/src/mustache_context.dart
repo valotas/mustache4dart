@@ -78,67 +78,10 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      return _getValueWithReflection(key);
+      return new _ObjectReflector(ctx).get(key);
     } 
   }
-
-  _getValueWithReflection(String key) {
-    var m = mirror;
-    var membersMirror = _findMemberMirror(m, key);
     
-    if (membersMirror == null) {
-      return null;
-    }
-    
-    if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
-      //this is the case of a lambda value
-      return _toFuncion(m, membersMirror.simpleName); 
-    }
-    
-    //Now we try to find out a field or a getter named after the given name
-    var im = null;
-    if (membersMirror is VariableMirror) {
-      im = m.getField(membersMirror.simpleName);
-    }
-    else if (membersMirror is MethodMirror && membersMirror.isGetter) {
-      im = m.getField(membersMirror.simpleName);
-    }
-    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
-      im = m.invoke(membersMirror.simpleName, []);
-    }
-    if (im != null && im is InstanceMirror) {
-      return im.reflectee;
-    }
-    return null;
-  }
-  
-  InstanceMirror get mirror => reflect(ctx);
-  
-  static _findMemberMirror(InstanceMirror m, String memberName) {
-    var members = m.type.members;
-    //members.forEach( (s, v) => print("${s} - ${v}"));
-    var membersMirror = members[new Symbol(memberName)];
-    if (membersMirror == null) {
-      //try out a getter:
-      memberName = "get${memberName[0].toUpperCase()}${memberName.substring(1)}";
-      membersMirror = members[new Symbol(memberName)];
-    }
-    return membersMirror;
-  }
-  
-  static Function _toFuncion(InstanceMirror mirror, Symbol method) {
-    return (val) {
-      var im = mirror.invoke(method, [val]);
-      if (im is InstanceMirror) {
-        var r = im.reflectee;
-        return r;
-      }
-      else {
-        return null;
-      }
-    };
-  }
-  
   String toString() => "MustacheContext($ctx, $parent)";
 }
 
@@ -169,5 +112,73 @@ class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
       current = null;
       return false;
     }
+  }
+}
+
+/**
+ * Helper class which given an object it will try to get a value by key analyzing
+ * the object by reflection
+ */
+class _ObjectReflector {
+  final InstanceMirror m;
+  
+  _ObjectReflector.fromMirror(this.m);
+  
+  factory _ObjectReflector(o) {
+    return new _ObjectReflector.fromMirror(reflect(o));
+  }
+  
+  get(String key) {
+    var membersMirror = _findMemberMirror(m, key);
+    
+    if (membersMirror == null) {
+      return null;
+    }
+    
+    if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
+      //this is the case of a lambda value
+      return _toFuncion(m, membersMirror.simpleName); 
+    }
+    
+    //Now we try to find out a field or a getter named after the given name
+    var im = null;
+    if (membersMirror is VariableMirror) {
+      im = m.getField(membersMirror.simpleName);
+    }
+    else if (membersMirror is MethodMirror && membersMirror.isGetter) {
+      im = m.getField(membersMirror.simpleName);
+    }
+    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
+      im = m.invoke(membersMirror.simpleName, []);
+    }
+    if (im != null && im is InstanceMirror) {
+      return im.reflectee;
+    }
+    return null;
+  }
+  
+  static _findMemberMirror(InstanceMirror m, String memberName) {
+    var members = m.type.members;
+    //members.forEach( (s, v) => print("${s} - ${v}"));
+    var membersMirror = members[new Symbol(memberName)];
+    if (membersMirror == null) {
+      //try out a getter:
+      memberName = "get${memberName[0].toUpperCase()}${memberName.substring(1)}";
+      membersMirror = members[new Symbol(memberName)];
+    }
+    return membersMirror;
+  }
+  
+  static Function _toFuncion(InstanceMirror mirror, Symbol method) {
+    return (val) {
+      var im = mirror.invoke(method, [val]);
+      if (im is InstanceMirror) {
+        var r = im.reflectee;
+        return r;
+      }
+      else {
+        return null;
+      }
+    };
   }
 }
