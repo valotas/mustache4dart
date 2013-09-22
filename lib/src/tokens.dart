@@ -165,11 +165,11 @@ class _ExpressionToken extends Token {
     if (val == null) {
       return EMPTY_STRING;
     }
-    if (val is Function) {
+    if (val.isLambda) {
       //A lambda's return value should be parsed
       return render(val(null), ctx);
     }
-    return val.asString();
+    return val();
   }
   
   String toString() => "ExpressionToken($name)";
