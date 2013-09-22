@@ -69,7 +69,7 @@ void main() {
       var ctx = new MustacheContext(t);
       var f = ctx['transform'];
       
-      expect(f is Function, true);
+      expect(f.isLambda, true);
       expect(f('123 456 777'), t.transform('123 456 777'));
     });
     
@@ -78,7 +78,7 @@ void main() {
       var ctx = new MustacheContext(map);
       var f = ctx['transform'];
       
-      expect(f is Function, true);
+      expect(f.isLambda, true);
       expect(f('woh'), 'woh!');
     });
     
