@@ -4,9 +4,9 @@ class MustacheContext {
   static const String DOT = '\.';
   final Map cache = {}; 
   final ctx;
-  MustacheContext other;
+  MustacheContext parent;
 
-  MustacheContext(this.ctx, [MustacheContext this.other]);
+  MustacheContext(this.ctx, [MustacheContext this.parent]);
 
   String asString() => ctx.toString();
 
@@ -14,7 +14,7 @@ class MustacheContext {
     if (ctx == null) return null;
     var result = cache[key];
     if (result == null) {
-      result = _getInThisOrOtherContext(key);
+      result = _getInThisOrParent(key);
       if (result != null) {
         cache[key] = result;
       }
@@ -22,14 +22,14 @@ class MustacheContext {
     return result;
   }
   
-  _getInThisOrOtherContext(String key) {
+  _getInThisOrParent(String key) {
     var result = _get(key);
     
     //if the result is null, try the other context
-    if (result == null && other != null) {
-      result = other[key];
+    if (result == null && parent != null) {
+      result = parent[key];
       if (result != null && result is MustacheContext && !identical(result, this)) {
-        result.other = this;
+        result.parent = this;
       }
     }
     return result;
@@ -139,7 +139,7 @@ class MustacheContext {
     };
   }
   
-  String toString() => "MustacheContext($ctx, $other)";
+  String toString() => "MustacheContext($ctx, $parent)";
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
