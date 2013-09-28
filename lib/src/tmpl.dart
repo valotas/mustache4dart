@@ -150,8 +150,8 @@ class _TokenList {
 
   void _addEndingToken(_EndSectionToken t) {
     var lastStarting = startingTokens.removeLast();
-    if (lastStarting.name != t.name) {
-      throw new FormatException("Expected {{/${lastStarting.name}}} but got {{/${t.name}}}");
+    if (lastStarting.value != t.value) {
+      throw new FormatException("Expected {{/${lastStarting.value}}} but got {{/${t.value}}}");
     }
     else {
       lastStarting.endSection = t;

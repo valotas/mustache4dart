@@ -54,22 +54,22 @@ abstract class Token {
   /**
    * This describes the value of the token.
    */
-  String get name;
+  String get value;
   
   /**
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
     if (other is Token) {
-      return name == (other as Token).name;
+      return value == (other as Token).value;
     }
     if (other is String) {
-      return name == other;
+      return value == other;
     }
     return false;
   }  
   
-  int get hashCode => name.hashCode;
+  int get hashCode => value.hashCode;
 }
 
 abstract class StandAloneLineCapable {
@@ -84,11 +84,11 @@ class _StringToken extends Token {
 
   _StringToken(_val) : super.withSource(_val);
   
-  apply(context) => name;
+  apply(context) => value;
   
-  String get name => _source;
+  String get value => _source;
 
-  String toString() => "StringToken($name)";
+  String toString() => "StringToken($value)";
 }
 
 class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
@@ -110,12 +110,12 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
     return super.apply(context);
   }
   
-  bool get _isNewLineOrEmpty => _isNewLine || name == EMPTY_STRING;
+  bool get _isNewLineOrEmpty => _isNewLine || value == EMPTY_STRING;
   
-  bool get _isNewLine => name == NL || name == CRNL; 
+  bool get _isNewLine => value == NL || value == CRNL; 
   
   String toString() {
-    var val = name.replaceAll('\r', '\\r').replaceAll(NL, '\\n');
+    var val = value.replaceAll('\r', '\\r').replaceAll(NL, '\\n');
     return "SpecialCharToken($val)";
   }
 }
@@ -125,7 +125,7 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
  * closing mustache.
  */
 class _ExpressionToken extends Token {
-  final String name;
+  final String value;
 
   factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial, Delimiter delimiter) {
     val = val.trim();
@@ -157,10 +157,10 @@ class _ExpressionToken extends Token {
     }
   }
 
-  _ExpressionToken.withSource(this.name, source) : super.withSource(source);
+  _ExpressionToken.withSource(this.value, source) : super.withSource(source);
   
   apply(MustacheContext ctx) {
-    var val = ctx[name];
+    var val = ctx[value];
     if (val == null) {
       return EMPTY_STRING;
     }
@@ -171,7 +171,7 @@ class _ExpressionToken extends Token {
     return val();
   }
   
-  String toString() => "ExpressionToken($name)";
+  String toString() => "ExpressionToken($value)";
 }
 
 class _DelimiterToken extends _ExpressionToken implements StandAloneLineCapable {
@@ -183,8 +183,8 @@ class _DelimiterToken extends _ExpressionToken implements StandAloneLineCapable 
   bool get rendable => false;
   
   Delimiter get newDelimiter {
-    List delimiters = name
-        .substring(0, name.length - 1)
+    List delimiters = value
+        .substring(0, value.length - 1)
         .split(SPACE);
     return new Delimiter(delimiters[0], delimiters[1]);
   }
@@ -197,7 +197,7 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
   
   apply(MustacheContext ctx) {
     if (partial != null) {
-      var partialTemplate = partial(name);
+      var partialTemplate = partial(value);
       if (partialTemplate != null) {
         return render(partialTemplate, ctx, partial: partial, ident: _ident);
       }
@@ -208,11 +208,11 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
   String get _ident {
     StringBuffer ident = new StringBuffer();
     Token p = this.prev;
-    while (p.name == SPACE) {
+    while (p.value == SPACE) {
       ident.write(SPACE);
       p = p.prev;
     }
-    if (p.name == NL || p.name == EMPTY_STRING) {
+    if (p.value == NL || p.value == EMPTY_STRING) {
       return ident.toString();      
     }
     else {
@@ -248,7 +248,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
         .replaceAll("'", "&apos;");
   }
   
-  String toString() => "EscapeHtmlToken($name)";
+  String toString() => "EscapeHtmlToken($value)";
 }
 
 class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapable {
@@ -261,7 +261,7 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
   Token get next =>  endSection.next;
 
   apply(MustacheContext ctx) {
-    var val = ctx[name];
+    var val = ctx[value];
     if (val == null) {
       return EMPTY_STRING;
     }
@@ -298,7 +298,7 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
   //The token itself is always rendable
   bool get rendable => true;
 
-  String toString() => "StartSectionToken($name)";
+  String toString() => "StartSectionToken($value)";
 }
 
 class _EndSectionToken extends _ExpressionToken implements StandAloneLineCapable {
@@ -306,14 +306,14 @@ class _EndSectionToken extends _ExpressionToken implements StandAloneLineCapable
 
   apply(MustacheContext ctx, [partial]) => EMPTY_STRING;
   
-  String toString() => "EndSectionToken($name)";
+  String toString() => "EndSectionToken($value)";
 }
 
 class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
   
   apply(MustacheContext ctx) {
-    if (ctx[name] == null) {
+    if (ctx[value] == null) {
       StringBuffer buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
         var val2 = t.apply(ctx);
@@ -325,6 +325,6 @@ class _InvertedSectionToken extends _StartSectionToken {
     return EMPTY_STRING;
   }
   
-  String toString() => "InvertedSectionToken($name)";
+  String toString() => "InvertedSectionToken($value)";
 }
 
