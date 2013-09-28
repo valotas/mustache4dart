@@ -245,6 +245,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
           .replaceAll("'", "&apos;");
     }
     else {
+      //TODO: do we really need this return value?
       return val;
     }
   }
@@ -267,23 +268,22 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
-    if (val is Function) { //apply the source to the given function
-      forEachUntilEndSection((Token t) => str.write(t._source));
-      //A lambda's return value should be parsed
-      return render(val(str.toString()), ctx, delimiter: delimiter);
-    }
-    if (val is MustacheContext) { //apply the new context to each of the tokens until the end
-      forEachUntilEndSection((Token t) => str.write(t.apply(val)));
-      return str;
-    }
     if (val is Iterable) {
       val.forEach((v) {
         forEachUntilEndSection((Token t) => str.write(t.apply(v)));
       });
       return str;
     }
-    //in any other case
-    return EMPTY_STRING;
+    
+    if (val.isLambda) { //apply the source to the given function
+      forEachUntilEndSection((Token t) => str.write(t._source));
+      //A lambda's return value should be parsed
+      return render(val(str.toString()), ctx, delimiter: delimiter);
+    }
+    
+    //in any other case:
+    forEachUntilEndSection((Token t) => str.write(t.apply(val)));
+    return str;
   }
 
   forEachUntilEndSection(void f(Token)) {
