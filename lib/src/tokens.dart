@@ -44,25 +44,24 @@ abstract class Token {
   
   StringBuffer apply(MustacheContext context);
 
-  /**
-   * This describes the value of the token.
-   */
-  String get name;
-  
   void set next (Token n) {
     _next = n;
     n.prev = this;
   }
   
   Token get next => _next;
+
+  /**
+   * This describes the value of the token.
+   */
+  String get name;
   
   /**
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
     if (other is Token) {
-     Token st = other;
-     return name == st.name;
+      return name == (other as Token).name;
     }
     if (other is String) {
       return name == other;
