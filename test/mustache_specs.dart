@@ -2,7 +2,6 @@ library mustache_specs;
 
 import 'dart:io';
 import 'dart:convert';
-import 'dart:json';
 import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
@@ -16,7 +15,7 @@ main() {
       if (shouldRun(filename)) {
         f.readAsString(encoding: UTF8)
         .then((text) {
-          var json = parse(text);
+          var json = JSON.decode(text);
           var tests = json['tests'];
           filename = filename.substring(filename.lastIndexOf('/') + 1);
           group("Specs of $filename", () {
