@@ -159,11 +159,12 @@ class _ObjectReflector {
   static _findMemberMirror(InstanceMirror m, String memberName) {
     var members = m.type.members;
     //members.forEach( (s, v) => print("${s} - ${v}"));
-    var membersMirror = members[new Symbol(memberName)];
+    var symbol = new Symbol(memberName);
+    var membersMirror = members[symbol];
     if (membersMirror == null) {
       //try out a getter:
       memberName = "get${memberName[0].toUpperCase()}${memberName.substring(1)}";
-      membersMirror = members[new Symbol(memberName)];
+      membersMirror = members[symbol];
     }
     return membersMirror;
   }
