@@ -128,27 +128,27 @@ class _ObjectReflector {
   }
   
   get(String key) {
-    var membersMirror = _findMemberMirror(m, key);
+    var declarationMirror = _findMemberMirror(m, key);
     
-    if (membersMirror == null) {
+    if (declarationMirror == null) {
       return null;
     }
     
-    if (membersMirror is MethodMirror && membersMirror.parameters.length == 1) {
+    if (declarationMirror is MethodMirror && declarationMirror.parameters.length == 1) {
       //this is the case of a lambda value
-      return _toFuncion(m, membersMirror.simpleName); 
+      return _toFuncion(m, declarationMirror.simpleName); 
     }
     
     //Now we try to find out a field or a getter named after the given name
     var im = null;
-    if (membersMirror is VariableMirror) {
-      im = m.getField(membersMirror.simpleName);
+    if (declarationMirror is VariableMirror) {
+      im = m.getField(declarationMirror.simpleName);
     }
-    else if (membersMirror is MethodMirror && membersMirror.isGetter) {
-      im = m.getField(membersMirror.simpleName);
+    else if (declarationMirror is MethodMirror && declarationMirror.isGetter) {
+      im = m.getField(declarationMirror.simpleName);
     }
-    else if (membersMirror is MethodMirror && membersMirror.parameters.length == 0) {
-      im = m.invoke(membersMirror.simpleName, []);
+    else if (declarationMirror is MethodMirror && declarationMirror.parameters.length == 0) {
+      im = m.invoke(declarationMirror.simpleName, []);
     }
     if (im != null && im is InstanceMirror) {
       return im.reflectee;
@@ -156,16 +156,16 @@ class _ObjectReflector {
     return null;
   }
   
-  static _findMemberMirror(InstanceMirror m, String memberName) {
-    var members = m.type.declarations;
+  static DeclarationMirror _findMemberMirror(InstanceMirror m, String declarationName) {
+    var declarations = m.type.declarations;
     //members.forEach( (s, v) => print("${s} - ${v}"));
-    var membersMirror = members[new Symbol(memberName)];
-    if (membersMirror == null) {
+    var declarationMirror = declarations[new Symbol(declarationName)];
+    if (declarationMirror == null) {
       //try out a getter:
-      memberName = "get${memberName[0].toUpperCase()}${memberName.substring(1)}";
-      membersMirror = members[new Symbol(memberName)];
+      declarationName = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
+      declarationMirror = declarations[new Symbol(declarationName)];
     }
-    return membersMirror;
+    return declarationMirror;
   }
   
   static Function _toFuncion(InstanceMirror mirror, Symbol method) {
