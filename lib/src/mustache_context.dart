@@ -157,7 +157,7 @@ class _ObjectReflector {
   }
   
   static _findMemberMirror(InstanceMirror m, String memberName) {
-    var members = m.type.members;
+    var members = m.type.declarations;
     //members.forEach( (s, v) => print("${s} - ${v}"));
     var membersMirror = members[new Symbol(memberName)];
     if (membersMirror == null) {
