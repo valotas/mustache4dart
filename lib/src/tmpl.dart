@@ -89,7 +89,7 @@ class _Template {
     if (!(ctx is MustacheContext)) {
       ctx = new MustacheContext(ctx);
     }
-    list.head.render(ctx, out);
+    list.head(ctx, out);
   }
   
   String toString() {
@@ -150,8 +150,8 @@ class _TokenList {
 
   void _addEndingToken(_EndSectionToken t) {
     var lastStarting = startingTokens.removeLast();
-    if (lastStarting.name != t.name) {
-      throw new FormatException("Expected {{/${lastStarting.name}}} but got {{/${t.name}}}");
+    if (lastStarting.value != t.value) {
+      throw new FormatException("Expected {{/${lastStarting.value}}} but got {{/${t.value}}}");
     }
     else {
       lastStarting.endSection = t;
