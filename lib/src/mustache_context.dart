@@ -4,9 +4,9 @@ class MustacheContext {
   static const String DOT = '\.';
   final Map cache = {}; 
   final ctx;
-  MustacheContext parent;
+  MustacheContext _parent;
 
-  MustacheContext(this.ctx, [MustacheContext this.parent]);
+  MustacheContext(this.ctx, [MustacheContext this._parent]);
   
   bool get isLambda => ctx is Function;
 
@@ -28,10 +28,10 @@ class MustacheContext {
     var result = _get(key);
     
     //if the result is null, try the parent context
-    if (result == null && parent != null) {
-      result = parent[key];
+    if (result == null && _parent != null) {
+      result = _parent[key];
       if (result != null && result is MustacheContext && !identical(result, this)) {
-        result.parent = this;
+        result._parent = this;
       }
     }
     return result;
@@ -81,7 +81,7 @@ class MustacheContext {
     } 
   }
     
-  String toString() => "MustacheContext($ctx, $parent)";
+  String toString() => "MustacheContext($ctx, $_parent)";
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
