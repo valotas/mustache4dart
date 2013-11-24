@@ -14,7 +14,7 @@ abstract class Token {
   Token.withSource(this._source);
  
   factory Token(String token, Function partial, Delimiter d, String ident) {
-    if (token == EMPTY_STRING || token == null) {
+    if (token == EMPTY_STRING) {
       return null;
     }
     if (token.startsWith('{{{') && d.opening == '{{') {
