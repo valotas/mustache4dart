@@ -19,6 +19,12 @@ main() {
           var tests = json['tests'];
           filename = filename.substring(filename.lastIndexOf('/') + 1);
           group("Specs of $filename", () {
+            
+            //Make sure that we reset the state of the Interpolation - Multiple Calls test
+            //as for some reason dart can run the group more than once causing the test
+            //to fail the second time it runs
+            tearDown (() =>lambdas['Interpolation - Multiple Calls'].reset());
+            
             tests.forEach( (t) {
               var testDescription = new StringBuffer(t['name']);
               testDescription.write(': ');
@@ -35,9 +41,10 @@ main() {
                 }
                 return partials[name];
               };
+              
+              //swap the data.lambda with a dart real function
               if (data['lambda'] != null) {
-                var l = lambdas[t['name']];
-                data['lambda'] = l;
+                data['lambda'] = lambdas[t['name']];
               }
               reason.write(" with '$data'");
               if (partials != null) {
@@ -62,11 +69,20 @@ bool shouldRun(String filename) {
 //Until we'll find a way to load a piece of code dynamically,
 //we provide the lambdas at the test here
 var callCounter = 1;
+
+class _DummyCallableWithState {
+  var _callCounter = 0;
+  
+  call (arg) => "${++_callCounter}";
+  
+  reset () => _callCounter = 0; 
+}
+
 var lambdas = {
                'Interpolation' : (t) => 'world',
                'Interpolation - Expansion': (t) => '{{planet}}',
                'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
-               'Interpolation - Multiple Calls': (t) => (callCounter++).toString(), //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+               'Interpolation - Multiple Calls': new _DummyCallableWithState(), //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
                'Escaping': (t) => '>',
                'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
                'Section - Expansion': (txt) => "$txt{{planet}}$txt",
