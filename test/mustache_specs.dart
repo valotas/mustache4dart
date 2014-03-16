@@ -71,11 +71,7 @@ var lambdas = {
                'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
                'Section - Expansion': (txt) => "$txt{{planet}}$txt",
                'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
-               'Section - Multiple Calls': (t) {
-                 var s = new StringBuffer("__$t");
-                 s.write('__');
-                 return s.toString();
-               },
+               'Section - Multiple Calls': (t) => "__${t}__",
                'Inverted Section': (txt) => false
                
 };
