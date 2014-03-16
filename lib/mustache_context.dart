@@ -1,4 +1,7 @@
-part of mustache4dart;
+library mustache_context;
+
+import 'dart:collection';
+import 'dart:mirrors';
 
 class MustacheContext {
   static const String DOT = '\.';

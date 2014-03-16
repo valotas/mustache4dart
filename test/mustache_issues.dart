@@ -2,6 +2,7 @@ library mustache_issues;
 
 import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
+import 'package:mustache4dart/mustache_context.dart';
 
 void main() {
   group('mustache4dart issues', () {    

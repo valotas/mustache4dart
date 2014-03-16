@@ -1,7 +1,7 @@
 library mustache_context_tests;
 
 import 'package:unittest/unittest.dart';
-import 'package:mustache4dart/mustache4dart.dart';
+import 'package:mustache4dart/mustache_context.dart';
 
 void main() {
   group ('Mustache contexts', () {
