@@ -1,5 +1,7 @@
 library mustache_issues;
 
+import 'dart:io';
+import 'dart:convert';
 import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
@@ -31,6 +33,11 @@ void main() {
       
       //Here lies a problem if the subaa.other == suba 
       expect(ctx['a']['a'].toString(), isNotNull);
+    });
+    test('#20', () {
+      var template = new File('test/lorem-ipsum.txt').readAsStringSync(encoding: UTF8);
+      String out = render(template, {});
+      expect(out, template);
     });
   });
 }
