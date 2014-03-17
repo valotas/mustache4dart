@@ -89,7 +89,12 @@ class _Template {
     if (!(ctx is MustacheContext)) {
       ctx = new MustacheContext(ctx);
     }
-    list.head(ctx, out);
+
+    //Iterate the tokens and apply the context
+    Token token = list.head;
+    while (token != null) {
+      token = token(ctx, out);
+    }
   }
   
   String toString() {
