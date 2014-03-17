@@ -5,5 +5,5 @@ description: A mustache implementation for the Dart language
 homepage: https://github.com/valotas/mustache4dart
 environment: 
   sdk: '>=0.8.10+6 <2.0.0'
-dependencies:
+dev_dependencies:
   unittest: '>=0.9.0 < 0.10.0'
