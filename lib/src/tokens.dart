@@ -31,15 +31,13 @@ abstract class Token {
     }
   }
   
-  void call(MustacheContext context, StringSink out) {
+  Token call(MustacheContext context, StringSink out) {
     if (out == null) throw new Exception("Need an output to write the rendered result");
     var string = apply(context);
     if (rendable) {
       out.write(string);
     }
-    if (next != null) {
-      next(context, out);
-    }
+    return next;
   }
   
   StringBuffer apply(MustacheContext context);
