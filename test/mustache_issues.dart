@@ -35,8 +35,14 @@ void main() {
       expect(ctx['a']['a'].toString(), isNotNull);
     });
     test('#20', () {
-      var template = new File('test/lorem-ipsum.txt').readAsStringSync(encoding: UTF8);
-      String out = render(template, {});
+      var currentPath = Directory.current.path;
+      if (!currentPath.endsWith('/test')) {
+        currentPath = "$currentPath/test";
+      }
+      var template = new File("$currentPath/lorem-ipsum.txt")
+        .readAsStringSync(encoding: UTF8);
+      
+      String out = render(template, {'ma': 'ma'});
       expect(out, template);
     });
   });
