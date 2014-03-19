@@ -33,12 +33,16 @@ class MustacheContext {
     //if the result is null, try the parent context
     if (result == null && _parent != null) {
       result = _parent[key];
-      if (result != null && result is MustacheContext && !identical(result, this)) {
-        result._parent = this;
+      
+      //set the parent of the result
+      if (result != null && !identical(result, this)) {
+        result.parent = this;
       }
     }
     return result;
   }
+  
+  set parent(MustacheContext ctx) => this._parent = ctx;
   
   _get(String key) {
     if (key == DOT) {
