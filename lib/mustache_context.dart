@@ -165,7 +165,6 @@ class _ObjectReflector {
   
   static DeclarationMirror _findMemberMirror(InstanceMirror m, String declarationName) {
     var declarations = m.type.declarations;
-    //members.forEach( (s, v) => print("${s} - ${v}"));
     var declarationMirror = declarations[new Symbol(declarationName)];
     if (declarationMirror == null) {
       //try out a getter:
