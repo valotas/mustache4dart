@@ -200,13 +200,10 @@ class _ObjectReflectorDeclaration {
     
     //Now we try to find out a field or a getter named after the given name
     var im = null;
-    if (declaration is VariableMirror) {
+    if (isVariableOrGetter) {
       im = mirror.getField(declaration.simpleName);
     }
-    else if (declaration is MethodMirror && (declaration as MethodMirror).isGetter) {
-      im = mirror.getField(declaration.simpleName);
-    }
-    else if (declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 0) {
+    else if (isParameterlessMethod) {
       im = mirror.invoke(declaration.simpleName, []);
     }
     if (im != null && im is InstanceMirror) {
@@ -214,4 +211,8 @@ class _ObjectReflectorDeclaration {
     }
     return null;
   }
+  
+  bool get isVariableOrGetter => (declaration is VariableMirror) || (declaration is MethodMirror && (declaration as MethodMirror).isGetter);
+  
+  bool get isParameterlessMethod => declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 0;
 }
