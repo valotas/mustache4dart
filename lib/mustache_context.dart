@@ -143,32 +143,23 @@ class _ObjectReflector {
   }
   
   operator [](String key) {
-    var declarationMirror = _findMemberMirror(m, key);
+    var declaration = getDeclaration(key);
     
+    if (declaration == null) {
+      return null;
+    }
+    
+    return declaration.value;
+  }
+  
+  _ObjectReflectorDeclaration getDeclaration (String key) {
+    var declarationMirror = _findMemberMirror(m, key);
+        
     if (declarationMirror == null) {
       return null;
     }
     
-    if (declarationMirror is MethodMirror && declarationMirror.parameters.length == 1) {
-      //this is the case of a lambda value
-      return _toFuncion(m, declarationMirror.simpleName); 
-    }
-    
-    //Now we try to find out a field or a getter named after the given name
-    var im = null;
-    if (declarationMirror is VariableMirror) {
-      im = m.getField(declarationMirror.simpleName);
-    }
-    else if (declarationMirror is MethodMirror && declarationMirror.isGetter) {
-      im = m.getField(declarationMirror.simpleName);
-    }
-    else if (declarationMirror is MethodMirror && declarationMirror.parameters.length == 0) {
-      im = m.invoke(declarationMirror.simpleName, []);
-    }
-    if (im != null && im is InstanceMirror) {
-      return im.reflectee;
-    }
-    return null;
+    return new _ObjectReflectorDeclaration(m, declarationMirror);
   }
   
   static DeclarationMirror _findMemberMirror(InstanceMirror m, String declarationName) {
@@ -181,17 +172,46 @@ class _ObjectReflector {
     }
     return declarationMirror;
   }
+}
+
+class _ObjectReflectorDeclaration {
+  final InstanceMirror mirror;
+  final DeclarationMirror declaration;
   
-  static Function _toFuncion(InstanceMirror mirror, Symbol method) {
-    return (val) {
-      var im = mirror.invoke(method, [val]);
-      if (im is InstanceMirror) {
-        var r = im.reflectee;
-        return r;
-      }
-      else {
-        return null;
-      }
-    };
+  _ObjectReflectorDeclaration(this.mirror, this.declaration);
+  
+  bool get isLambda => declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 1;
+  
+  Function get lambda => (val) {
+    var im = mirror.invoke(declaration.simpleName, [val]);
+    if (im is InstanceMirror) {
+      var r = im.reflectee;
+      return r;
+     }
+     else {
+      return null;
+     }
+  };
+  
+  get value {
+    if (isLambda) {
+      return lambda;
+    }
+    
+    //Now we try to find out a field or a getter named after the given name
+    var im = null;
+    if (declaration is VariableMirror) {
+      im = mirror.getField(declaration.simpleName);
+    }
+    else if (declaration is MethodMirror && (declaration as MethodMirror).isGetter) {
+      im = mirror.getField(declaration.simpleName);
+    }
+    else if (declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 0) {
+      im = mirror.invoke(declaration.simpleName, []);
+    }
+    if (im != null && im is InstanceMirror) {
+      return im.reflectee;
+    }
+    return null;
   }
 }
