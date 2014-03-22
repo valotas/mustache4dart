@@ -7,6 +7,7 @@ class MustacheContext {
   static const String DOT = '\.';
   final Map cache = {}; 
   final ctx;
+  _ObjectReflector ctxReflector;
   MustacheContext _parent;
 
   MustacheContext(this.ctx, [MustacheContext this._parent]);
@@ -84,8 +85,15 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      return new _ObjectReflector(ctx).get(key);
+      return _ctxReflector[key];
     } 
+  }
+  
+  get _ctxReflector {
+    if (ctxReflector == null) {
+      ctxReflector = new _ObjectReflector(ctx);
+    }
+    return ctxReflector;
   }
     
   String toString() => "MustacheContext($ctx, $_parent)";
@@ -134,7 +142,7 @@ class _ObjectReflector {
     return new _ObjectReflector.fromMirror(reflect(o));
   }
   
-  get(String key) {
+  operator [](String key) {
     var declarationMirror = _findMemberMirror(m, key);
     
     if (declarationMirror == null) {
