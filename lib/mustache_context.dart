@@ -136,14 +136,14 @@ class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
 class _ObjectReflector {
   final InstanceMirror m;
   
-  _ObjectReflector.fromMirror(this.m);
-  
   factory _ObjectReflector(o) {
-    return new _ObjectReflector.fromMirror(reflect(o));
+    return new _ObjectReflector._(reflect(o));
   }
   
+  _ObjectReflector._(this.m);
+  
   operator [](String key) {
-    var declaration = getDeclaration(key);
+    var declaration = new _ObjectReflectorDeclaration(m, key);
     
     if (declaration == null) {
       return null;
@@ -151,18 +151,13 @@ class _ObjectReflector {
     
     return declaration.value;
   }
+}
+
+class _ObjectReflectorDeclaration {
+  final InstanceMirror mirror;
+  final DeclarationMirror declaration;
   
-  _ObjectReflectorDeclaration getDeclaration (String key) {
-    var declarationMirror = _findMemberMirror(m, key);
-        
-    if (declarationMirror == null) {
-      return null;
-    }
-    
-    return new _ObjectReflectorDeclaration(m, declarationMirror);
-  }
-  
-  static DeclarationMirror _findMemberMirror(InstanceMirror m, String declarationName) {
+  factory _ObjectReflectorDeclaration(InstanceMirror m, String declarationName) {
     var declarations = m.type.declarations;
     var declarationMirror = declarations[new Symbol(declarationName)];
     if (declarationMirror == null) {
@@ -170,15 +165,10 @@ class _ObjectReflector {
       declarationName = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
       declarationMirror = declarations[new Symbol(declarationName)];
     }
-    return declarationMirror;
+    return declarationMirror == null ? null : new _ObjectReflectorDeclaration._(m, declarationMirror);
   }
-}
-
-class _ObjectReflectorDeclaration {
-  final InstanceMirror mirror;
-  final DeclarationMirror declaration;
   
-  _ObjectReflectorDeclaration(this.mirror, this.declaration);
+  _ObjectReflectorDeclaration._(this.mirror, this.declaration);
   
   bool get isLambda => declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 1;
   
