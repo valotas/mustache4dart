@@ -7,9 +7,10 @@ import 'dart:mirrors';
 
 class MustacheContext {
   static const String DOT = '\.';
+  static var USE_MIRRORS_DEFAULT = true;
   final Map cache = {}; 
   final ctx;
-  bool useMirrors = true;
+  bool useMirrors = USE_MIRRORS_DEFAULT;
   _ObjectReflector ctxReflector;
   MustacheContext _parent;
 

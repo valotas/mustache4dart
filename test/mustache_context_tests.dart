@@ -120,9 +120,13 @@ void main() {
   
   group('Mirrorless mustache_context lib', () {
     
-    test('should be disabled by default', () {
+    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT', () {
       var ctx = new MustacheContext({'key1': 'value1'});
-      expect(ctx.useMirrors, true);
+      expect(ctx.useMirrors, MustacheContext.USE_MIRRORS_DEFAULT);
+    });
+    
+    test('should be disabled by default', () {
+      expect(MustacheContext.USE_MIRRORS_DEFAULT, true);
     });
     
     test('should return the result of the [] operator', () {
