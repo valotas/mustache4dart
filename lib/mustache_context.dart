@@ -7,6 +7,7 @@ class MustacheContext {
   static const String DOT = '\.';
   final Map cache = {}; 
   final ctx;
+  bool useMirrors = true;
   _ObjectReflector ctxReflector;
   MustacheContext _parent;
 
@@ -85,7 +86,7 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      return _ctxReflector[key];
+      return useMirrors ? _ctxReflector[key] : null;
     } 
   }
   

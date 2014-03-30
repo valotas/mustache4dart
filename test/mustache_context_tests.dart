@@ -4,7 +4,7 @@ import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
 void main() {
-  group ('Mustache contexts', () {
+  group ('mustache_context lib', () {
     test('Simple context with map', () {
       var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
       expect(ctx['k1'](), 'value1');
@@ -115,6 +115,27 @@ void main() {
       expect(ctx['n1']['.'](), '1');
       expect(ctx['n2']['.'](), '2.0'); 
       expect(ctx['s']['.'](), 'some string'); 
+    });
+  });
+  
+  group('Mirrorless mustache_context lib', () {
+    
+    test('should be disabled by default', () {
+      var ctx = new MustacheContext({'key1': 'value1'});
+      expect(ctx.useMirrors, true);
+    });
+    
+    test('should return the result of the [] operator', () {
+      var ctx = new MustacheContext({'key1': 'value1'});
+      ctx.useMirrors = false;
+      expect(ctx['key1'](), 'value1');
+    });
+    
+    test('should not be able to analyze classes with reflectioon', () {
+      var contactInfo = new _ContactInfo('type', 'value');
+      var ctx = new MustacheContext(contactInfo, null);
+      ctx.useMirrors = false;
+      expect(ctx['type'], isNull);
     });
   });
 }
