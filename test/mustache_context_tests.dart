@@ -141,6 +141,8 @@ void main() {
       ctx.useMirrors = false;
       expect(ctx['type'], isNull);
     });
+    
+    //TODO: add check for lambda returned from within a map
   });
 }
 
