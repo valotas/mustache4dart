@@ -32,8 +32,10 @@ if you give the template `{{firstname}}` for rendering, mustache4dart will try t
 
 in each case the first valid value will be used.
 
-As a sidenote, you will get the best performance if you provide a proper implementation of
-the `[]` operator.
+#### @MirrorsUsed
+In order to do the stuff described above the mirror library is being used which could lead to big js files when compiling the library with dartjs. The implementation does use the `@MirrorsUsed` annotation but [as documented](https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed) this is experimental.
+
+In order to avoid the use of the mirrors package the `doNotUseMirrors` top level function is exposed. In that case you must make sure that your context objects implement the `[]` operator.
 
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a partial. You can
