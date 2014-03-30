@@ -5,12 +5,13 @@ import 'dart:collection';
 @MirrorsUsed(symbols: '*')
 import 'dart:mirrors';
 
+const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
+
 class MustacheContext {
   static const String DOT = '\.';
-  static var USE_MIRRORS_DEFAULT = true;
   final Map cache = {}; 
   final ctx;
-  bool useMirrors = USE_MIRRORS_DEFAULT;
+  bool useMirrors = USE_MIRRORS;
   _ObjectReflector ctxReflector;
   MustacheContext _parent;
 
