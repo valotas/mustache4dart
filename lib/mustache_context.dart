@@ -1,12 +1,16 @@
 library mustache_context;
 
 import 'dart:collection';
+
+@MirrorsUsed(symbols: '*')
 import 'dart:mirrors';
 
 class MustacheContext {
   static const String DOT = '\.';
+  static var USE_MIRRORS_DEFAULT = true;
   final Map cache = {}; 
   final ctx;
+  bool useMirrors = USE_MIRRORS_DEFAULT;
   _ObjectReflector ctxReflector;
   MustacheContext _parent;
 
@@ -85,7 +89,7 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      return _ctxReflector[key];
+      return useMirrors ? _ctxReflector[key] : null;
     } 
   }
   
