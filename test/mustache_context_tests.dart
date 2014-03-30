@@ -122,11 +122,11 @@ void main() {
     
     test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT', () {
       var ctx = new MustacheContext({'key1': 'value1'});
-      expect(ctx.useMirrors, MustacheContext.USE_MIRRORS_DEFAULT);
+      expect(ctx.useMirrors, USE_MIRRORS);
     });
     
     test('should be disabled by default', () {
-      expect(MustacheContext.USE_MIRRORS_DEFAULT, true);
+      expect(USE_MIRRORS, true);
     });
     
     test('should return the result of the [] operator', () {
