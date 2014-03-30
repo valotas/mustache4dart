@@ -1,6 +1,8 @@
 library mustache_context;
 
 import 'dart:collection';
+
+@MirrorsUsed(symbols: '*')
 import 'dart:mirrors';
 
 class MustacheContext {
