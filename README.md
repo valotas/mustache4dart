@@ -35,7 +35,7 @@ in each case the first valid value will be used.
 #### @MirrorsUsed
 In order to do the stuff described above the mirror library is being used which could lead to big js files when compiling the library with dartjs. The implementation does use the `@MirrorsUsed` annotation but [as documented](https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed) this is experimental.
 
-In order to avoid the use of the mirrors package the `doNotUseMirrors` top level function is exposed. In that case you must make sure that your context objects implement the `[]` operator.
+In order to avoid the use of the mirrors package the make sure that you compile your library with `dart2js -DMIRRORS=false `
 
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a partial. You can
