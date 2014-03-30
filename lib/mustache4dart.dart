@@ -11,3 +11,5 @@ const EMPTY_STRING = '';
 const SPACE = ' ';
 const NL = '\n';
 const CRNL = '\r\n';
+
+doNotUseMirrors () => MustacheContext.USE_MIRRORS_DEFAULT = false;  
