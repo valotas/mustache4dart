@@ -10,7 +10,7 @@ Using it
 In order to use the library, just add it to your pubspec.yalm as a dependency
 
 	dependencies:
-	  mustache4dart: any
+	  mustache4dart: '>= 1.0.0'
 
 and you are good to go. You can use the render toplevel function to render your template.
 For example:
@@ -74,12 +74,10 @@ Contributing
 If you found a bug, just create a [new issue][new_issue] or even better fork and issue a
 pull request with you fix.
 
-	
+
 Versioning
 ----------
-The library will follow a [semantic versioning][semver] and until a final release of the language will be 
-followed by the latest dart language it has been tested against. For example 0.0.7+0.4.1.0 means that
-the libraries version is 0.0.7 and has been tested against dart version 0.4.1.0
+The library will follow a [semantic versioning][semver]
 
 [mustache]: http://mustache.github.com/
 [dartlang]: http://www.dartlang.org/
