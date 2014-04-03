@@ -90,7 +90,9 @@ class MustacheContext {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
-      return useMirrors ? _ctxReflector[key] : null;
+      //Try to make dart2js understand that when we define USE_MIRRORS = false
+      //we do not want to use any reflector
+      return (useMirrors && USE_MIRRORS) ? _ctxReflector[key] : null;
     } 
   }
   
