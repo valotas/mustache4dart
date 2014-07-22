@@ -10,7 +10,7 @@ DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 # canonicalization.
 pushd $DIR/..
 #echo Analyzing library for warnings or type errors
-dartanalyzer --fatal-warnings --fatal-type-errors lib/*.dart \
+dartanalyzer --fatal-warnings lib/*.dart \
   || echo -e "Ignoring analyzer errors"
 #pd
 dart --enable-type-checks --enable-asserts test/run_all.dart $@
