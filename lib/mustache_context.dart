@@ -55,10 +55,10 @@ class MustacheContext {
       return this;
     }
     if (key.contains(DOT)) {
-      Iterator<String> k = key.split(DOT).iterator;
+      Iterator<String> i = key.split(DOT).iterator;
       var val = this;
-      while(k.moveNext()) {
-        val = val._getValidValueOrContext(k.current);
+      while(i.moveNext()) {
+        val = val._getValidValueOrContext(i.current);
         if (val == null) {
           return null;
         }
