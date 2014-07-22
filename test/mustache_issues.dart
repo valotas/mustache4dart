@@ -45,5 +45,13 @@ void main() {
       String out = render(template, {'ma': 'ma'});
       expect(out, template);
     });
+
+    test('#25', () {
+      var ctx = {
+        "parent_name": "John",
+        "children": [{"name": "child"}] 
+      };
+      expect(render('{{#children}}Parent: {{parent_name}}{{/children}}', ctx), 'Parent: John');
+    });
   });
 }
