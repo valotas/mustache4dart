@@ -127,7 +127,7 @@ class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
   
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new MustacheContext(delegate.current, other);
+      current = new MustacheContext(delegate.current);
       return true;
     } else {
       current = null;

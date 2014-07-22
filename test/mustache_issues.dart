@@ -46,7 +46,7 @@ void main() {
       expect(out, template);
     });
 
-    test('#25', () {
+    skip_test('#25', () {
       var ctx = {
         "parent_name": "John",
         "children": [{"name": "child"}] 
