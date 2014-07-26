@@ -15,7 +15,7 @@ class MustacheContext {
   _ObjectReflector ctxReflector;
 
   MustacheContext(this.ctx, [MustacheContext this.parent]);
-  
+
   bool get isLambda => ctx is Function;
 
   call([arg]) => isLambda ? ctx(arg) : ctx.toString();
@@ -27,7 +27,6 @@ class MustacheContext {
   
   _getInThisOrParent(String key) {
     var result = _get(key);
-    
     //if the result is null, try the parent context
     if (result == null && parent != null) {
       result = parent[key];
@@ -37,7 +36,7 @@ class MustacheContext {
     }
     return result;
   }
-  
+
   _get(String key) {
     if (key == DOT) {
       return this;
@@ -67,9 +66,6 @@ class MustacheContext {
       return null;
     }
     if (v is Iterable) {
-      if (v.isEmpty) {
-        return null;
-      }
       return new _IterableMustacheContextDecorator(v, this);
     }
     if (v == false) {
@@ -100,28 +96,30 @@ class MustacheContext {
 
 class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
   final Iterable ctx;
-  MustacheContext parent;
+  final MustacheContext parent;
   
   _IterableMustacheContextDecorator(this.ctx, this.parent);
   
-  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, this);
+  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, parent);
   
   int get length => ctx.length;
+  
+  bool get isEmpty => ctx.isEmpty;
 }
 
 
 
 class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
   final Iterator delegate;
-  final _IterableMustacheContextDecorator _parentProvider;
+  final MustacheContext parent;
   
   MustacheContext current;
   
-  _MustachContextIteratorDecorator(this.delegate, this._parentProvider);
+  _MustachContextIteratorDecorator(this.delegate, this.parent);
   
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new MustacheContext(delegate.current, _parentProvider.parent);
+      current = new MustacheContext(delegate.current, parent);
       return true;
     } else {
       current = null;
