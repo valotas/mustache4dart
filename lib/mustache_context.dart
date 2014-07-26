@@ -8,14 +8,13 @@ import 'dart:mirrors';
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
 class MustacheContext {
-  static const String DOT = '\.';
-  final Map cache = {}; 
+  static const String DOT = '\.'; 
   final ctx;
+  final MustacheContext parent;
   bool useMirrors = USE_MIRRORS;
   _ObjectReflector ctxReflector;
-  MustacheContext _parent;
 
-  MustacheContext(this.ctx, [MustacheContext this._parent]);
+  MustacheContext(this.ctx, [MustacheContext this.parent]);
   
   bool get isLambda => ctx is Function;
 
@@ -23,32 +22,21 @@ class MustacheContext {
 
   operator [](String key) {
     if (ctx == null) return null;
-    var result = cache[key];
-    if (result == null) {
-      result = _getInThisOrParent(key);
-      if (result != null) {
-        cache[key] = result;
-      }
-    }
-    return result;
+    return _getInThisOrParent(key);
   }
   
   _getInThisOrParent(String key) {
     var result = _get(key);
     
     //if the result is null, try the parent context
-    if (result == null && _parent != null) {
-      result = _parent[key];
-      
-      //set the parent of the result
-      if (result != null && !identical(result, this)) {
-        result.parent = this;
+    if (result == null && parent != null) {
+      result = parent[key];
+      if (result != null) {
+        return _newMustachContextOrNull(result.ctx);        
       }
     }
     return result;
   }
-  
-  set parent(MustacheContext ctx) => this._parent = ctx;
   
   _get(String key) {
     if (key == DOT) {
@@ -71,6 +59,10 @@ class MustacheContext {
   
   _getValidValueOrContext(String key) {
     var v = _getValue(key);
+    return _newMustachContextOrNull(v);
+  }
+  
+  _newMustachContextOrNull(v) {
     if (v == null) {
       return null;
     }
@@ -103,31 +95,33 @@ class MustacheContext {
     return ctxReflector;
   }
     
-  String toString() => "MustacheContext($ctx, $_parent)";
+  String toString() => "MustacheContext($ctx, $parent)";
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
-  final Iterable delegate;
-  final MustacheContext other;
+  final Iterable ctx;
+  MustacheContext parent;
   
-  _IterableMustacheContextDecorator(this.delegate, this.other);
+  _IterableMustacheContextDecorator(this.ctx, this.parent);
   
-  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(delegate.iterator, other);
+  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, this);
   
-  int get length => delegate.length;
-  
+  int get length => ctx.length;
 }
+
+
 
 class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
   final Iterator delegate;
-  final MustacheContext other;
+  final _IterableMustacheContextDecorator _parentProvider;
+  
   MustacheContext current;
   
-  _MustachContextIteratorDecorator(this.delegate, this.other);
+  _MustachContextIteratorDecorator(this.delegate, this._parentProvider);
   
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new MustacheContext(delegate.current);
+      current = new MustacheContext(delegate.current, _parentProvider.parent);
       return true;
     } else {
       current = null;
