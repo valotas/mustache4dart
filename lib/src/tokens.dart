@@ -311,7 +311,8 @@ class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
   
   apply(MustacheContext ctx) {
-    if (ctx[value] == null) {
+    var val = ctx[value];
+    if (ctx[value] == null || val is Iterable && val.isEmpty) {
       StringBuffer buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
         var val2 = t.apply(ctx);
