@@ -68,8 +68,6 @@ bool shouldRun(String filename) {
 
 //Until we'll find a way to load a piece of code dynamically,
 //we provide the lambdas at the test here
-var callCounter = 1;
-
 class _DummyCallableWithState {
   var _callCounter = 0;
   
