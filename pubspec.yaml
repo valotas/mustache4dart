@@ -1,9 +1,9 @@
 name: mustache4dart
-version: 1.0.4
+version: 1.0.5
 author: Georgios Valotasios <valotas@gmail.com>
 description: A mustache implementation for the Dart language
 homepage: https://github.com/valotas/mustache4dart
-environment: 
+environment:
   sdk: '>=0.8.10+6 <2.0.0'
 dev_dependencies:
-  unittest: '>=0.9.0 < 0.10.0'
+  unittest: '>=0.9.0 <0.10.0'
