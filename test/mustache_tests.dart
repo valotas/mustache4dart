@@ -4,6 +4,10 @@ import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
+  defineTests();
+}
+
+void defineTests() {
   group('mustache4dart tests', () {    
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
     var salut = compile(salutTemplate);
