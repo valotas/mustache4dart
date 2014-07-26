@@ -4,11 +4,11 @@ packages:
   path:
     description: path
     source: hosted
-    version: "1.0.0"
+    version: "1.2.2"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.9.2"
+    version: "0.9.3+2"
   unittest:
     description: unittest
     source: hosted
