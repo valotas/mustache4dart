@@ -109,6 +109,18 @@ void main() {
       expect(ctx['a']['b']['c']['two'](), '2', reason: "a.b.c.two == b.two when using $map");
       expect(ctx['a']['b']['c']['three'](), '3');
     });
+    
+    test('Recursion of iterable contextes', () {
+      var contextY = {'content': 'Y', 'nodes': []};
+      var contextX = {'content': 'X', 'nodes': [contextY]};
+      var ctx = new MustacheContext(contextX);
+      expect(ctx['nodes'], isNotNull);
+      expect(ctx['nodes'].length, 1);
+      ctx['nodes'].forEach((n) {
+        expect(n['content'](), 'Y');
+        expect(n['nodes'].length, 0);
+      });
+    });
 
     test('Direct interpolation', () {
       var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
