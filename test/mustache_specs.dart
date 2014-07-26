@@ -6,7 +6,6 @@ import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 main() {
-  print("Running mustache specs");
   var specs_dir = new Directory('spec/specs');
   specs_dir
     .listSync()
