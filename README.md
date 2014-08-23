@@ -10,7 +10,13 @@ Using it
 In order to use the library, just add it to your pubspec.yalm as a dependency
 
 	dependencies:
-	  mustache4dart: '>= 1.0.0'
+	  mustache4dart: '>= 1.0.0 < 2.0.0'
+
+and then import the package
+
+```dart
+import 'package:mustache4dart/mustache4dart.dart';
+```
 
 and you are good to go. You can use the render toplevel function to render your template.
 For example:
