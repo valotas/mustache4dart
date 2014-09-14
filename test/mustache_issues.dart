@@ -57,5 +57,18 @@ defineTests() {
       };
       expect(render('{{#children}}Parent: {{parent_name}}{{/children}}', ctx), 'Parent: John');
     });
+    
+    test('#28', () {
+      var model = {
+        "name": "God",
+        "hasChildren": true,
+        "children": [
+          { "name": "granpa", "hasChildren": true},
+          { "name": "granma", "hasChildern": false}
+        ]
+      };
+      
+      expect(render('{{#children}}{{name}} {{#hasChildren}}has children{{/hasChildren}},{{/children}}', model), 'granpa has children,granma,');
+    });
   });
 }
