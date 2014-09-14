@@ -64,11 +64,11 @@ defineTests() {
         "hasChildren": true,
         "children": [
           { "name": "granpa", "hasChildren": true},
-          { "name": "granma", "hasChildern": false}
+          { "name": "granma", "hasChildren": false}
         ]
       };
       
-      expect(render('{{#children}}{{name}} {{#hasChildren}}has children{{/hasChildren}},{{/children}}', model), 'granpa has children,granma,');
+      expect(render('{{#children}}{{name}}{{#hasChildren}} has children{{/hasChildren}},{{/children}}', model), 'granpa has children,granma,');
     });
   });
 }
