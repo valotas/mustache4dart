@@ -8,7 +8,8 @@ import 'dart:mirrors';
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
 class MustacheContext {
-  static const String DOT = '\.'; 
+  static const String DOT = '\.';
+  static final FALSEY_CONTEXT = new MustacheContext(false);
   final ctx;
   final MustacheContext parent;
   bool useMirrors = USE_MIRRORS;
@@ -17,6 +18,8 @@ class MustacheContext {
   MustacheContext(this.ctx, [MustacheContext this.parent]);
 
   bool get isLambda => ctx is Function;
+  
+  bool get isFalsey => ctx == null || ctx == false;
 
   call([arg]) => isLambda ? ctx(arg) : ctx.toString();
 
@@ -69,7 +72,7 @@ class MustacheContext {
       return new _IterableMustacheContextDecorator(v, this);
     }
     if (v == false) {
-      return null;
+      return FALSEY_CONTEXT;
     }
     return new MustacheContext(v, this);
   }
@@ -105,6 +108,8 @@ class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
   int get length => ctx.length;
   
   bool get isEmpty => ctx.isEmpty;
+  
+  bool get isFalsey => isEmpty;
 }
 
 
