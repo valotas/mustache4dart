@@ -13,7 +13,7 @@ class MustacheContext {
   final ctx;
   final MustacheContext parent;
   bool useMirrors = USE_MIRRORS;
-  _ObjectReflector ctxReflector;
+  _ObjectReflector _ctxReflector;
 
   MustacheContext(this.ctx, [MustacheContext this.parent]);
 
@@ -29,7 +29,7 @@ class MustacheContext {
   }
   
   _getInThisOrParent(String key) {
-    var result = _get(key);
+    var result = _getContextForKey(key);
     //if the result is null, try the parent context
     if (result == null && parent != null) {
       result = parent[key];
@@ -40,7 +40,7 @@ class MustacheContext {
     return result;
   }
 
-  _get(String key) {
+  _getContextForKey(String key) {
     if (key == DOT) {
       return this;
     }
@@ -48,7 +48,7 @@ class MustacheContext {
       Iterator<String> i = key.split(DOT).iterator;
       var val = this;
       while(i.moveNext()) {
-        val = val._getValidValueOrContext(i.current);
+        val = val._getMustachContext(i.current);
         if (val == null) {
           return null;
         }
@@ -56,11 +56,11 @@ class MustacheContext {
       return val;
     }
     //else
-    return _getValidValueOrContext(key);
+    return _getMustachContext(key);
   }
   
-  _getValidValueOrContext(String key) {
-    var v = _getValue(key);
+  _getMustachContext(String key) {
+    var v = _getActualValue(key);
     return _newMustachContextOrNull(v);
   }
   
@@ -77,21 +77,21 @@ class MustacheContext {
     return new MustacheContext(v, this);
   }
   
-  _getValue(String key) {
+  _getActualValue(String key) {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
       //Try to make dart2js understand that when we define USE_MIRRORS = false
       //we do not want to use any reflector
-      return (useMirrors && USE_MIRRORS) ? _ctxReflector[key] : null;
+      return (useMirrors && USE_MIRRORS) ? ctxReflector[key] : null;
     } 
   }
   
-  get _ctxReflector {
-    if (ctxReflector == null) {
-      ctxReflector = new _ObjectReflector(ctx);
+  get ctxReflector {
+    if (_ctxReflector == null) {
+      _ctxReflector = new _ObjectReflector(ctx);
     }
-    return ctxReflector;
+    return _ctxReflector;
   }
     
   String toString() => "MustacheContext($ctx, $parent)";
