@@ -136,7 +136,6 @@ void defineTests() {
       test('Direct list interpolation',  () {
         var list = [1, 'two', 'three', '4'];
         var ctx = new MustacheContext(list);
-        expect(ctx['.'](), list.toString());
         expect(ctx['.'] is Iterable, isTrue);
       });
     });
