@@ -107,7 +107,7 @@ class _TokenList {
   Token head;
   Token tail;
   Delimiter _nextDelimiter;
-  Line line;
+  Line line = new Line(null);
   final List<_StartSectionToken> startingTokens = [];
   
   _TokenList(Delimiter delimiter, String ident) {
@@ -164,9 +164,6 @@ class _TokenList {
   }
 
   void _addToLine(Token t, [bool last]) {
-    if (line == null) {
-      line = new Line(null);
-    }
     line = line.add(t, last);
   }
     
