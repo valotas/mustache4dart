@@ -37,7 +37,8 @@ void defineTests() {
         var ctx = new MustacheContext({'k': [{'k1': 'item1'}, 
                                              {'k3': [{'kk1' : 'subitem1'}, {'kk2': 'subitem2'}]}]});
         expect(ctx['k'].length, 2);
-        expect(ctx['k'].last['k3'].length, 2);
+        expect(ctx['k'] is Iterable, isTrue);
+        expect((ctx['k'] as Iterable).last['k3'].length, 2);
       });
       
       test('Object with iterables', () {
@@ -50,8 +51,11 @@ void defineTests() {
         }));
         p.contactInfos.add(new _ContactInfo('skype', 'some1'));
         var ctx = new MustacheContext(p);
-        expect(ctx['contactInfos'].length, 2);
-        expect(ctx['contactInfos'].first['value']['Num'](), '31');
+        var contactInfos = ctx['contactInfos'];
+        expect(contactInfos.length, 2);
+        expect(contactInfos is Iterable, isTrue);
+        var iterableContactInfos = contactInfos as Iterable;
+        expect(iterableContactInfos.first['value']['Num'](), '31');
       });
       
       test('Deep search with object', () {
@@ -120,7 +124,8 @@ void defineTests() {
         var ctx = new MustacheContext(contextX);
         expect(ctx['nodes'], isNotNull);
         expect(ctx['nodes'].length, 1);
-        ctx['nodes'].forEach((n) {
+        expect(ctx['nodes'] is Iterable, isTrue);
+        (ctx['nodes'] as Iterable).forEach((n) {
           expect(n['content'](), 'Y');
           expect(n['nodes'].length, 0);
         });
