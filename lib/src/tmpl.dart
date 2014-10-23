@@ -165,11 +165,9 @@ class _TokenList {
 
   void _addToLine(Token t, [bool last]) {
     if (line == null) {
-      line = new Line(t);
+      line = new Line(null);
     }
-    else {
-      line = line.add(t, last);
-    }
+    line = line.add(t, last);
   }
     
   Delimiter get nextDelimiter => _nextDelimiter;
