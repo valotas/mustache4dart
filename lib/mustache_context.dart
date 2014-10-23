@@ -6,16 +6,32 @@ import 'dart:collection';
 import 'dart:mirrors';
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
+const String DOT = '\.';
 
-class MustacheContext {
-  static const String DOT = '\.';
-  static final FALSEY_CONTEXT = new MustacheContext(false);
+abstract class MustacheContext {
+  
+  factory MustacheContext(ctx, [MustacheContext parent]) {
+    if (ctx is Iterable) {
+      return new _IterableMustacheContextDecorator(ctx, parent);
+    }
+    return new _MustacheContext(ctx, parent);
+  }
+  
+  call([arg]);
+
+  bool get isFalsey;
+  bool get isLambda;
+  MustacheContext operator [](String key);
+}
+
+class _MustacheContext implements MustacheContext {
+  static final FALSEY_CONTEXT = new _MustacheContext(false);
   final ctx;
-  final MustacheContext parent;
+  final _MustacheContext parent;
   bool useMirrors = USE_MIRRORS;
   _ObjectReflector _ctxReflector;
 
-  MustacheContext(this.ctx, [MustacheContext this.parent]);
+  _MustacheContext(this.ctx, [_MustacheContext this.parent]);
 
   bool get isLambda => ctx is Function;
   
@@ -74,7 +90,7 @@ class MustacheContext {
     if (v == false) {
       return FALSEY_CONTEXT;
     }
-    return new MustacheContext(v, this);
+    return new _MustacheContext(v, this);
   }
   
   _getActualValue(String key) {
@@ -97,34 +113,45 @@ class MustacheContext {
   String toString() => "MustacheContext($ctx, $parent)";
 }
 
-class _IterableMustacheContextDecorator extends IterableBase<MustacheContext> {
+class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext> implements MustacheContext {
   final Iterable ctx;
-  final MustacheContext parent;
+  final _MustacheContext parent;
   
   _IterableMustacheContextDecorator(this.ctx, this.parent);
   
-  Iterator<MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, parent);
+  call([arg]) => throw new Exception('Iterable can be called as a function');
+  
+  Iterator<_MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, parent);
   
   int get length => ctx.length;
   
   bool get isEmpty => ctx.isEmpty;
   
   bool get isFalsey => isEmpty;
+  
+  bool get isLambda => false;
+  
+  operator [](String key) {
+    if (key == DOT) {
+      return this;
+    }
+    throw new Exception('Iterable can only be iterated. No [] implementation is available');
+  }
 }
 
 
 
-class _MustachContextIteratorDecorator extends Iterator<MustacheContext> {
+class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
   final Iterator delegate;
-  final MustacheContext parent;
+  final _MustacheContext parent;
   
-  MustacheContext current;
+  _MustacheContext current;
   
   _MustachContextIteratorDecorator(this.delegate, this.parent);
   
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new MustacheContext(delegate.current, parent);
+      current = new _MustacheContext(delegate.current, parent);
       return true;
     } else {
       current = null;

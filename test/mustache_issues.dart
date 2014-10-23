@@ -70,5 +70,10 @@ defineTests() {
       
       expect(render('{{#children}}{{name}}{{#hasChildren}} has children{{/hasChildren}},{{/children}}', model), 'granpa has children,granma,');
     });
+    
+    test('#29', () {
+      var list = [1, 'two', 'three', '4'];
+      expect(render('{{#.}}{{.}},{{/.}}', list), '1,two,three,4,');
+    });
   });
 }
