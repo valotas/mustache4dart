@@ -132,6 +132,13 @@ void defineTests() {
         expect(ctx['n2']['.'](), '2.0'); 
         expect(ctx['s']['.'](), 'some string'); 
       });
+      
+      test('Direct list interpolation',  () {
+        var list = [1, 'two', 'three', '4'];
+        var ctx = new MustacheContext(list);
+        expect(ctx['.'](), list.toString());
+        expect(ctx['.'] is Iterable, isTrue);
+      });
     });
     
     group('Mirrorless mustache_context lib', () {
