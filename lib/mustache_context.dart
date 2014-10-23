@@ -16,6 +16,8 @@ abstract class MustacheContext {
     }
     return new _MustacheContext(ctx, parent);
   }
+  
+  call([arg]);
 
   bool get isFalsey;
   bool get isLambda;
@@ -116,6 +118,8 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext> i
   final _MustacheContext parent;
   
   _IterableMustacheContextDecorator(this.ctx, this.parent);
+  
+  call([arg]) => throw new Exception('Iterable can be called as a function');
   
   Iterator<_MustacheContext> get iterator => new _MustachContextIteratorDecorator(ctx.iterator, parent);
   
