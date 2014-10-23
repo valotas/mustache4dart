@@ -75,5 +75,16 @@ defineTests() {
       var list = [1, 'two', 'three', '4'];
       expect(render('{{#.}}{{.}},{{/.}}', list), '1,two,three,4,');
     });
+    
+    test('#30', () {
+      var txt = '''
+
+<div>
+  <h1>Hello World!</h1>
+</div>
+
+''';
+      expect(render(txt, null), txt);
+    });
   });
 }
