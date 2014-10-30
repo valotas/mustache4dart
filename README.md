@@ -7,7 +7,7 @@ just read further.
 
 Using it
 --------
-In order to use the library, just add it to your pubspec.yalm as a dependency
+In order to use the library, just add it to your `pubspec.yalm` as a dependency
 
 	dependencies:
 	  mustache4dart: '>= 1.0.0 < 2.0.0'
