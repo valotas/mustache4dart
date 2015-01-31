@@ -192,8 +192,8 @@ class _ObjectReflectorDeclaration {
     var methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
     if (methodMirror == null) {
       //try appending the word get to the name:
-      methodMirror = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
-      methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
+      var nameWithGet = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
+      methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
     }
     return methodMirror == null ? null : new _ObjectReflectorDeclaration._(m, methodMirror);
   }
