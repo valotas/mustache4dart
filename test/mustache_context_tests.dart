@@ -143,6 +143,25 @@ void defineTests() {
         var ctx = new MustacheContext(list);
         expect(ctx['.'] is Iterable, isTrue);
       });
+
+      group('rootContextString()', () {
+        test('should delegate to context toString()', () {
+          var map = {'Simple': 'Map'};
+          expect(new MustacheContext(map).rootContextString, map.toString());
+        });
+
+        test('should delegate to root context toString()', () {
+          var root = new _Person('George', 'George', new _Person('Nick', 'Nick'));
+          var ctx = new MustacheContext(root);
+          expect(ctx['parent'].rootContextString, root.toString());
+        });
+
+        test('should also work with iterrables', () {
+          var list = [{'Map': '1'},  {'Map': '2'}];
+          var ctx = new MustacheContext(list);
+          expect(ctx.rootContextString, list.toString());
+        });
+      });
     });
     
     group('Mirrorless mustache_context lib', () {

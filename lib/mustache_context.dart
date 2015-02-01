@@ -9,7 +9,7 @@ const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
 abstract class MustacheContext {
-  
+
   factory MustacheContext(ctx, [MustacheContext parent]) {
     if (ctx is Iterable) {
       return new _IterableMustacheContextDecorator(ctx, parent);
@@ -24,7 +24,14 @@ abstract class MustacheContext {
   MustacheContext operator [](String key);
 }
 
-class _MustacheContext implements MustacheContext {
+abstract class MustacheToString {
+  final ctx;
+  final MustacheContext parent;
+
+  String get rootContextString => parent == null ? ctx.toString() : parent.rootContextString;
+}
+
+class _MustacheContext extends MustacheToString implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
   final ctx;
   final _MustacheContext parent;
@@ -113,7 +120,7 @@ class _MustacheContext implements MustacheContext {
   String toString() => "MustacheContext($ctx, $parent)";
 }
 
-class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext> implements MustacheContext {
+class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext> with MustacheToString implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;
   
