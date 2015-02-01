@@ -13,4 +13,4 @@ pushd $DIR/..
 dartanalyzer --fatal-warnings lib/*.dart \
   || echo -e "Ignoring analyzer errors"
 #pd
-dart --enable-type-checks --enable-asserts test/run_all.dart $@
+dart --enable-type-checks --enable-asserts test/all_test.dart $@
