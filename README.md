@@ -61,25 +61,34 @@ var salut = compile('Hello {{name}}!');
 print(salut({'name': 'Alice'})); //should print Hello Alice!
 ``` 
 
-Running the tests
------------------
-At the moment the project is under heavy development but pass all the [Mustache specs][specs]. 
-If you want to run the tests yourself, just do what [drone.io does](https://drone.io/github.com/valotas/mustache4dart/admin),
-or to put it by another way, do the following:
+Developing
+----------
+The project passes all the [Mustache specs][specs].  You have to make sure though that you've downloaded them. Just make sure that you have done the steps described below.
 
 ```sh
 git clone git://github.com/valotas/mustache4dart.git
 git submodule init
-git submodule update 
+git submodule update
 pub install
+```
+
+
+If you want to run the tests yourself, just do what [drone.io does](https://drone.io/github.com/valotas/mustache4dart/admin),
+or to put it by another way, do the following:
+
+```sh
 test/run.sh
+```
+
+Alternatively, if you have [Dart Test Runner](https://pub.dartlang.org/packages/test_runner) installed you can just do
+
+```
+pub global run test_runner
 ```
 
 Contributing
 ------------
-If you found a bug, just create a [new issue][new_issue] or even better fork and issue a
-pull request with you fix.
-
+If you found a bug, just create a [new issue][new_issue] or even better fork and issue a pull request with you fix.
 
 Versioning
 ----------
