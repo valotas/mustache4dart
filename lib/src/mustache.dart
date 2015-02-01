@@ -1,7 +1,12 @@
 part of mustache4dart;
 
-render(String template, Object context, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING, StringSink out: null}) {
-  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context, out: out);
+render(String template, Object context, {
+    Function partial: null,
+    Delimiter delimiter: null,
+    String ident: EMPTY_STRING,
+    StringSink out: null,
+    bool errorOnMissingProperty: false}) {
+  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context, out: out, errorOnMissingProperty: errorOnMissingProperty);
 }
 
 compile(String template, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {

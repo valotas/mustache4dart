@@ -68,7 +68,7 @@ class _Template {
   
   _Template._internal(this.list);
     
-  call(ctx, {StringSink out: null}) {
+  call(ctx, {StringSink out: null, bool errorOnMissingProperty: false}) {
     StringSink o = out == null ? new StringBuffer() : out;
     _write(ctx, o);
     
