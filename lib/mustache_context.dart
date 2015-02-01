@@ -232,7 +232,8 @@ class _ObjectReflectorDeclaration {
     return null;
   }
   
-  bool get isVariableOrGetter => (declaration is VariableMirror) || (declaration is MethodMirror && (declaration as MethodMirror).isGetter);
+  //TODO check if we really need the declation is VariableMirror test
+  bool get isVariableOrGetter => (declaration is VariableMirror) || (declaration is MethodMirror && declaration.isGetter);
   
-  bool get isParameterlessMethod => declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 0;
+  bool get isParameterlessMethod => declaration is MethodMirror && declaration.parameters.length == 0;
 }
