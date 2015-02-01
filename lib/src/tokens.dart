@@ -157,9 +157,13 @@ class _ExpressionToken extends Token {
 
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
   
-  apply(MustacheContext ctx) {
+  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = ctx[value];
     if (val == null) {
+      //TODO define an exception for such cases
+      if (errorOnMissingProperty) {
+        throw "Could not find '$value' property in ${ctx.rootContextString}}";
+      }
       return EMPTY_STRING;
     }
     if (val.isLambda) {

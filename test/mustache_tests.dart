@@ -54,6 +54,16 @@ void defineTests() {
     
     test('Compiled templates should be at least 2 times faster', () => expect(d2 < (d/2), isTrue));
   });
+
+  group('mustache4dart enhancements', () {
+    test('Throw exception on unknown tag', () {
+      try {
+        render('Hi {{name}}', {'namee': 'George'});
+      } catch (e) {
+        expect(e, "Could not find 'name' property in {namee: George}}");
+      }
+    });
+  });
 }
 
 num duration(int reps, f()) {
