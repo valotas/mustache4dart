@@ -1,5 +1,5 @@
-Mustache for the dartlang [![Build Status](https://drone.io/github.com/valotas/mustache4dart/status.png)](https://drone.io/github.com/valotas/mustache4dart/latest)
-===================================================================================================================================================================
+Mustache for the dartlang [![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.8)](https://travis-ci.org/valotas/mustache4dart)
+=======================================================================================================================================================
 A simple implementation of [Mustache][mustache] for the [Dart language][dartlang],
 which passes happily all the [mustache specs][specs]. If you want to 
 have a look at how it works, just check the [tests][tests]. For more info, 
