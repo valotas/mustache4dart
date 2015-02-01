@@ -7,6 +7,7 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
 class A {
+  String getBar () => 'bar';
   String get foo => 'foo';
 }
 
@@ -98,6 +99,7 @@ defineTests() {
     test('#33', () {
       var b = new B();
       expect(render('{{b.foo}}', {'b': b}), 'foo');
+      expect(render('{{b.bar}}', {'b': b}), 'bar');
     });
   });
 }
