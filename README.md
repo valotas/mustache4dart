@@ -72,9 +72,7 @@ git submodule update
 pub install
 ```
 
-
-If you want to run the tests yourself, just do what [drone.io does](https://drone.io/github.com/valotas/mustache4dart/admin),
-or to put it by another way, do the following:
+If you are with Linux, a script is provided to run all the test:
 
 ```sh
 test/run.sh
