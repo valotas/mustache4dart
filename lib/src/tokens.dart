@@ -119,8 +119,8 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
 }
 
 /**
- * This is a token that represends a mustache expression. That is anything between an opening and
- * closing mustache.
+ * This is a token that represents a mustache expression. That is anything
+ * between an opening and closing mustache.
  */
 class _ExpressionToken extends Token {
   final String value;

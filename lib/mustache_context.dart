@@ -186,22 +186,21 @@ class _ObjectReflector {
 
 class _ObjectReflectorDeclaration {
   final InstanceMirror mirror;
-  final DeclarationMirror declaration;
+  final MethodMirror declaration;
   
   factory _ObjectReflectorDeclaration(InstanceMirror m, String declarationName) {
-    var declarations = m.type.declarations;
-    var declarationMirror = declarations[new Symbol(declarationName)];
-    if (declarationMirror == null) {
-      //try out a getter:
-      declarationName = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
-      declarationMirror = declarations[new Symbol(declarationName)];
+    var methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
+    if (methodMirror == null) {
+      //try appending the word get to the name:
+      var nameWithGet = "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
+      methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
     }
-    return declarationMirror == null ? null : new _ObjectReflectorDeclaration._(m, declarationMirror);
+    return methodMirror == null ? null : new _ObjectReflectorDeclaration._(m, methodMirror);
   }
   
   _ObjectReflectorDeclaration._(this.mirror, this.declaration);
   
-  bool get isLambda => declaration is MethodMirror && (declaration as MethodMirror).parameters.length == 1;
+  bool get isLambda => declaration.parameters.length == 1;
   
   Function get lambda => (val) {
     var im = mirror.invoke(declaration.simpleName, [val]);

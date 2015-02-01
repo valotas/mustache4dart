@@ -6,6 +6,14 @@ import 'package:unittest/unittest.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
+class A {
+  String get foo => 'foo';
+}
+
+class B extends A {
+
+}
+
 void main() {
   defineTests();
 }
@@ -85,6 +93,11 @@ defineTests() {
 
 ''';
       expect(render(txt, null), txt);
+    });
+
+    test('#33', () {
+      var b = new B();
+      expect(render('{{b.foo}}', {'b': b}), 'foo');
     });
   });
 }
