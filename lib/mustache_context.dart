@@ -22,6 +22,7 @@ abstract class MustacheContext {
   bool get isFalsey;
   bool get isLambda;
   MustacheContext operator [](String key);
+  String get rootContextString;
 }
 
 abstract class MustacheToString {
