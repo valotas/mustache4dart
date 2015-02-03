@@ -7,12 +7,14 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
 class A {
+  String name;
+  A(this.name);
   String getBar () => 'bar';
   String get foo => 'foo';
 }
 
 class B extends A {
-
+  B(String name) : super(name);
 }
 
 void main() {
@@ -97,9 +99,34 @@ defineTests() {
     });
 
     test('#33', () {
-      var b = new B();
+      var b = new B('b');
       expect(render('{{b.foo}}', {'b': b}), 'foo');
       expect(render('{{b.bar}}', {'b': b}), 'bar');
+    });
+
+    test('#39 handle sub-contexts and lambdas', () {
+      var map = {
+        'things': [
+          new A('one'),
+          new A('two')
+        ]
+      };
+
+      var template = '''
+{{#map.things}}
+{{#lambda}}{{name}}{{/lambda}}|
+{{/map.things}}
+''';
+
+      var context = {
+        'map': map,
+        'lambda': (String s, ctx) => "!!!" + render(s, ctx) + "!!!"
+      };
+
+      var output = render(template, context);
+      var expected = "!!!one!!!|\n!!!two!!!|\n";
+
+      expect(output, expected);
     });
   });
 }

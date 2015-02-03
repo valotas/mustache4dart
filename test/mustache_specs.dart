@@ -76,21 +76,21 @@ bool shouldRun(String filename) {
 class _DummyCallableWithState {
   var _callCounter = 0;
   
-  call (arg) => "${++_callCounter}";
+  call (arg, ctx) => "${++_callCounter}";
   
   reset () => _callCounter = 0; 
 }
 
 var lambdas = {
-               'Interpolation' : (t) => 'world',
-               'Interpolation - Expansion': (t) => '{{planet}}',
-               'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
+               'Interpolation' : (t, ctx) => 'world',
+               'Interpolation - Expansion': (t, ctx) => '{{planet}}',
+               'Interpolation - Alternate Delimiters': (t, ctx) => "|planet| => {{planet}}",
                'Interpolation - Multiple Calls': new _DummyCallableWithState(), //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
-               'Escaping': (t) => '>',
-               'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
-               'Section - Expansion': (txt) => "$txt{{planet}}$txt",
-               'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
-               'Section - Multiple Calls': (t) => "__${t}__",
-               'Inverted Section': (txt) => false
+               'Escaping': (t, ctx) => '>',
+               'Section': (txt, ctx) => txt == "{{x}}" ? "yes" : "no",
+               'Section - Expansion': (txt, ctx) => "$txt{{planet}}$txt",
+               'Section - Alternate Delimiters': (txt, ctx) => "$txt{{planet}} => |planet|$txt",
+               'Section - Multiple Calls': (t, ctx) => "__${t}__",
+               'Inverted Section': (txt, ctx) => false
                
 };

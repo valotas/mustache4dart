@@ -45,7 +45,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   
   bool get isFalsey => ctx == null || ctx == false;
 
-  call([arg]) => isLambda ? ctx(arg) : ctx.toString();
+  call([arg]) => isLambda ? ctx(arg, this) : ctx.toString();
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -208,10 +208,10 @@ class _ObjectReflectorDeclaration {
   
   _ObjectReflectorDeclaration._(this.mirror, this.declaration);
   
-  bool get isLambda => declaration.parameters.length == 1;
+  bool get isLambda => declaration.parameters.length == 2;
   
-  Function get lambda => (val) {
-    var im = mirror.invoke(declaration.simpleName, [val]);
+  Function get lambda => (val, ctx) {
+    var im = mirror.invoke(declaration.simpleName, [val, ctx]);
     if (im is InstanceMirror) {
       var r = im.reflectee;
       return r;
