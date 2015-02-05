@@ -123,7 +123,7 @@ defineTests() {
 {{foo}}
 {{#children}}{{foo}}!{{/children}}''';
 
-      var output = render(template, c);
+      var output = render(template, c, assumeNullNonExistingProperty: false);
       var expected = "child\notherchild!!";
 
       expect(output, expected);

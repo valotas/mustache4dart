@@ -68,9 +68,9 @@ class _Template {
   
   _Template._internal(this.list);
     
-  call(ctx, {StringSink out: null, bool errorOnMissingProperty: false}) {
+  call(ctx, {StringSink out: null, bool errorOnMissingProperty: false, bool assumeNullNonExistingProperty : true}) {
     StringSink o = out == null ? new StringBuffer() : out;
-    _write(ctx, o);
+    _write(ctx, o, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
     
     //If we provide a StringSink, write there and return it as
     //the response of the funtion. Otherwise make our library
@@ -82,12 +82,12 @@ class _Template {
     return o;
   }
   
-  void _write(ctx, StringSink out) {
+  void _write(ctx, StringSink out, {bool assumeNullNonExistingProperty}) {
     if (list.head == null) {
       return EMPTY_STRING;
     }
     if (!(ctx is MustacheContext)) {
-      ctx = new MustacheContext(ctx);
+      ctx = new MustacheContext(ctx, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
     }
 
     //Iterate the tokens and apply the context

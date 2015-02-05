@@ -5,8 +5,12 @@ render(String template, Object context, {
     Delimiter delimiter: null,
     String ident: EMPTY_STRING,
     StringSink out: null,
-    bool errorOnMissingProperty: false}) {
-  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context, out: out, errorOnMissingProperty: errorOnMissingProperty);
+    bool errorOnMissingProperty: false,
+    bool assumeNullNonExistingProperty: true}) {
+  return compile(template, partial: partial, delimiter: delimiter, ident: ident)(context, 
+      out: out, 
+      errorOnMissingProperty: errorOnMissingProperty, 
+      assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 }
 
 compile(String template, {Function partial: null, Delimiter delimiter: null, String ident: EMPTY_STRING}) {

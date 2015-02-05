@@ -96,7 +96,7 @@ void defineTests() {
       });
       
       test('Context with another context', () {
-        var ctx = new MustacheContext(new _Person('George', 'Valotasios'), new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
+        var ctx = new MustacheContext(new _Person('George', 'Valotasios'), parent: new MustacheContext({'a' : {'one': 1}, 'b': {'two': 2}}));
         expect(ctx['name'](), 'George');
         expect(ctx['a']['one'](), '1');
         expect(ctx['b']['two'](), '2');
@@ -183,7 +183,7 @@ void defineTests() {
       
       test('should not be able to analyze classes with reflectioon', () {
         var contactInfo = new _ContactInfo('type', 'value');
-        var ctx = new MustacheContext(contactInfo, null);
+        var ctx = new MustacheContext(contactInfo, parent: null);
         ctx.useMirrors = false;
         expect(ctx['type'], isNull);
       });
