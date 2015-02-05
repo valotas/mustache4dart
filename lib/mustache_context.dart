@@ -45,7 +45,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   
   bool get isFalsey => ctx == null || ctx == false;
 
-  call([arg]) => isLambda ? ctx(arg) : ctx.toString();
+  call([arg]) => isLambda ? ctx(arg, this) : ctx.toString();
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -55,7 +55,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     //if the result is null, try the parent context
-    if (result == null && parent != null) {
+    if (result == null && !_hasActualValueSlot(key) && parent != null) {
       result = parent[key];
       if (result != null) {
         return _newMustachContextOrNull(result.ctx);        
@@ -101,7 +101,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     return new _MustacheContext(v, this);
   }
   
-  _getActualValue(String key) {
+  dynamic _getActualValue(String key) {
     try {
       return ctx[key];
     } catch (NoSuchMethodError) {
@@ -109,6 +109,14 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
       //we do not want to use any reflector
       return (useMirrors && USE_MIRRORS) ? ctxReflector[key] : null;
     } 
+  }
+
+  bool _hasActualValueSlot(String key) {
+    if (ctx is Map) {
+      return (ctx as Map).containsKey(key);
+    } else {
+      return ctxReflector.hasSlot(key);
+    }
   }
   
   get ctxReflector {
@@ -190,6 +198,11 @@ class _ObjectReflector {
     
     return declaration.value;
   }
+
+  bool hasSlot(String key) {
+    var declaration = new _ObjectReflectorDeclaration(m, key);
+    return declaration != null;
+  }
 }
 
 class _ObjectReflectorDeclaration {
@@ -208,10 +221,10 @@ class _ObjectReflectorDeclaration {
   
   _ObjectReflectorDeclaration._(this.mirror, this.declaration);
   
-  bool get isLambda => declaration.parameters.length == 1;
+  bool get isLambda => declaration.parameters.length == 2;
   
-  Function get lambda => (val) {
-    var im = mirror.invoke(declaration.simpleName, [val]);
+  Function get lambda => (val, ctx) {
+    var im = mirror.invoke(declaration.simpleName, [val, ctx]);
     if (im is InstanceMirror) {
       var r = im.reflectee;
       return r;
@@ -240,7 +253,7 @@ class _ObjectReflectorDeclaration {
     return null;
   }
   
-  //TODO check if we really need the declation is VariableMirror test
+  //TODO check if we really need the declaration is VariableMirror test
   bool get isVariableOrGetter => (declaration is VariableMirror) || (declaration is MethodMirror && declaration.isGetter);
   
   bool get isParameterlessMethod => declaration is MethodMirror && declaration.parameters.length == 0;

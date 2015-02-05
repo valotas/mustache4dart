@@ -78,11 +78,11 @@ void defineTests() {
         var f = ctx['transform'];
         
         expect(f.isLambda, true);
-        expect(f('123 456 777'), t.transform('123 456 777'));
+        expect(f('123 456 777'), t.transform('123 456 777', ctx));
       });
       
       test('MustacheFunction from anonymus function', () {
-        var map = {'transform': (String val) => "$val!"};
+        var map = {'transform': (String val, ctx) => "$val!"};
         var ctx = new MustacheContext(map);
         var f = ctx['transform'];
         
@@ -223,5 +223,5 @@ class _ContactInfo {
 }
 
 class _Transformer {
-  String transform(String val) => "<b>$val</b>";
+  String transform(String val, ctx) => "<b>$val</b>";
 }
