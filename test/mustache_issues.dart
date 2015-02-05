@@ -15,6 +15,18 @@ class B extends A {
 
 }
 
+class Parent {
+  String foo;
+}
+
+class Child extends Parent {
+  List<OtherChild> children = [];
+}
+
+class OtherChild extends Parent {
+
+}
+
 void main() {
   defineTests();
 }
@@ -100,6 +112,21 @@ defineTests() {
       var b = new B();
       expect(render('{{b.foo}}', {'b': b}), 'foo');
       expect(render('{{b.bar}}', {'b': b}), 'bar');
+    });
+
+    test('#41 do not look into parent context if current context has field but its value is null', () {
+      var c = new Child()
+        ..foo = 'child'
+        ..children = [new OtherChild()..foo='otherchild', new OtherChild()..foo=null];
+
+      var template = '''
+{{foo}}
+{{#children}}{{foo}}!{{/children}}''';
+
+      var output = render(template, c);
+      var expected = "child\notherchild!!";
+
+      expect(output, expected);
     });
   });
 }
