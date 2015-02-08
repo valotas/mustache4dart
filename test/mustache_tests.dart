@@ -65,12 +65,12 @@ void defineTests() {
     });
     
     test('Throw exception on unknown start tag', () {
-          try {
-            render('Hi {{#name}}man!{{/name}}', {'namee': 'George'});
-          } catch (e) {
-            expect(e, "Could not find 'name' property in {namee: George}}");
-          }
-        });
+      try {
+        render('Hi {{#name}}man!{{/name}}', {'namee': 'George'});
+      } catch (e) {
+        expect(e, "Could not find 'name' property in {namee: George}}");
+      }
+    });
   });
 }
 
