@@ -118,9 +118,11 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     }
     if (ctx is Map) {
       return (ctx as Map).containsKey(key);
-    } else {
+    } else if (useMirrors && USE_MIRRORS) {
+      //TODO test the case of no mirrors
       return ctxReflector.hasSlot(key);
     }
+    return false;
   }
   
   get ctxReflector {
@@ -196,7 +198,7 @@ class _ObjectReflector {
   _ObjectReflector._(this.m);
   
   operator [](String key) {
-    var declaration = new _ObjectReflectorDeclaration(m, key);
+    var declaration = getDeclaration(key);
     
     if (declaration == null) {
       return null;
@@ -206,8 +208,11 @@ class _ObjectReflector {
   }
 
   bool hasSlot(String key) {
-    var declaration = new _ObjectReflectorDeclaration(m, key);
-    return declaration != null;
+    return getDeclaration(key) != null;
+  }
+  
+  _ObjectReflectorDeclaration getDeclaration(String key) {
+    return new _ObjectReflectorDeclaration(m, key);
   }
 }
 
