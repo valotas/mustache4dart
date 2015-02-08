@@ -7,6 +7,11 @@ void main() {
   defineTests();
 }
 
+class A {
+  String name;
+  A(this.name);
+}
+
 void defineTests() {
   group('mustache4dart tests', () {    
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
@@ -70,6 +75,21 @@ void defineTests() {
       } catch (e) {
         expect(e, "Could not find 'name' property in {namee: George}}");
       }
+    });
+    
+    test('Provide lambdas with the current nested context when they have two parameters (#39)', () {
+      var context = { 
+        'map': {
+          'things': [ new A('a'), new A('b') ]  
+        },
+        'lambda': (String s, ctx) => "[" + render(s, ctx) + "]"
+      };
+      var  template = '''
+{{#map.things}}
+{{#lambda}}{{name}}{{/lambda}}|
+{{/map.things}}
+''';
+      expect(render(template, context), "[a]|\n[b]|\n");
     });
   });
 }

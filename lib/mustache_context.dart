@@ -8,6 +8,9 @@ import 'dart:mirrors';
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
+typedef OneParamLambda(String s);
+typedef TwoParamLambda(String s, dynamic ctx);
+
 abstract class MustacheContext {
 
   factory MustacheContext(ctx, {MustacheContext parent, assumeNullNonExistingProperty : true}) {
@@ -46,7 +49,9 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   
   bool get isFalsey => ctx == null || ctx == false;
 
-  call([arg]) => isLambda ? ctx(arg) : ctx.toString();
+  call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
+  
+  callLambda(arg) => ctx is OneParamLambda ? ctx(arg) : ctx(arg, this);
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -232,17 +237,15 @@ class _ObjectReflectorDeclaration {
   
   _ObjectReflectorDeclaration._(this.mirror, this.declaration);
   
-  bool get isLambda => declaration.parameters.length == 1;
+  bool get isLambda => declaration.parameters.length >= 1;
   
-  Function get lambda => (val) {
-    var im = mirror.invoke(declaration.simpleName, [val]);
-    if (im is InstanceMirror) {
-      var r = im.reflectee;
-      return r;
-     }
-     else {
-      return null;
-     }
+  Function get lambda => (val, [MustacheContext ctx]) {
+    var arguments = [val];
+    if (declaration.parameters.length > 1) {
+      arguments.add(ctx);
+    }
+    var im = mirror.invoke(declaration.simpleName, arguments);
+    return im is InstanceMirror ? im.reflectee : null;
   };
   
   get value {
