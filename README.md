@@ -1,5 +1,7 @@
-Mustache for the dartlang [![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.8)](https://travis-ci.org/valotas/mustache4dart)
-=======================================================================================================================================================
+# Mustache for Dart
+
+[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.8)](https://travis-ci.org/valotas/mustache4dart)
+
 A simple implementation of [Mustache][mustache] for the [Dart language][dartlang],
 which passes happily all the [mustache specs][specs]. If you want to 
 have a look at how it works, just check the [tests][tests]. For more info, 
@@ -93,7 +95,7 @@ Versioning
 The library will follow a [semantic versioning][semver]
 
 [mustache]: http://mustache.github.com/
-[dartlang]: http://www.dartlang.org/
+[dartlang]: https://www.dartlang.org/
 [tests]: http://github.com/valotas/mustache4dart/blob/master/test/mustache_tests.dart
 [specs]: http://github.com/mustache/spec
 [new_issue]: https://github.com/valotas/mustache4dart/issues/new
