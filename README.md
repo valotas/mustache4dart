@@ -63,6 +63,11 @@ var salut = compile('Hello {{name}}!');
 print(salut({'name': 'Alice'})); //should print Hello Alice!
 ``` 
 
+### Lambdas support
+The library passes all the optional [lambda specs][lambda_specs] based on which lambdas must be treatable as arity 0 or 1 functions.
+As dart provides optional named parameters, you can pass to a given lambda function the `nestedContext`. In that case the current nested context will be given as parameter to the lambda function.
+
+
 Developing
 ----------
 The project passes all the [Mustache specs][specs].  You have to make sure though that you've downloaded them. Just make sure that you have done the steps described below.
@@ -98,5 +103,6 @@ The library will follow a [semantic versioning][semver]
 [dartlang]: https://www.dartlang.org/
 [tests]: http://github.com/valotas/mustache4dart/blob/master/test/mustache_tests.dart
 [specs]: http://github.com/mustache/spec
+[lambda_specs]: https://github.com/mustache/spec/blob/master/specs/~lambdas.yml
 [new_issue]: https://github.com/valotas/mustache4dart/issues/new
 [semver]: http://semver.org/
