@@ -8,7 +8,7 @@ import 'dart:mirrors';
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
-typedef TwoParamLambda(String s, dynamic ctx);
+typedef TwoParamLambda(String s, {nestedContext});
 
 abstract class MustacheContext {
 
@@ -50,7 +50,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
   
-  callLambda(arg) => ctx is TwoParamLambda ? ctx(arg, this) : ctx(arg);
+  callLambda(arg) => ctx is TwoParamLambda ? ctx(arg, nestedContext: this) : ctx(arg);
 
   operator [](String key) {
     if (ctx == null) return null;

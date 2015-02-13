@@ -83,7 +83,7 @@ void defineTests() {
         'map': {
           'things': [ new A('a'), new A('b') ]  
         },
-        'lambda': (String s, ctx) => "[" + render(s, ctx) + "]"
+        'lambda': (String s, {nestedContext}) => "[" + render(s, nestedContext) + "]"
       };
       var  template = '''
 {{#map.things}}
