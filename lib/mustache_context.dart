@@ -8,6 +8,8 @@ import 'dart:mirrors';
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
+typedef NoParamLambda();
+typedef OptionalParamLambda({nestedContext});
 typedef TwoParamLambda(String s, {nestedContext});
 
 abstract class MustacheContext {
@@ -50,7 +52,10 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
   
-  callLambda(arg) => ctx is TwoParamLambda ? ctx(arg, nestedContext: this) : ctx(arg);
+  callLambda(arg) => ctx is NoParamLambda ? ctx() : 
+    ctx is TwoParamLambda ? ctx(arg, nestedContext: this) :
+    ctx is OptionalParamLambda ? ctx(nestedContext: this) :
+    ctx(arg);
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -238,14 +243,30 @@ class _ObjectReflectorDeclaration {
   
   bool get isLambda => declaration.parameters.length >= 1;
   
-  Function get lambda => (val, [MustacheContext ctx]) {
-    var arguments = [val];
-    if (declaration.parameters.length > 1) {
-      arguments.add(ctx);
-    }
-    var im = mirror.invoke(declaration.simpleName, arguments);
+  Function get lambda => (val, {MustacheContext nestedContext}) {
+    var im = mirror.invoke(declaration.simpleName, _createPositionalArguments(val), _createNamedArguments(nestedContext));
     return im is InstanceMirror ? im.reflectee : null;
   };
+  
+  _createPositionalArguments(val) {
+    var positionalParam = declaration.parameters
+        .firstWhere((p) => !p.isOptional, orElse: () => null);
+    if (positionalParam == null) {
+      return [];
+    } else {
+      return [val];
+    }
+  }
+  
+  _createNamedArguments(MustacheContext ctx) {
+    var map = {};
+    var nestedContextParameterExists = declaration.parameters
+          .firstWhere((p) => p.simpleName == new Symbol('nestedContext'), orElse: () => null);
+    if (nestedContextParameterExists != null) {
+      map[nestedContextParameterExists.simpleName] = ctx;
+    }
+    return map;
+  }
   
   get value {
     if (isLambda) {

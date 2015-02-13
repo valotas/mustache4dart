@@ -12,6 +12,22 @@ class A {
   A(this.name);
 }
 
+class B {
+  final map = {};
+  
+  B(List<A> list) {
+    map['things'] = list;
+  }
+  
+  lambda1(String s) => "1" + s + "1";
+  
+  lambda2(String s, {nestedContext}) => "2" + render(s, nestedContext) + "2";
+  
+  lambda3() => () => "[3]";
+ 
+  lambda4({nestedContext}) => "4${nestedContext != null}4";
+}
+
 void defineTests() {
   group('mustache4dart tests', () {    
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
@@ -78,20 +94,55 @@ void defineTests() {
       }
     });
     
-    test('Provide lambdas with the current nested context when they have two parameters (#39)', () {
-      var context = { 
-        'map': {
-          'things': [ new A('a'), new A('b') ]  
-        },
-        'lambda': (String s, {nestedContext}) => "[" + render(s, nestedContext) + "]"
-      };
-      var  template = '''
+    group('Lambdas with nested context (#39)', () {
+      test('Provide lambdas as a dynamic (String s, {nestedContext}) function within a map', () {
+        var context = { 
+          'map': {
+            'things': [ new A('a'), new A('b') ]  
+          },
+          'lambda': (String s, {nestedContext}) => "[" + render(s, nestedContext) + "]"
+        };
+        var  template = '''
 {{#map.things}}
 {{#lambda}}{{name}}{{/lambda}}|
 {{/map.things}}
 ''';
-      expect(render(template, context), "[a]|\n[b]|\n");
+        expect(render(template, context), "[a]|\n[b]|\n");
+      });
+      
+      test('Provide lambdas as a method(String s) within a class', () {            
+        var context = new B([ new A('a'), new A('b') ]);
+        
+        var  template = '''{{#map.things}}{{#lambda1}}{{name}}{{/lambda1}}|{{/map.things}}''';
+
+        expect(render(template, context), "1a1|1b1|");
+      });
+      
+      test('Provide lambdas as a method(String s, {nestedContext}) within a class', () {            
+        var context = new B([ new A('a'), new A('b') ]);
+        
+        var  template = '''{{#map.things}}{{#lambda2}}{{name}}{{/lambda2}}|{{/map.things}}''';
+
+        expect(render(template, context), "2a2|2b2|");
+      });
+      
+      test('Provide lambdas as a method() within a class', () {            
+        var context = new B([ new A('a'), new A('b') ]);
+        
+        var  template = '''{{#map.things}}{{#lambda3}}{{name}}{{/lambda3}}|{{/map.things}}''';
+
+        expect(render(template, context), "[3]|[3]|");
+      });
+      
+      test('Provide lambdas as a method({nestedContext}) within a class', () {            
+        var context = new B([ new A('a'), new A('b') ]);
+        
+        var  template = '''{{#map.things}}{{#lambda4}}{{name}}{{/lambda4}}|{{/map.things}}''';
+
+        expect(render(template, context), "4true4|4true4|");
+      });
     });
+    
   });
 }
 
