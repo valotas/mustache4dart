@@ -10,4 +10,4 @@ main() {
   mustache_tests.defineTests();
   specs.defineTests();
   issues.defineTests();
-}  
+}

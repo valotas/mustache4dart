@@ -4,56 +4,57 @@ part of mustache4dart;
  * This is the main class describing a compiled token.
  */
 
-abstract class Token { 
+abstract class Token {
   final String _source;
 
   Token _next;
   Token prev;
   bool rendable = true;
-  
+
   Token.withSource(this._source);
- 
+
   factory Token(String token, Function partial, Delimiter d, String ident) {
     if (token == EMPTY_STRING) {
       return null;
     }
     if (token.startsWith('{{{') && d.opening == '{{') {
-      return new _ExpressionToken(token.substring(3, token.length - 3), false, token, partial, d);
-    } 
-    else if (token.startsWith(d.opening)) {
-      return new _ExpressionToken(token.substring(d.openingLength, token.length - d.closingLength), true, token, partial, d);
-    }
-    else if (token == SPACE || token == NL || token == CRNL) {
+      return new _ExpressionToken(
+          token.substring(3, token.length - 3), false, token, partial, d);
+    } else if (token.startsWith(d.opening)) {
+      return new _ExpressionToken(
+          token.substring(d.openingLength, token.length - d.closingLength),
+          true, token, partial, d);
+    } else if (token == SPACE || token == NL || token == CRNL) {
       return new _SpecialCharToken(token, ident);
-    }
-    else {
+    } else {
       return new _StringToken(token);
     }
   }
-  
+
   Token call(MustacheContext context, StringSink out) {
-    if (out == null) throw new Exception("Need an output to write the rendered result");
+    if (out == null) throw new Exception(
+        "Need an output to write the rendered result");
     var string = apply(context);
     if (rendable) {
       out.write(string);
     }
     return next;
   }
-  
+
   StringBuffer apply(MustacheContext context);
 
-  void set next (Token n) {
+  void set next(Token n) {
     _next = n;
     n.prev = this;
   }
-  
+
   Token get next => _next;
 
   /**
    * This describes the value of the token.
    */
   String get value;
-  
+
   /**
    * Two tokens are the same if their _val are the same.
    */
@@ -65,25 +66,22 @@ abstract class Token {
       return value == other;
     }
     return false;
-  }  
-  
+  }
+
   int get hashCode => value.hashCode;
 }
 
-abstract class StandAloneLineCapable {
-  
-}
+abstract class StandAloneLineCapable {}
 
 /**
  * The simplest implementation of a token is the _StringToken which is any string that is not within
  * an opening and closing mustache.
  */
 class _StringToken extends Token {
-
   _StringToken(_val) : super.withSource(_val);
-  
+
   apply(context) => value;
-  
+
   String get value => _source;
 
   String toString() => "StringToken($value)";
@@ -91,14 +89,14 @@ class _StringToken extends Token {
 
 class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
   final String ident;
-  
+
   _SpecialCharToken(_val, [this.ident = EMPTY_STRING]) : super(_val);
-  
+
   apply(context) {
     if (!rendable) {
       return EMPTY_STRING;
     }
-    
+
     if (next == null) {
       return super.apply(context);
     }
@@ -107,11 +105,11 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
     }
     return super.apply(context);
   }
-  
+
   bool get _isNewLineOrEmpty => _isNewLine || value == EMPTY_STRING;
-  
-  bool get _isNewLine => value == NL || value == CRNL; 
-  
+
+  bool get _isNewLine => value == NL || value == CRNL;
+
   String toString() {
     var val = value.replaceAll('\r', '\\r').replaceAll(NL, '\\n');
     return "SpecialCharToken($val)";
@@ -125,7 +123,8 @@ class _SpecialCharToken extends _StringToken implements StandAloneLineCapable {
 class _ExpressionToken extends Token {
   final String value;
 
-  factory _ExpressionToken(String val, bool escapeHtml, String source, Function partial, Delimiter delimiter) {
+  factory _ExpressionToken(String val, bool escapeHtml, String source,
+      Function partial, Delimiter delimiter) {
     val = val.trim();
     if (escapeHtml && val.startsWith('&')) {
       escapeHtml = false;
@@ -156,7 +155,7 @@ class _ExpressionToken extends Token {
   }
 
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
-  
+
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = ctx[value];
     if (val == null) {
@@ -172,31 +171,30 @@ class _ExpressionToken extends Token {
     }
     return val();
   }
-  
+
   String toString() => "ExpressionToken($value)";
 }
 
-class _DelimiterToken extends _ExpressionToken implements StandAloneLineCapable {
-  
+class _DelimiterToken extends _ExpressionToken
+    implements StandAloneLineCapable {
   _DelimiterToken(String val) : super.withSource(val, null);
-  
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) => EMPTY_STRING;
-  
+
+  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
+      EMPTY_STRING;
+
   bool get rendable => false;
-  
+
   Delimiter get newDelimiter {
-    List delimiters = value
-        .substring(0, value.length - 1)
-        .split(SPACE);
+    List delimiters = value.substring(0, value.length - 1).split(SPACE);
     return new Delimiter(delimiters[0], delimiters[1]);
   }
 }
 
 class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
   final Function partial;
-  
+
   _PartialToken(this.partial, String val) : super.withSource(val, null);
-  
+
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     if (partial != null) {
       var partialTemplate = partial(value);
@@ -206,7 +204,7 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
     }
     return EMPTY_STRING;
   }
-  
+
   String get _ident {
     StringBuffer ident = new StringBuffer();
     Token p = this.prev;
@@ -215,21 +213,20 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
       p = p.prev;
     }
     if (p.value == NL || p.value == EMPTY_STRING) {
-      return ident.toString();      
-    }
-    else {
+      return ident.toString();
+    } else {
       return EMPTY_STRING;
     }
   }
-  
+
   bool get rendable => true;
 }
 
 class _CommentToken extends _ExpressionToken implements StandAloneLineCapable {
-  
   _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
-  
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) => EMPTY_STRING;
+
+  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
+      EMPTY_STRING;
 
   String toString() => "_CommentsToken()";
 }
@@ -239,28 +236,31 @@ class _EscapeHtmlToken extends _ExpressionToken {
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = super.apply(ctx);
-    if (! (val is String)) {
-      throw new Exception("Computed value ($val) is not a string. Can not apply it");      
+    if (!(val is String)) {
+      throw new Exception(
+          "Computed value ($val) is not a string. Can not apply it");
     }
 
-    return val.replaceAll("&", "&amp;")
+    return val
+        .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&apos;");
   }
-  
+
   String toString() => "EscapeHtmlToken($value)";
 }
 
-class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapable {
+class _StartSectionToken extends _ExpressionToken
+    implements StandAloneLineCapable {
   final Delimiter delimiter;
   _EndSectionToken endSection;
-  
+
   _StartSectionToken(String val, this.delimiter) : super.withSource(val, null);
 
   //Override the next getter
-  Token get next =>  endSection.next;
+  Token get next => endSection.next;
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = ctx[value];
@@ -278,13 +278,14 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
       });
       return str;
     }
-    
-    if (val.isLambda) { //apply the source to the given function
+
+    if (val.isLambda) {
+      //apply the source to the given function
       forEachUntilEndSection((Token t) => str.write(t._source));
       //A lambda's return value should be parsed
       return render(val(str.toString()), ctx, delimiter: delimiter);
     }
-    
+
     //in any other case:
     forEachUntilEndSection((Token t) => str.write(t.apply(val)));
     return str;
@@ -300,23 +301,25 @@ class _StartSectionToken extends _ExpressionToken implements StandAloneLineCapab
       n = n.next;
     }
   }
-  
+
   //The token itself is always rendable
   bool get rendable => true;
 
   String toString() => "StartSectionToken($value)";
 }
 
-class _EndSectionToken extends _ExpressionToken implements StandAloneLineCapable {
+class _EndSectionToken extends _ExpressionToken
+    implements StandAloneLineCapable {
   _EndSectionToken(String val) : super.withSource(val, null);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) => EMPTY_STRING;
+  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
+      EMPTY_STRING;
   String toString() => "EndSectionToken($value)";
 }
 
 class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
-  
+
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = ctx[value];
     //TODO: remove null check. Always return a falsey context
@@ -331,7 +334,6 @@ class _InvertedSectionToken extends _StartSectionToken {
     //else just return an empty string
     return EMPTY_STRING;
   }
-  
+
   String toString() => "InvertedSectionToken($value)";
 }
-
