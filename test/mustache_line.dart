@@ -71,7 +71,7 @@ void main() {
       var l_empty = l_a_end.add(newToken(NL));
       var l_b = l_empty.add(newToken(NL))
         .add(newToken('{{b.two}}'));
-      var l_last = l_b.add(newToken(NL));
+      l_b.add(newToken(NL));
 
       expect(l_a.standAlone, isTrue);
       expect(l_one.standAlone, isFalse);
@@ -89,7 +89,7 @@ void main() {
       var l = new Line(newToken('|'))
         .add(newToken(CRNL))
         .add(newToken('{{> p}}'));
-      var l2 = l.add(newToken(CRNL))
+      l.add(newToken(CRNL))
         .add(newToken('|'));
       expect(l.standAlone, isTrue);
     });
