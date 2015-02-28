@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.10
+
+* Allow iterables to get queried for empty or isEmpty attribute [issue](https://github.com/valotas/mustache4dart/issues/44)
+
 ## 1.0.9 (2015-02-13)
 
 * throw exception on missing property (helps debugging and tracking down errors) [issue](https://github.com/valotas/mustache4dart/issues/36)
