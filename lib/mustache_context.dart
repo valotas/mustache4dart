@@ -33,7 +33,9 @@ abstract class MustacheContext {
   bool get isFalsey;
   bool get isLambda;
   MustacheContext operator [](String key);
+  MustacheContext _getMustachContext (String key);
   String get rootContextString;
+  
 }
 
 abstract class MustacheToString {
@@ -192,6 +194,14 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
     }
     throw new Exception(
         'Iterable can only be iterated. No [] implementation is available');
+  }
+  
+  _getMustachContext (String key) {
+    if (key == 'empty' || key == 'isEmpty') {
+      return new _MustacheContext(isEmpty, parent: parent, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+    }
+    throw new Exception(
+            'Iterable can only be asked for empty or isEmpty keys or be iterated');
   }
 }
 

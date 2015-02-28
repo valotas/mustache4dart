@@ -166,5 +166,10 @@ defineTests() {
 
       expect(output, expected);
     });
+ 
+    test('#44 should provide a way to check for non empty lists', () {
+      var map = {'list': [1, 2]};
+      expect(render('{{^list.empty}}<ul>{{#list}}<li>{{.}}</li>{{/list}}</ul>{{/list.empty}}', map), '<ul><li>1</li><li>2</li></ul>');
+    });
   });
 }
