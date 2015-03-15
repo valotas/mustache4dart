@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.0.10
+## 1.0.10 (2015-03-15)
 
 * Allow iterables to get queried for empty or isEmpty attribute [issue](https://github.com/valotas/mustache4dart/issues/44)
 
