@@ -14,14 +14,14 @@ class _Template {
     for (int i = 0; i < template.length; i++) {
       String char = template[i];
       if (delimiter.isDelimiter(template, i, searchForOpening)) {
-        if (searchForOpening) { //opening delimiter
+        if (searchForOpening) { // opening delimiter
           tokens.addTokenWithBuffer(delimiter, ident, partial);
           searchForOpening = false;
-        } else { //closing delimiter
-          tokens.write(delimiter.closing); //add the closing delimiter
+        } else { // closing delimiter
+          tokens.write(delimiter.closing); // add the closing delimiter
           tokens.addTokenWithBuffer(delimiter, ident, partial);
           i = i + delimiter.closingLength - 1;
-          delimiter = tokens.nextDelimiter; //get the next delimiter to use
+          delimiter = tokens.nextDelimiter; // get the next delimiter to use
           searchForOpening = true;
           continue;
         }
