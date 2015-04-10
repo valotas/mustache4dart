@@ -1,7 +1,7 @@
 part of mustache4dart;
 
-render(String template, Object context, {Function partial: null,
-    Delimiter delimiter: null, String ident: EMPTY_STRING, StringSink out: null,
+render(String template, Object context, {Function partial,
+    Delimiter delimiter, String ident: EMPTY_STRING, StringSink out,
     bool errorOnMissingProperty: false, bool assumeNullNonExistingProperty: true}) {
   return compile(
       template,
@@ -14,7 +14,7 @@ render(String template, Object context, {Function partial: null,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 }
 
-compile(String template, {Function partial: null, Delimiter delimiter: null,
+compile(String template, {Function partial, Delimiter delimiter,
     String ident: EMPTY_STRING}) {
   if (delimiter == null) {
     delimiter = new Delimiter('{{', '}}');
