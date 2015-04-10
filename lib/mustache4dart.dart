@@ -1,6 +1,5 @@
 library mustache4dart;
 
-import 'dart:core';
 import 'mustache_context.dart';
 
 part 'src/mustache.dart';
