@@ -75,7 +75,7 @@ class _Template {
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 
     //If we provide a StringSink, write there and return it as
-    //the response of the funtion. Otherwise make our library
+    //the response of the function. Otherwise make our library
     //easier to use by returning the string representation of
     //the template
     if (out == null) {
