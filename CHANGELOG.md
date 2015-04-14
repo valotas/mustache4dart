@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.11
+
+* Compile method now returns type annotation [issue](https://github.com/valotas/mustache4dart/issues/50)
+
 ## 1.0.10 (2015-03-15)
 
 * Allow iterables to get queried for empty or isEmpty attribute [issue](https://github.com/valotas/mustache4dart/issues/44)
