@@ -14,8 +14,8 @@ render(String template, Object context, {Function partial: null,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 }
 
-compile(String template, {Function partial: null, Delimiter delimiter: null,
-    String ident: EMPTY_STRING}) {
+TemplateRenderer compile(String template, {Function partial: null,
+    Delimiter delimiter: null, String ident: EMPTY_STRING}) {
   if (delimiter == null) {
     delimiter = new Delimiter('{{', '}}');
   }
