@@ -34,13 +34,14 @@ void main() {
       expect(l.standAlone, isTrue);
     });
 
-    test(
-        "Last line with an expression only should be considered standalone",
+    test("Last line with an expression only should be considered standalone",
         () {
       var l = new Line(newToken(' '));
-      l = l.add(
-          newToken(
-              NL)).add(newToken(' ')).add(newToken(' ')).add(newToken('{{/ending}}'));
+      l = l
+          .add(newToken(NL))
+          .add(newToken(' '))
+          .add(newToken(' '))
+          .add(newToken('{{/ending}}'));
 
       expect(l.standAlone, isTrue);
     });
@@ -70,13 +71,10 @@ void main() {
       expect(l_one.standAlone, isFalse);
       expect(l_a_end.standAlone, isTrue);
 
-
-          //Make sure that the empty line is actuall an empty line. It only contains a NL char
+      //Make sure that the empty line is actuall an empty line. It only contains a NL char
       expect(l_empty.tokens.length, 1);
       expect(l_empty.tokens[0], newToken(NL));
-      expect(
-          l_empty.standAlone,
-          isFalse,
+      expect(l_empty.standAlone, isFalse,
           reason:
               'empty line is part of the template and should not be considered as a standAlone one');
 

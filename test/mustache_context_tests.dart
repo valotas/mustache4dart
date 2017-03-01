@@ -10,10 +10,7 @@ void main() {
 void defineTests() {
   group('mustache_context lib', () {
     test('Simple context with map', () {
-      var ctx = new MustacheContext({
-        'k1': 'value1',
-        'k2': 'value2'
-      });
+      var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
       expect(ctx['k1'](), 'value1');
       expect(ctx['k2'](), 'value2');
       expect(ctx['k3'], null);
@@ -31,31 +28,28 @@ void defineTests() {
 
     test('Simple map with list of maps', () {
       var ctx = new MustacheContext({
-        'k': [{
-            'k1': 'item1'
-          }, {
-            'k2': 'item2'
-          }, {
-            'k3': {
-              'kk1': 'subitem1',
-              'kk2': 'subitem2'
-            }
-          }]
+        'k': [
+          {'k1': 'item1'},
+          {'k2': 'item2'},
+          {
+            'k3': {'kk1': 'subitem1', 'kk2': 'subitem2'}
+          }
+        ]
       });
       expect(ctx['k'].length, 3);
     });
 
     test('Map with list of lists', () {
       var ctx = new MustacheContext({
-        'k': [{
-            'k1': 'item1'
-          }, {
-            'k3': [{
-                'kk1': 'subitem1'
-              }, {
-                'kk2': 'subitem2'
-              }]
-          }]
+        'k': [
+          {'k1': 'item1'},
+          {
+            'k3': [
+              {'kk1': 'subitem1'},
+              {'kk2': 'subitem2'}
+            ]
+          }
+        ]
       });
       expect(ctx['k'].length, 2);
       expect(ctx['k'] is Iterable, isTrue);
@@ -86,7 +80,6 @@ void defineTests() {
         p = new _Person("name$i", "lastname$i", p);
       }
 
-
       MustacheContext ctx = new MustacheContext(p);
       expect(ctx['name'](), 'name1');
       expect(ctx['parent']['lastname'](), 'lastname2');
@@ -103,9 +96,7 @@ void defineTests() {
     });
 
     test('MustacheFunction from anonymus function', () {
-      var map = {
-        'transform': (String val) => "$val!"
-      };
+      var map = {'transform': (String val) => "$val!"};
       var ctx = new MustacheContext(map);
       var f = ctx['transform'];
 
@@ -114,23 +105,17 @@ void defineTests() {
     });
 
     test('Dotted names', () {
-      var ctx = new MustacheContext({
-        'person': new _Person('George', 'Valotasios')
-      });
+      var ctx =
+          new MustacheContext({'person': new _Person('George', 'Valotasios')});
       expect(ctx['person.name'](), 'George');
     });
 
     test('Context with another context', () {
-      var ctx = new MustacheContext(
-          new _Person('George', 'Valotasios'),
+      var ctx = new MustacheContext(new _Person('George', 'Valotasios'),
           parent: new MustacheContext({
-        'a': {
-          'one': 1
-        },
-        'b': {
-          'two': 2
-        }
-      }));
+            'a': {'one': 1},
+            'b': {'two': 2}
+          }));
       expect(ctx['name'](), 'George');
       expect(ctx['a']['one'](), '1');
       expect(ctx['b']['two'](), '2');
@@ -138,63 +123,36 @@ void defineTests() {
 
     test('Deep subcontext test', () {
       var map = {
-        'a': {
-          'one': 1
-        },
-        'b': {
-          'two': 2
-        },
-        'c': {
-          'three': 3
-        }
+        'a': {'one': 1},
+        'b': {'two': 2},
+        'c': {'three': 3}
       };
       var ctx = new MustacheContext({
-        'a': {
-          'one': 1
-        },
-        'b': {
-          'two': 2
-        },
-        'c': {
-          'three': 3
-        }
+        'a': {'one': 1},
+        'b': {'two': 2},
+        'c': {'three': 3}
       });
       expect(ctx['a'], isNotNull, reason: "a should exists when using $map");
       expect(ctx['a']['one'](), '1');
       expect(ctx['a']['two'], isNull);
-      expect(
-          ctx['a']['b'],
-          isNotNull,
+      expect(ctx['a']['b'], isNotNull,
           reason: "a.b should exists when using $map");
-      expect(
-          ctx['a']['b']['one'](),
-          '1',
+      expect(ctx['a']['b']['one'](), '1',
           reason: "a.b.one == a.own when using $map");
-      expect(
-          ctx['a']['b']['two'](),
-          '2',
+      expect(ctx['a']['b']['two'](), '2',
           reason: "a.b.two == b.two when using $map");
       expect(ctx['a']['b']['three'], isNull);
-      expect(
-          ctx['a']['b']['c'],
-          isNotNull,
+      expect(ctx['a']['b']['c'], isNotNull,
           reason: "a.b.c should not be null when using $map");
-      expect(
-          ctx['a']['b']['c']['one'](),
-          '1',
+      expect(ctx['a']['b']['c']['one'](), '1',
           reason: "a.b.c.one == a.one when using $map");
-      expect(
-          ctx['a']['b']['c']['two'](),
-          '2',
+      expect(ctx['a']['b']['c']['two'](), '2',
           reason: "a.b.c.two == b.two when using $map");
       expect(ctx['a']['b']['c']['three'](), '3');
     });
 
     test('Recursion of iterable contextes', () {
-      var contextY = {
-        'content': 'Y',
-        'nodes': []
-      };
+      var contextY = {'content': 'Y', 'nodes': []};
       var contextX = {
         'content': 'X',
         'nodes': [contextY]
@@ -210,11 +168,7 @@ void defineTests() {
     });
 
     test('Direct interpolation', () {
-      var ctx = new MustacheContext({
-        'n1': 1,
-        'n2': 2.0,
-        's': 'some string'
-      });
+      var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
       expect(ctx['n1']['.'](), '1');
       expect(ctx['n2']['.'](), '2.0');
       expect(ctx['s']['.'](), 'some string');
@@ -228,9 +182,7 @@ void defineTests() {
 
     group('rootContextString()', () {
       test('should delegate to context toString()', () {
-        var map = {
-          'Simple': 'Map'
-        };
+        var map = {'Simple': 'Map'};
         expect(new MustacheContext(map).rootContextString, map.toString());
       });
 
@@ -241,11 +193,10 @@ void defineTests() {
       });
 
       test('should also work with iterrables', () {
-        var list = [{
-            'Map': '1'
-          }, {
-            'Map': '2'
-          }];
+        var list = [
+          {'Map': '1'},
+          {'Map': '2'}
+        ];
         var ctx = new MustacheContext(list);
         expect(ctx.rootContextString, list.toString());
       });
@@ -253,13 +204,9 @@ void defineTests() {
   });
 
   group('Mirrorless mustache_context lib', () {
-
-    test(
-        'the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
+    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
         () {
-      var ctx = new MustacheContext({
-        'key1': 'value1'
-      });
+      var ctx = new MustacheContext({'key1': 'value1'});
       expect(ctx.useMirrors, USE_MIRRORS);
     });
 
@@ -268,9 +215,7 @@ void defineTests() {
     });
 
     test('should return the result of the [] operator', () {
-      var ctx = new MustacheContext({
-        'key1': 'value1'
-      });
+      var ctx = new MustacheContext({'key1': 'value1'});
       ctx.useMirrors = false;
       expect(ctx['key1'](), 'value1');
     });

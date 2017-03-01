@@ -13,17 +13,14 @@ typedef OptionalParamLambda({nestedContext});
 typedef TwoParamLambda(String s, {nestedContext});
 
 abstract class MustacheContext {
-
-  factory MustacheContext(ctx, {MustacheContext parent,
-      assumeNullNonExistingProperty: true}) {
+  factory MustacheContext(ctx,
+      {MustacheContext parent, assumeNullNonExistingProperty: true}) {
     if (ctx is Iterable) {
-      return new _IterableMustacheContextDecorator(
-          ctx,
+      return new _IterableMustacheContextDecorator(ctx,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
     }
-    return new _MustacheContext(
-        ctx,
+    return new _MustacheContext(ctx,
         parent: parent,
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
@@ -33,9 +30,8 @@ abstract class MustacheContext {
   bool get isFalsey;
   bool get isLambda;
   MustacheContext operator [](String key);
-  MustacheContext _getMustachContext (String key);
+  MustacheContext _getMustachContext(String key);
   String get rootContextString;
-  
 }
 
 abstract class MustacheToString {
@@ -54,8 +50,8 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   bool useMirrors = USE_MIRRORS;
   _ObjectReflector _ctxReflector;
 
-  _MustacheContext(this.ctx, {_MustacheContext this.parent,
-      this.assumeNullNonExistingProperty});
+  _MustacheContext(this.ctx,
+      {_MustacheContext this.parent, this.assumeNullNonExistingProperty});
 
   bool get isLambda => ctx is Function;
 
@@ -63,12 +59,11 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
 
-  callLambda(arg) =>
-      ctx is NoParamLambda ?
-          ctx() :
-          ctx is TwoParamLambda ?
-              ctx(arg, nestedContext: this) :
-              ctx is OptionalParamLambda ? ctx(nestedContext: this) : ctx(arg);
+  callLambda(arg) => ctx is NoParamLambda
+      ? ctx()
+      : ctx is TwoParamLambda
+          ? ctx(arg, nestedContext: this)
+          : ctx is OptionalParamLambda ? ctx(nestedContext: this) : ctx(arg);
 
   operator [](String key) {
     if (ctx == null) return null;
@@ -116,16 +111,14 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
       return null;
     }
     if (v is Iterable) {
-      return new _IterableMustacheContextDecorator(
-          v,
+      return new _IterableMustacheContextDecorator(v,
           parent: this,
           assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
     }
     if (v == false) {
       return FALSEY_CONTEXT;
     }
-    return new _MustacheContext(
-        v,
+    return new _MustacheContext(v,
         parent: this,
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
@@ -164,19 +157,19 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
-    with MustacheToString implements MustacheContext {
+    with MustacheToString
+    implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
 
-  _IterableMustacheContextDecorator(this.ctx, {this.parent,
-      this.assumeNullNonExistingProperty});
+  _IterableMustacheContextDecorator(this.ctx,
+      {this.parent, this.assumeNullNonExistingProperty});
 
   call([arg]) => throw new Exception('Iterable can be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
-      new _MustachContextIteratorDecorator(
-          ctx.iterator,
+      new _MustachContextIteratorDecorator(ctx.iterator,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 
@@ -195,17 +188,17 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
     throw new Exception(
         'Iterable can only be iterated. No [] implementation is available');
   }
-  
-  _getMustachContext (String key) {
+
+  _getMustachContext(String key) {
     if (key == 'empty' || key == 'isEmpty') {
-      return new _MustacheContext(isEmpty, parent: parent, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+      return new _MustacheContext(isEmpty,
+          parent: parent,
+          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
     }
     throw new Exception(
-            'Iterable can only be asked for empty or isEmpty keys or be iterated');
+        'Iterable can only be asked for empty or isEmpty keys or be iterated');
   }
 }
-
-
 
 class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
   final Iterator delegate;
@@ -214,13 +207,12 @@ class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
 
   _MustacheContext current;
 
-  _MustachContextIteratorDecorator(this.delegate, {this.parent,
-      this.assumeNullNonExistingProperty});
+  _MustachContextIteratorDecorator(this.delegate,
+      {this.parent, this.assumeNullNonExistingProperty});
 
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new _MustacheContext(
-          delegate.current,
+      current = new _MustacheContext(delegate.current,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
       return true;
@@ -267,8 +259,8 @@ class _ObjectReflectorDeclaration {
   final InstanceMirror mirror;
   final MethodMirror declaration;
 
-  factory _ObjectReflectorDeclaration(InstanceMirror m, String declarationName)
-      {
+  factory _ObjectReflectorDeclaration(
+      InstanceMirror m, String declarationName) {
     var methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
     if (methodMirror == null) {
       //try appending the word get to the name:
@@ -276,9 +268,9 @@ class _ObjectReflectorDeclaration {
           "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
       methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
     }
-    return methodMirror == null ?
-        null :
-        new _ObjectReflectorDeclaration._(m, methodMirror);
+    return methodMirror == null
+        ? null
+        : new _ObjectReflectorDeclaration._(m, methodMirror);
   }
 
   _ObjectReflectorDeclaration._(this.mirror, this.declaration);
@@ -286,16 +278,16 @@ class _ObjectReflectorDeclaration {
   bool get isLambda => declaration.parameters.length >= 1;
 
   Function get lambda => (val, {MustacheContext nestedContext}) {
-    var im = mirror.invoke(
-        declaration.simpleName,
-        _createPositionalArguments(val),
-        _createNamedArguments(nestedContext));
-    return im is InstanceMirror ? im.reflectee : null;
-  };
+        var im = mirror.invoke(
+            declaration.simpleName,
+            _createPositionalArguments(val),
+            _createNamedArguments(nestedContext));
+        return im is InstanceMirror ? im.reflectee : null;
+      };
 
   _createPositionalArguments(val) {
-    var positionalParam =
-        declaration.parameters.firstWhere((p) => !p.isOptional, orElse: () => null);
+    var positionalParam = declaration.parameters
+        .firstWhere((p) => !p.isOptional, orElse: () => null);
     if (positionalParam == null) {
       return [];
     } else {
@@ -335,7 +327,7 @@ class _ObjectReflectorDeclaration {
   //TODO check if we really need the declaration is VariableMirror test
   bool get isVariableOrGetter =>
       (declaration is VariableMirror) ||
-          (declaration is MethodMirror && declaration.isGetter);
+      (declaration is MethodMirror && declaration.isGetter);
 
   bool get isParameterlessMethod =>
       declaration is MethodMirror && declaration.parameters.length == 0;

@@ -11,9 +11,7 @@ class A {
   String get foo => 'foo';
 }
 
-class B extends A {
-
-}
+class B extends A {}
 
 class Parent {
   String foo;
@@ -23,9 +21,7 @@ class Child extends Parent {
   List<OtherChild> children = [];
 }
 
-class OtherChild extends Parent {
-
-}
+class OtherChild extends Parent {}
 
 void main() {
   defineTests();
@@ -33,22 +29,18 @@ void main() {
 
 defineTests() {
   group('mustache4dart issues', () {
-    test('#9', () => expect(render("{{#sec}}[{{var}}]{{/sec}}", {
-      'sec': 42
-    }), '[]'));
-    test('#10', () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {
-      'bob': []
-    }), '|\n|'));
+    test('#9',
+        () => expect(render("{{#sec}}[{{var}}]{{/sec}}", {'sec': 42}), '[]'));
+    test('#10',
+        () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
     test(
         '#11',
-        () => expect(() => render("{{#sec}}[{{var}}]{{/somethingelse}}", {
-      'sec': 42
-    }), throwsFormatException));
+        () => expect(
+            () => render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}),
+            throwsFormatException));
     test('#12: Write to a StringSink', () {
       StringSink out = new StringBuffer();
-      StringSink outcome = render("{{name}}!", {
-        'name': "George"
-      }, out: out);
+      StringSink outcome = render("{{name}}!", {'name': "George"}, out: out);
       expect(out, outcome);
       expect(out.toString(), "George!");
     });
@@ -62,15 +54,13 @@ defineTests() {
       expect(ctx[''], null);
       expect(ctx[null], null);
     });
-    test('#17', () => expect(render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {
-      'a': 'aa',
-      'b': 'bb'
-    }), '[aa|bb]'));
+    test(
+        '#17',
+        () => expect(
+            render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {'a': 'aa', 'b': 'bb'}),
+            '[aa|bb]'));
     test('#17 root cause: setting the same context as a subcontext', () {
-      var ctx = new MustacheContext({
-        'a': 'aa',
-        'b': 'bb'
-      });
+      var ctx = new MustacheContext({'a': 'aa', 'b': 'bb'});
       expect(ctx, isNotNull);
       expect(ctx['a'].toString(), isNotNull);
 
@@ -82,24 +72,21 @@ defineTests() {
       if (!currentPath.endsWith('/test')) {
         currentPath = "$currentPath/test";
       }
-      var template =
-          new File("$currentPath/lorem-ipsum.txt").readAsStringSync(encoding: UTF8);
+      var template = new File("$currentPath/lorem-ipsum.txt")
+          .readAsStringSync(encoding: UTF8);
 
-      String out = render(template, {
-        'ma': 'ma'
-      });
+      String out = render(template, {'ma': 'ma'});
       expect(out, template);
     });
 
     test('#25', () {
       var ctx = {
         "parent_name": "John",
-        "children": [{
-            "name": "child"
-          }]
+        "children": [
+          {"name": "child"}
+        ]
       };
-      expect(
-          render('{{#children}}Parent: {{parent_name}}{{/children}}', ctx),
+      expect(render('{{#children}}Parent: {{parent_name}}{{/children}}', ctx),
           'Parent: John');
     });
 
@@ -107,13 +94,10 @@ defineTests() {
       var model = {
         "name": "God",
         "hasChildren": true,
-        "children": [{
-            "name": "granpa",
-            "hasChildren": true
-          }, {
-            "name": "granma",
-            "hasChildren": false
-          }]
+        "children": [
+          {"name": "granpa", "hasChildren": true},
+          {"name": "granma", "hasChildren": false}
+        ]
       };
 
       expect(
@@ -141,21 +125,19 @@ defineTests() {
 
     test('#33', () {
       var b = new B();
-      expect(render('{{b.foo}}', {
-        'b': b
-      }), 'foo');
-      expect(render('{{b.bar}}', {
-        'b': b
-      }), 'bar');
+      expect(render('{{b.foo}}', {'b': b}), 'foo');
+      expect(render('{{b.bar}}', {'b': b}), 'bar');
     });
 
     test(
         '#41 do not look into parent context if current context has field but its value is null',
         () {
       var c = new Child()
-          ..foo = 'child'
-          ..children =
-              [new OtherChild()..foo = 'otherchild', new OtherChild()..foo = null];
+        ..foo = 'child'
+        ..children = [
+          new OtherChild()..foo = 'otherchild',
+          new OtherChild()..foo = null
+        ];
 
       var template = '''
 {{foo}}
@@ -166,10 +148,16 @@ defineTests() {
 
       expect(output, expected);
     });
- 
+
     test('#44 should provide a way to check for non empty lists', () {
-      var map = {'list': [1, 2]};
-      expect(render('{{^list.empty}}<ul>{{#list}}<li>{{.}}</li>{{/list}}</ul>{{/list.empty}}', map), '<ul><li>1</li><li>2</li></ul>');
+      var map = {
+        'list': [1, 2]
+      };
+      expect(
+          render(
+              '{{^list.empty}}<ul>{{#list}}<li>{{.}}</li>{{/list}}</ul>{{/list.empty}}',
+              map),
+          '<ul><li>1</li><li>2</li></ul>');
     });
   });
 }

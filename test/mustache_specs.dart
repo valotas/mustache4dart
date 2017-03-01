@@ -25,9 +25,7 @@ _defineGroupFromFile(filename, text) {
   var tests = json['tests'];
   filename = filename.substring(filename.lastIndexOf('/') + 1);
   group("Specs of $filename", () {
-
-
-        //Make sure that we reset the state of the Interpolation - Multiple Calls test
+    //Make sure that we reset the state of the Interpolation - Multiple Calls test
     //as for some reason dart can run the group more than once causing the test
     //to fail the second time it runs
     tearDown(() => lambdas['Interpolation - Multiple Calls'].reset());
@@ -61,11 +59,8 @@ _defineGroupFromFile(filename, text) {
       }
       test(
           testDescription.toString(),
-          () =>
-              expect(
-                  render(template, data, partial: partial),
-                  expected,
-                  reason: reason.toString()));
+          () => expect(render(template, data, partial: partial), expected,
+              reason: reason.toString()));
     });
   });
 }
@@ -93,12 +88,11 @@ var lambdas = {
   'Interpolation - Expansion': (t) => '{{planet}}',
   'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
   'Interpolation - Multiple Calls': new _DummyCallableWithState(),
-      //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+  //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
   'Escaping': (t) => '>',
   'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
   'Section - Expansion': (txt) => "$txt{{planet}}$txt",
   'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
   'Section - Multiple Calls': (t) => "__${t}__",
   'Inverted Section': (txt) => false
-
 };

@@ -3,8 +3,8 @@ part of mustache4dart;
 class _Template {
   final _TokenList list;
 
-  factory _Template({String template, Delimiter delimiter, String ident,
-      Function partial}) {
+  factory _Template(
+      {String template, Delimiter delimiter, String ident, Function partial}) {
     if (template == null) {
       throw new FormatException("The given template is null");
     }
@@ -14,10 +14,12 @@ class _Template {
     for (int i = 0; i < template.length; i++) {
       String char = template[i];
       if (delimiter.isDelimiter(template, i, searchForOpening)) {
-        if (searchForOpening) { //opening delimiter
+        if (searchForOpening) {
+          //opening delimiter
           tokens.addTokenWithBuffer(delimiter, ident, partial);
           searchForOpening = false;
-        } else { //closing delimiter
+        } else {
+          //closing delimiter
           tokens.write(delimiter.closing); //add the closing delimiter
           tokens.addTokenWithBuffer(delimiter, ident, partial);
           i = i + delimiter.closingLength - 1;
@@ -66,12 +68,12 @@ class _Template {
 
   _Template._internal(this.list);
 
-  call(ctx, {StringSink out: null, bool errorOnMissingProperty: false,
+  call(ctx,
+      {StringSink out: null,
+      bool errorOnMissingProperty: false,
       bool assumeNullNonExistingProperty: true}) {
     StringSink o = out == null ? new StringBuffer() : out;
-    _write(
-        ctx,
-        o,
+    _write(ctx, o,
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 
     //If we provide a StringSink, write there and return it as
@@ -89,8 +91,7 @@ class _Template {
       return EMPTY_STRING;
     }
     if (!(ctx is MustacheContext)) {
-      ctx = new MustacheContext(
-          ctx,
+      ctx = new MustacheContext(ctx,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
     }
 
@@ -122,8 +123,8 @@ class _TokenList {
     buffer = new StringBuffer();
   }
 
-  void addTokenWithBuffer(Delimiter del, String ident, Function partial, {last:
-      false}) {
+  void addTokenWithBuffer(Delimiter del, String ident, Function partial,
+      {last: false}) {
     if (buffer.length > 0) {
       addToken(buffer.toString(), del, ident, partial, last: last);
       buffer = new StringBuffer();
@@ -281,5 +282,4 @@ class Line {
       tokens.forEach((t) => t.rendable = false);
     }
   }
-
 }
