@@ -84,9 +84,9 @@ void main() {
     test(
         "Should cosider partial tag followed by a newline as an standAlone line",
         () {
-      var l = new Line(newToken('|'))
-          .add(newToken(CRNL))
-          .add(newToken('{{> p}}'));
+      var l = new Line(newToken('|'));
+      l = l.add(newToken(CRNL));
+      l = l.add(newToken('{{> p}}'));
       l.add(newToken(CRNL)).add(newToken('|'));
       expect(l.standAlone, isTrue);
     });
