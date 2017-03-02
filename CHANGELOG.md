@@ -1,7 +1,8 @@
 # CHANGELOG
 
-## 1.0.11
+## 1.0.11 (2017-03-02)
 
+* Fixed issue with default value of boolean arguments
 * Compile method now returns type annotation [issue](https://github.com/valotas/mustache4dart/issues/50)
 
 ## 1.0.10 (2015-03-15)
