@@ -6,4 +6,4 @@ homepage: https://github.com/valotas/mustache4dart
 environment:
   sdk: '>=0.8.10+6 <2.0.0'
 dev_dependencies:
-  unittest: '>=0.11.0 <0.12.0'
+  test: '>=0.12.0 <0.13.0'

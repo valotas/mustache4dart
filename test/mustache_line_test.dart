@@ -1,4 +1,4 @@
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 void main() {
@@ -84,8 +84,9 @@ void main() {
     test(
         "Should cosider partial tag followed by a newline as an standAlone line",
         () {
-      var l =
-          new Line(newToken('|')).add(newToken(CRNL)).add(newToken('{{> p}}'));
+      var l = new Line(newToken('|'))
+          .add(newToken(CRNL))
+          .add(newToken('{{> p}}'));
       l.add(newToken(CRNL)).add(newToken('|'));
       expect(l.standAlone, isTrue);
     });
