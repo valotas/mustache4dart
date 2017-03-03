@@ -106,7 +106,7 @@ void defineTests() {
       print("100 iterations of compiled rendering tool ${d2}millis");
       expect(d2 < (d / 2), isTrue);
     });
-  });
+  }, skip: "Performance should not be part of unittest");
 
   group('mustache4dart enhancements', () {
     test('Throw exception on unknown tag', () {
