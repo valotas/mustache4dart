@@ -1,12 +1,11 @@
 # Mustache for Dart
 
-[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.8)](https://travis-ci.org/valotas/mustache4dart)
+[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.11)](https://travis-ci.org/valotas/mustache4dart)
 
 A simple implementation of [Mustache][mustache] for the
-[Dart language][dartlang],
-which passes happily all the [mustache specs][specs]. If you want to 
-have a look at how it works, just check the [tests][tests]. For more info, 
-just read further.
+[Dart language][dartlang], which passes happily all the
+[mustache v1.1.2+λ specs][specs]. If you want to have a look at how it works,
+just check the [tests][tests]. For more info, just read further.
 
 Using it
 --------
