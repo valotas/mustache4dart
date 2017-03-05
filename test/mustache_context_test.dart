@@ -4,11 +4,86 @@ import 'package:test/test.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
 void main() {
-  defineTests();
-}
-
-void defineTests() {
   group('mustache_context lib', () {
+    test('Recursion of iterable contextes', () {
+      var contextY = {'content': 'Y', 'nodes': []};
+      var contextX = {
+        'content': 'X',
+        'nodes': [contextY]
+      };
+      var ctx = new MustacheContext(contextX);
+      expect(ctx['nodes'], isNotNull);
+      expect(ctx['nodes'].length, 1);
+      expect(ctx['nodes'] is Iterable, isTrue);
+      (ctx['nodes'] as Iterable).forEach((n) {
+        expect(n['content'](), 'Y');
+        expect(n['nodes'].length, 0);
+      });
+    });
+
+    test('Direct interpolation', () {
+      var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
+      expect(ctx['n1']['.'](), '1');
+      expect(ctx['n2']['.'](), '2.0');
+      expect(ctx['s']['.'](), 'some string');
+    });
+
+    test('Direct list interpolation', () {
+      var list = [1, 'two', 'three', '4'];
+      var ctx = new MustacheContext(list);
+      expect(ctx['.'] is Iterable, isTrue);
+    });
+
+    group('rootContextString()', () {
+      test('should delegate to context toString()', () {
+        var map = {'Simple': 'Map'};
+        expect(new MustacheContext(map).rootContextString, map.toString());
+      });
+
+      test('should delegate to root context toString()', () {
+        var root = new _Person('George', 'George', new _Person('Nick', 'Nick'));
+        var ctx = new MustacheContext(root);
+        expect(ctx['parent'].rootContextString, root.toString());
+      });
+
+      test('should also work with iterrables', () {
+        var list = [
+          {'Map': '1'},
+          {'Map': '2'}
+        ];
+        var ctx = new MustacheContext(list);
+        expect(ctx.rootContextString, list.toString());
+      });
+    });
+  });
+
+  group('Mirrorless mustache_context lib', () {
+    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
+        () {
+      var ctx = new MustacheContext({'key1': 'value1'});
+      expect(ctx.useMirrors, USE_MIRRORS);
+    });
+
+    test('should be disabled by default', () {
+      expect(USE_MIRRORS, true);
+    });
+
+    test('should return the result of the [] operator', () {
+      var ctx = new MustacheContext({'key1': 'value1'});
+      ctx.useMirrors = false;
+      expect(ctx['key1'](), 'value1');
+    });
+
+    test('should not be able to analyze classes with reflectioon', () {
+      var contactInfo = new _ContactInfo('type', 'value');
+      var ctx = new MustacheContext(contactInfo, parent: null);
+      ctx.useMirrors = false;
+      expect(ctx['type'], isNull);
+    });
+
+    //TODO: add check for lambda returned from within a map
+  });
+
     test('Simple context with map', () {
       var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
       expect(ctx['k1'](), 'value1');
@@ -150,85 +225,6 @@ void defineTests() {
           reason: "a.b.c.two == b.two when using $map");
       expect(ctx['a']['b']['c']['three'](), '3');
     });
-
-    test('Recursion of iterable contextes', () {
-      var contextY = {'content': 'Y', 'nodes': []};
-      var contextX = {
-        'content': 'X',
-        'nodes': [contextY]
-      };
-      var ctx = new MustacheContext(contextX);
-      expect(ctx['nodes'], isNotNull);
-      expect(ctx['nodes'].length, 1);
-      expect(ctx['nodes'] is Iterable, isTrue);
-      (ctx['nodes'] as Iterable).forEach((n) {
-        expect(n['content'](), 'Y');
-        expect(n['nodes'].length, 0);
-      });
-    });
-
-    test('Direct interpolation', () {
-      var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
-      expect(ctx['n1']['.'](), '1');
-      expect(ctx['n2']['.'](), '2.0');
-      expect(ctx['s']['.'](), 'some string');
-    });
-
-    test('Direct list interpolation', () {
-      var list = [1, 'two', 'three', '4'];
-      var ctx = new MustacheContext(list);
-      expect(ctx['.'] is Iterable, isTrue);
-    });
-
-    group('rootContextString()', () {
-      test('should delegate to context toString()', () {
-        var map = {'Simple': 'Map'};
-        expect(new MustacheContext(map).rootContextString, map.toString());
-      });
-
-      test('should delegate to root context toString()', () {
-        var root = new _Person('George', 'George', new _Person('Nick', 'Nick'));
-        var ctx = new MustacheContext(root);
-        expect(ctx['parent'].rootContextString, root.toString());
-      });
-
-      test('should also work with iterrables', () {
-        var list = [
-          {'Map': '1'},
-          {'Map': '2'}
-        ];
-        var ctx = new MustacheContext(list);
-        expect(ctx.rootContextString, list.toString());
-      });
-    });
-  });
-
-  group('Mirrorless mustache_context lib', () {
-    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
-        () {
-      var ctx = new MustacheContext({'key1': 'value1'});
-      expect(ctx.useMirrors, USE_MIRRORS);
-    });
-
-    test('should be disabled by default', () {
-      expect(USE_MIRRORS, true);
-    });
-
-    test('should return the result of the [] operator', () {
-      var ctx = new MustacheContext({'key1': 'value1'});
-      ctx.useMirrors = false;
-      expect(ctx['key1'](), 'value1');
-    });
-
-    test('should not be able to analyze classes with reflectioon', () {
-      var contactInfo = new _ContactInfo('type', 'value');
-      var ctx = new MustacheContext(contactInfo, parent: null);
-      ctx.useMirrors = false;
-      expect(ctx['type'], isNull);
-    });
-
-    //TODO: add check for lambda returned from within a map
-  });
 }
 
 class _Person {

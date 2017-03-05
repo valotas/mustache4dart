@@ -24,10 +24,6 @@ class Child extends Parent {
 class OtherChild extends Parent {}
 
 void main() {
-  defineTests();
-}
-
-defineTests() {
   group('mustache4dart issues', () {
     test('#9',
         () => expect(render("{{#sec}}[{{var}}]{{/sec}}", {'sec': 42}), '[]'));

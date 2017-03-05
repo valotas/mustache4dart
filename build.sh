@@ -18,3 +18,13 @@ fi
 
 # run the tests
 pub run test
+
+# Install dart_coveralls; gather and send coverage data.
+if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
+  pub global activate dart_coveralls
+  pub global run dart_coveralls report \
+    --retry 2 \
+    --exclude-test-files \
+    --debug \
+    test/mustache_all.dart
+fi

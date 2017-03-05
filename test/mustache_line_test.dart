@@ -71,7 +71,7 @@ void main() {
       expect(l_one.standAlone, isFalse);
       expect(l_a_end.standAlone, isTrue);
 
-      //Make sure that the empty line is actuall an empty line. It only contains a NL char
+      //Make sure that the empty line is actual an empty line. It only contains a NL char
       expect(l_empty.tokens.length, 1);
       expect(l_empty.tokens[0], newToken(NL));
       expect(l_empty.standAlone, isFalse,

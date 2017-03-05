@@ -6,10 +6,6 @@ import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 main() {
-  defineTests();
-}
-
-defineTests() {
   var specs_dir = new Directory('spec/specs');
   specs_dir.listSync().forEach((File f) {
     var filename = f.path;

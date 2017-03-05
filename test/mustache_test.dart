@@ -3,10 +3,6 @@ library mustache_tests;
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
-void main() {
-  defineTests();
-}
-
 class A {
   String name;
   A(this.name);
@@ -28,7 +24,7 @@ class B {
   lambda4({nestedContext}) => "4${nestedContext != null}4";
 }
 
-void defineTests() {
+void main() {
   group('mustache4dart tests', () {
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
     var salut = compile(salutTemplate);
