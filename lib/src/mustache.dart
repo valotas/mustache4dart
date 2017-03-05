@@ -1,10 +1,10 @@
 part of mustache4dart;
 
 render(String template, Object context,
-    {Function partial: null,
-    Delimiter delimiter: null,
+    {Function partial,
+    Delimiter delimiter,
     String ident: EMPTY_STRING,
-    StringSink out: null,
+    StringSink out,
     bool errorOnMissingProperty: false,
     bool assumeNullNonExistingProperty: true}) {
   return compile(template,
@@ -18,9 +18,7 @@ render(String template, Object context,
 }
 
 TemplateRenderer compile(String template,
-    {Function partial: null,
-    Delimiter delimiter: null,
-    String ident: EMPTY_STRING}) {
+    {Function partial, Delimiter delimiter, String ident: EMPTY_STRING}) {
   if (delimiter == null) {
     delimiter = new Delimiter('{{', '}}');
   }
