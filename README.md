@@ -96,10 +96,10 @@ git submodule update
 pub get
 ```
 
-If you are with Linux, a script is provided to run all the test:
+If you are with Linux, you can use what [travis][travis] does:
 
 ```sh
-test/run.sh
+./build.sh
 ```
 
 Alternatively, if you have [Dart Test Runner][testrunner] installed you can
@@ -127,3 +127,4 @@ The library will follow a [semantic versioning][semver]
 [semver]: http://semver.org/
 [mirrorsused]: https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed
 [testrunner]: https://pub.dartlang.org/packages/test_runner
+[travis]: https://travis-ci.org/valotas/mustache4dart
