@@ -35,8 +35,7 @@ abstract class Token {
   }
 
   Token call(MustacheContext context, StringSink out) {
-    if (out == null)
-      throw new Exception("Need an output to write the rendered result");
+    assert(out != null, "No StringSink provided");
     var string = apply(context);
     if (rendable) {
       out.write(string);
@@ -239,11 +238,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = super.apply(ctx);
-    if (!(val is String)) {
-      throw new Exception(
-          "Computed value ($val) is not a string. Can not apply it");
-    }
-
+    assert(val is String, "Result is not a string. That is not possible!");
     return val
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
