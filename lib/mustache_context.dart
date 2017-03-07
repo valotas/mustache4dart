@@ -134,9 +134,6 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   }
 
   bool _hasActualValueSlot(String key) {
-    if (assumeNullNonExistingProperty) {
-      return false;
-    }
     if (ctx is Map) {
       return (ctx as Map).containsKey(key);
     } else if (useMirrors && USE_MIRRORS) {
