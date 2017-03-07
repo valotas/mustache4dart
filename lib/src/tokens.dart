@@ -290,9 +290,7 @@ class _StartSectionToken extends _ExpressionToken
   }
 
   forEachUntilEndSection(void f(Token)) {
-    if (f == null) {
-      throw new Exception('Can not apply a null function!');
-    }
+    assert(f != null, 'Can not apply a null function!');
     Token n = super.next;
     while (!identical(n, endSection)) {
       f(n);
