@@ -70,6 +70,16 @@ void main() {
             render('{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n', map), '1\n\n2\n'));
   });
 
+  group('render', () {
+    test('throws exeption if given template is null', () {
+      expect(
+          () => render(null, null),
+          throwsA(predicate((e) =>
+              e is ArgumentError &&
+              e.message == "The given template is null")));
+    });
+  });
+
   group('Performance tests', () {
     test('Compiled templates should be at least 2 times faster', () {
       var tmpl =

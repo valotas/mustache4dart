@@ -6,7 +6,7 @@ class _Template {
   factory _Template(
       {String template, Delimiter delimiter, String ident, Function partial}) {
     if (template == null) {
-      throw new FormatException("The given template is null");
+      throw new ArgumentError("The given template is null");
     }
     _TokenList tokens = new _TokenList(delimiter, ident);
 
