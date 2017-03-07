@@ -69,7 +69,7 @@ class _Template {
   _Template._internal(this.list);
 
   call(ctx,
-      {StringSink out: null,
+      {StringSink out,
       bool errorOnMissingProperty: false,
       bool assumeNullNonExistingProperty: true}) {
     StringSink o = out == null ? new StringBuffer() : out;
