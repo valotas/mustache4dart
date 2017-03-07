@@ -109,6 +109,21 @@ just do:
 pub global run test_runner
 ```
 
+### Observatory
+
+To start the observatory after running test:
+
+```sh
+dart --pause-isolates-on-exit --enable-vm-service=NNNN ./test/mustache_all.dart
+```
+
+Then [`coverage`][coverage] can be used in order to collect and format data:
+
+```sh
+pub global run coverage:collect_coverage --uri=http://... -o /tmp/mustache4dart.coverage.json --resume-isolates
+pub global run coverage:format_coverage --packages=app_package/.packages -i /tmp/mustache4dart.coverage.json
+```
+
 Contributing
 ------------
 If you found a bug, just create a [new issue][new_issue] or even better fork
@@ -128,3 +143,4 @@ The library will follow a [semantic versioning][semver]
 [mirrorsused]: https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed
 [testrunner]: https://pub.dartlang.org/packages/test_runner
 [travis]: https://travis-ci.org/valotas/mustache4dart
+[coverage]: https://pub.dartlang.org/packages/coverage
