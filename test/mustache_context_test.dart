@@ -226,6 +226,22 @@ void main() {
         reason: "a.b.c.two == b.two when using $map");
     expect(ctx['a']['b']['c']['three'](), '3');
   });
+
+  group('with assumeNullNonExistingProperty', () {
+    test('throws exception if false and property not found in context', () {
+      final map = {
+        'a': {'one': 1}
+      };
+      final ctx =
+          new MustacheContext(map, assumeNullNonExistingProperty: false);
+
+      expect(
+          ctx['b'],
+          throwsA(predicate((e) =>
+              e is StateError &&
+              e.message == 'Could not find b in $map')));
+    });
+  });
 }
 
 class _Person {

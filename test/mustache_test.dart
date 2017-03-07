@@ -78,6 +78,15 @@ void main() {
               e is ArgumentError &&
               e.message == "The given template is null")));
     });
+
+    test(
+        'throws exception on missing property when assumeNullNonExistingProperty = false',
+        () {
+      expect(
+          () => render('<{{theProp}}>', {'the': 'val'},
+              assumeNullNonExistingProperty: false),
+          throwsA('Oups'));
+    });
   });
 
   group('Performance tests', () {
