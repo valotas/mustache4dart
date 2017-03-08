@@ -35,7 +35,7 @@ abstract class Token {
   }
 
   Token call(MustacheContext context, StringSink out) {
-    assert(out != null, "No StringSink provided");
+    assert(() => out != null || "No StringSink provided");
     var string = apply(context);
     if (rendable) {
       out.write(string);
@@ -238,7 +238,7 @@ class _EscapeHtmlToken extends _ExpressionToken {
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
     var val = super.apply(ctx);
-    assert(val is String, "Result is not a string. That is not possible!");
+    assert(() => val is String || "Result is not a string. That is not possible!");
     return val
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -290,7 +290,7 @@ class _StartSectionToken extends _ExpressionToken
   }
 
   forEachUntilEndSection(void f(Token)) {
-    assert(f != null, 'Can not apply a null function!');
+    assert(() => f != null || 'Can not apply a null function!');
     Token n = super.next;
     while (!identical(n, endSection)) {
       f(n);
