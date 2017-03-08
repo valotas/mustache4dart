@@ -227,8 +227,8 @@ void main() {
     expect(ctx['a']['b']['c']['three'](), '3');
   });
 
-  group('with assumeNullNonExistingProperty', () {
-    test('throws exception if false and property not found in context', () {
+  group('with assumeNullNonExistingProperty = false', () {
+    test('throws exception if property not found in context', () {
       final map = {
         'a': {'one': 1}
       };
@@ -240,6 +240,16 @@ void main() {
           throwsA(predicate((e) =>
               e is StateError &&
               e.message == 'Could not find "b" in "$map"')));
+    });
+
+    test('handles null as normal value', () {
+      final map = {
+        'a': null
+      };
+      final ctx =
+      new MustacheContext(map, assumeNullNonExistingProperty: false);
+
+      expect(ctx['a'], null);
     });
   });
 }

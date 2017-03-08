@@ -72,8 +72,12 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
+    var hasSlot = _hasActualValueSlot(key);
+    if (!assumeNullNonExistingProperty && !hasSlot) {
+      throw new StateError('Could not find "$key" in "$ctx"');
+    }
     //if the result is null, try the parent context
-    if (result == null && !_hasActualValueSlot(key) && parent != null) {
+    if (result == null && !hasSlot && parent != null) {
       result = parent[key];
       if (result != null) {
         return _newMustachContextOrNull(result.ctx);
@@ -103,9 +107,6 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   _getMustachContext(String key) {
     var v = _getActualValue(key);
-    if (v == null && !assumeNullNonExistingProperty) {
-      throw new StateError('Could not find "$key" in "$ctx"');
-    }
     return _newMustachContextOrNull(v);
   }
 
