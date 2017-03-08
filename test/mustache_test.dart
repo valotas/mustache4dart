@@ -82,10 +82,14 @@ void main() {
     test(
         'throws exception on missing property when assumeNullNonExistingProperty = false',
         () {
+      final propName = "theProp";
+      final ctx = {'the': 'val'};
       expect(
-          () => render('<{{theProp}}>', {'the': 'val'},
+          () => render('<{{$propName}}>', ctx,
               assumeNullNonExistingProperty: false),
-          throwsA('Oups'));
+          throwsA(predicate((e) =>
+              e is StateError &&
+              e.message == 'Could not find "$propName" in "$ctx"')));
     });
   });
 

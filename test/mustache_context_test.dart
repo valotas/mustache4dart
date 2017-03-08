@@ -236,10 +236,10 @@ void main() {
           new MustacheContext(map, assumeNullNonExistingProperty: false);
 
       expect(
-          ctx['b'],
+          () => ctx['b'],
           throwsA(predicate((e) =>
               e is StateError &&
-              e.message == 'Could not find b in $map')));
+              e.message == 'Could not find "b" in "$map"')));
     });
   });
 }

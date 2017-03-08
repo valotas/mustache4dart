@@ -103,6 +103,9 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   _getMustachContext(String key) {
     var v = _getActualValue(key);
+    if (v == null && !assumeNullNonExistingProperty) {
+      throw new StateError('Could not find "$key" in "$ctx"');
+    }
     return _newMustachContextOrNull(v);
   }
 
