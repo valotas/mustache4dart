@@ -238,16 +238,13 @@ void main() {
       expect(
           () => ctx['b'],
           throwsA(predicate((e) =>
-              e is StateError &&
-              e.message == 'Could not find "b" in "$map"')));
+              e is StateError && e.message == 'Could not find "b" in "$map"')));
     });
 
     test('handles null as normal value', () {
-      final map = {
-        'a': null
-      };
+      final map = {'a': null};
       final ctx =
-      new MustacheContext(map, assumeNullNonExistingProperty: false);
+          new MustacheContext(map, assumeNullNonExistingProperty: false);
 
       expect(ctx['a'], null);
     });
