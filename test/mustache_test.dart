@@ -128,21 +128,6 @@ void main() {
   }, skip: "Performance should not be part of unittest");
 
   group('mustache4dart enhancements', () {
-    test('Throw exception on unknown tag', () {
-      try {
-        render('Hi {{name}}', {'namee': 'George'});
-      } catch (e) {
-        expect(e, "Could not find 'name' property in {namee: George}}");
-      }
-    });
-
-    test('Throw exception on unknown start tag', () {
-      try {
-        render('Hi {{#name}}man!{{/name}}', {'namee': 'George'});
-      } catch (e) {
-        expect(e, "Could not find 'name' property in {namee: George}}");
-      }
-    });
 
     group('Lambdas with nested context (#39)', () {
       test(
