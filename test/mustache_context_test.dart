@@ -238,7 +238,8 @@ void main() {
       expect(
           () => ctx['b'],
           throwsA(predicate((e) =>
-              e is StateError && e.message == 'Could not find "b" in "$map"')));
+              e is StateError &&
+              e.message == 'Could not find "b" in given context')));
     });
 
     test('handles null as normal value', () {
@@ -247,6 +248,14 @@ void main() {
           new MustacheContext(map, assumeNullNonExistingProperty: false);
 
       expect(ctx['a'], null);
+    });
+
+    test('try also parent context before throwing an exception', () {
+      final map = {'a': null, 'b': 'this is a value'};
+      final ctx =
+          new MustacheContext(map, assumeNullNonExistingProperty: false);
+
+      expect(ctx['b']['a'], null);
     });
   });
 }

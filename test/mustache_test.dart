@@ -89,7 +89,7 @@ void main() {
               assumeNullNonExistingProperty: false),
           throwsA(predicate((e) =>
               e is StateError &&
-              e.message == 'Could not find "$propName" in "$ctx"')));
+              e.message == 'Could not find "$propName" in given context')));
     });
   });
 
