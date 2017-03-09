@@ -5,16 +5,13 @@ render(String template, Object context,
     Delimiter delimiter,
     String ident: EMPTY_STRING,
     StringSink out,
-    bool errorOnMissingProperty: false,
-    bool assumeNullNonExistingProperty: true}) {
+    bool errorOnMissingProperty: false}) {
   return compile(template,
       partial: partial,
       delimiter: delimiter,
       ident:
           ident)(context,
-      out: out,
-      errorOnMissingProperty: errorOnMissingProperty,
-      assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+      out: out, errorOnMissingProperty: errorOnMissingProperty);
 }
 
 TemplateRenderer compile(String template,

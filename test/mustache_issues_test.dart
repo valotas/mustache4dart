@@ -137,7 +137,7 @@ void main() {
 
       var template = '''{{foo}}[{{#children}}[{{foo}}]!{{/children}}]''';
 
-      var output = render(template, c, assumeNullNonExistingProperty: false);
+      var output = render(template, c, errorOnMissingProperty: true);
       var expected = "child[[otherchild]![]!]";
 
       expect(output, expected);

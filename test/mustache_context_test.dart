@@ -232,8 +232,7 @@ void main() {
       final map = {
         'a': {'one': 1}
       };
-      final ctx =
-          new MustacheContext(map, assumeNullNonExistingProperty: false);
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
       expect(
           () => ctx['b'],
@@ -244,16 +243,14 @@ void main() {
 
     test('handles null as normal value', () {
       final map = {'a': null};
-      final ctx =
-          new MustacheContext(map, assumeNullNonExistingProperty: false);
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
       expect(ctx['a'], null);
     });
 
     test('try also parent context before throwing an exception', () {
       final map = {'a': null, 'b': 'this is a value'};
-      final ctx =
-          new MustacheContext(map, assumeNullNonExistingProperty: false);
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
       expect(ctx['b']['a'], null);
     });

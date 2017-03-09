@@ -85,8 +85,7 @@ void main() {
       final propName = "theProp";
       final ctx = {'the': 'val'};
       expect(
-          () => render('<{{$propName}}>', ctx,
-              assumeNullNonExistingProperty: false),
+          () => render('<{{$propName}}>', ctx, errorOnMissingProperty: true),
           throwsA(predicate((e) =>
               e is StateError &&
               e.message == 'Could not find "$propName" in given context')));
@@ -128,7 +127,6 @@ void main() {
   }, skip: "Performance should not be part of unittest");
 
   group('mustache4dart enhancements', () {
-
     group('Lambdas with nested context (#39)', () {
       test(
           'Provide lambdas as a dynamic (String s, {nestedContext}) function within a map',

@@ -14,15 +14,13 @@ typedef TwoParamLambda(String s, {nestedContext});
 
 abstract class MustacheContext {
   factory MustacheContext(ctx,
-      {MustacheContext parent, assumeNullNonExistingProperty: true}) {
+      {MustacheContext parent, errorOnMissingProperty: false}) {
     if (ctx is Iterable) {
       return new _IterableMustacheContextDecorator(ctx,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
     }
     return new _MustacheContext(ctx,
-        parent: parent,
-        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+        parent: parent, errorOnMissingProperty: errorOnMissingProperty);
   }
 
   call([arg]);
@@ -46,12 +44,12 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
   final ctx;
   final _MustacheContext parent;
-  final bool assumeNullNonExistingProperty;
+  final bool errorOnMissingProperty;
   bool useMirrors = USE_MIRRORS;
   _ObjectReflector _ctxReflector;
 
   _MustacheContext(this.ctx,
-      {_MustacheContext this.parent, this.assumeNullNonExistingProperty});
+      {_MustacheContext this.parent, this.errorOnMissingProperty});
 
   bool get isLambda => ctx is Function;
 
@@ -73,7 +71,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     var hasSlot = _hasActualValueSlot(key);
-    if (!assumeNullNonExistingProperty && !hasSlot && parent == null) {
+    if (errorOnMissingProperty && !hasSlot && parent == null) {
       throw new StateError('Could not find "$key" in given context');
     }
     //if the result is null, try the parent context
@@ -116,15 +114,13 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     }
     if (v is Iterable) {
       return new _IterableMustacheContextDecorator(v,
-          parent: this,
-          assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
+          parent: this, errorOnMissingProperty: this.errorOnMissingProperty);
     }
     if (v == false) {
       return FALSEY_CONTEXT;
     }
     return new _MustacheContext(v,
-        parent: this,
-        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+        parent: this, errorOnMissingProperty: errorOnMissingProperty);
   }
 
   dynamic _getActualValue(String key) {
@@ -162,17 +158,16 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
     implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;
-  final bool assumeNullNonExistingProperty;
+  final bool errorOnMissingProperty;
 
   _IterableMustacheContextDecorator(this.ctx,
-      {this.parent, this.assumeNullNonExistingProperty});
+      {this.parent, this.errorOnMissingProperty});
 
   call([arg]) => throw new Exception('Iterable can be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
       new _MustachContextIteratorDecorator(ctx.iterator,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
 
   int get length => ctx.length;
 
@@ -193,8 +188,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   _getMustachContext(String key) {
     if (key == 'empty' || key == 'isEmpty') {
       return new _MustacheContext(isEmpty,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
     }
     throw new Exception(
         'Iterable can only be asked for empty or isEmpty keys or be iterated');
@@ -204,18 +198,17 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
 class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
   final Iterator delegate;
   final _MustacheContext parent;
-  final bool assumeNullNonExistingProperty;
+  final bool errorOnMissingProperty;
 
   _MustacheContext current;
 
   _MustachContextIteratorDecorator(this.delegate,
-      {this.parent, this.assumeNullNonExistingProperty});
+      {this.parent, this.errorOnMissingProperty});
 
   bool moveNext() {
     if (delegate.moveNext()) {
       current = new _MustacheContext(delegate.current,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
       return true;
     } else {
       current = null;
