@@ -5,8 +5,7 @@ main() {
       '{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{#d}}-{{one}}{{two}}{{three}}{{four}}{{#e}}{{one}}{{two}}{{three}}{{four}}{{/e}}{{/d}}{{/c}}{{/b}}{{/a}}';
   StringBuffer buf = new StringBuffer(tmpl);
   for (int i = 0; i < 10; i++) {
-    buf.write(
-        'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
+    buf.write('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
     buf.write(tmpl);
   }
   tmpl = buf.toString();
