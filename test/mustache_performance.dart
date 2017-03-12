@@ -1,5 +1,7 @@
 import 'package:mustache4dart/mustache4dart.dart';
 
+const ITERATIONS = 10000;
+
 main() {
   var tmpl =
       '{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{#d}}-{{one}}{{two}}{{three}}{{four}}{{#e}}{{one}}{{two}}{{three}}{{four}}{{/e}}{{/d}}{{/c}}{{/b}}{{/a}}';
@@ -19,20 +21,20 @@ main() {
   };
   var ctmpl = compile(tmpl);
 
-  var warmup = duration(100, () => "${ctmpl(map)}--${render(tmpl, map)}");
+  var warmup = duration(() => "${ctmpl(map)}--${render(tmpl, map)}");
   print(
       "Warmup rendering of template with length ${tmpl.length} took ${warmup}millis");
 
-  var d = duration(100, () => render(tmpl, map));
+  var d = duration(() => render(tmpl, map));
   print("100 iterations of uncompiled rendering took ${d}millis");
 
-  var d2 = duration(100, () => ctmpl(map));
+  var d2 = duration(() => ctmpl(map));
   print("100 iterations of compiled rendering tool ${d2}millis");
 }
 
-num duration(int reps, f()) {
+num duration(f()) {
   var start = new DateTime.now();
-  for (int i = 0; i < reps; i++) {
+  for (int i = 0; i < ITERATIONS; i++) {
     f();
   }
   var end = new DateTime.now();
