@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.12 (2017-03-17)
+
+* Maintenance release
+
 ## 1.0.11 (2017-03-02)
 
 * Fixed issue with default value of boolean arguments
