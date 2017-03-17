@@ -1,6 +1,8 @@
 import 'package:mustache4dart/mustache4dart.dart';
 
-const ITERATIONS = 1000;
+const ITERATIONS = 10000;
+
+var AVAILABLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 main() {
   final tmpl = createTemplate();
@@ -25,6 +27,9 @@ main() {
   print("Compiled rendering took ${d2}millis");
 
   print("Score relation: ${d2/d}");
+
+  final base = duration(baselineTest);
+  print("Baseline test took: ${base}millis");
 }
 
 createTemplate() {
@@ -38,7 +43,15 @@ createTemplate() {
     buf.write(tmpl);
   }
   return buf.toString();
+}
 
+baselineTest() {
+  final length = AVAILABLE_CHARS.length;
+  var newString = '';
+  for (var i = length - 1; i >= 0; i--) {
+    newString += '-' + AVAILABLE_CHARS[i];
+  }
+  return newString;
 }
 
 num duration(f()) {
