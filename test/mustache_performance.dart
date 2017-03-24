@@ -1,10 +1,12 @@
 import 'package:mustache4dart/mustache4dart.dart';
 
-const ITERATIONS = 10000;
+const ITERATIONS = 1000;
 
 var AVAILABLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 main() {
+  final iterations = findIterations();
+
   final tmpl = createTemplate();
 
   final map = {
@@ -16,20 +18,18 @@ main() {
   };
   final ctmpl = compile(tmpl);
 
-  final warmup = duration(() => "${ctmpl(map)}--${render(tmpl, map)}");
+  final warmup =
+      duration(() => "${ctmpl(map)}--${render(tmpl, map)}", iterations);
   print(
       "Warmup rendering of template with length ${tmpl.length} took ${warmup}millis");
 
-  final d = duration(() => render(tmpl, map));
+  final d = duration(() => render(tmpl, map), iterations);
   print("Uncompiled rendering took ${d}millis");
 
-  final d2 = duration(() => ctmpl(map));
+  final d2 = duration(() => ctmpl(map), iterations);
   print("Compiled rendering took ${d2}millis");
 
   print("Score relation: ${d2/d}");
-
-  final base = duration(baselineTest);
-  print("Baseline test took: ${base}millis");
 }
 
 createTemplate() {
@@ -45,6 +45,17 @@ createTemplate() {
   return buf.toString();
 }
 
+findIterations([num initialIterations = ITERATIONS]) {
+  var iterations = initialIterations;
+  var time = duration(baselineTest, iterations);
+  while (time < 100) {
+    iterations = iterations * 2;
+    time = duration(baselineTest, iterations);
+    print("Baseline test took: ${time}millis for ${iterations} iterations");
+  }
+  return iterations;
+}
+
 baselineTest() {
   final length = AVAILABLE_CHARS.length;
   var newString = '';
@@ -54,9 +65,9 @@ baselineTest() {
   return newString;
 }
 
-num duration(f()) {
+num duration(f(), [numOfIterations = ITERATIONS]) {
   final start = new DateTime.now();
-  for (int i = 0; i < ITERATIONS; i++) {
+  for (int i = 0; i < numOfIterations; i++) {
     f();
   }
   final end = new DateTime.now();
