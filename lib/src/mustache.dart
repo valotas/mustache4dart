@@ -8,10 +8,7 @@ render(String template, Object context,
     bool errorOnMissingProperty: false,
     bool assumeNullNonExistingProperty: true}) {
   return compile(template,
-      partial: partial,
-      delimiter: delimiter,
-      ident:
-          ident)(context,
+          partial: partial, delimiter: delimiter, ident: ident)(context,
       out: out,
       errorOnMissingProperty: errorOnMissingProperty,
       assumeNullNonExistingProperty: assumeNullNonExistingProperty);
