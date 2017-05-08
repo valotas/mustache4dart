@@ -124,13 +124,22 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   }
 
   dynamic _getActualValue(String key) {
-    try {
-      return ctx[key];
-    } catch (NoSuchMethodError) {
-      //Try to make dart2js understand that when we define USE_MIRRORS = false
-      //we do not want to use any reflector
-      return (useMirrors && USE_MIRRORS) ? ctxReflector[key] : null;
+    if (reflect(ctx).type.instanceMembers.containsKey(new Symbol("[]"))) {
+      MethodMirror m = reflect(ctx).type.instanceMembers[new Symbol("[]")];
+      TypeMirror reflectedString = reflectType(String);
+      if (reflectedString.isAssignableTo(m.parameters[0].type)) {
+        try {
+          return ctx[key];
+        } catch (NoSuchMethodError) {
+          // This should never happen unless we were trapping a lower level
+          // NoSuchMethodError before.  Continue to do so to be bug-for-bug
+          // compatible.
+        }
+      }
     }
+    //Try to make dart2js understand that when we define USE_MIRRORS = false
+    //we do not want to use any reflector
+    return (useMirrors && USE_MIRRORS) ? ctxReflector[key] : null;
   }
 
   bool _hasActualValueSlot(String key) {
