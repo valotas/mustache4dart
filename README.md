@@ -1,6 +1,6 @@
 # Mustache for Dart
 
-[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=master)](https://travis-ci.org/valotas/mustache4dart)
+[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.12)](https://travis-ci.org/valotas/mustache4dart)
 [![Coverage Status](https://coveralls.io/repos/github/valotas/mustache4dart/badge.svg?branch=master)](https://coveralls.io/github/valotas/mustache4dart?branch=master)
 
 A simple implementation of [Mustache][mustache] for the
