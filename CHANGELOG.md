@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.0 (2017-05-10)
+
+* Avoid trapping exceptions by using reflection ([#59](https://github.com/valotas/mustache4dart/pull/59))
+
 ## 1.0.12 (2017-03-17)
 
 * Maintenance release
