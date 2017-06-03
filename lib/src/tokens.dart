@@ -44,7 +44,7 @@ abstract class Token {
     return next;
   }
 
-  StringBuffer apply(MustacheContext context);
+  String apply(MustacheContext context);
 
   void set next(Token n) {
     _next = n;
@@ -63,7 +63,7 @@ abstract class Token {
    */
   bool operator ==(other) {
     if (other is Token) {
-      return value == (other as Token).value;
+      return value == other.value;
     }
     if (other is String) {
       return value == other;
@@ -276,10 +276,10 @@ class _StartSectionToken extends _ExpressionToken
     }
     StringBuffer str = new StringBuffer();
     if (val is Iterable) {
-      val.forEach((v) {
+      (val as Iterable).forEach((v) {
         forEachUntilEndSection((Token t) => str.write(t.apply(v)));
       });
-      return str;
+      return str.toString();
     }
 
     if (val.isLambda) {
@@ -291,7 +291,7 @@ class _StartSectionToken extends _ExpressionToken
 
     //in any other case:
     forEachUntilEndSection((Token t) => str.write(t.apply(val)));
-    return str;
+    return str.toString();
   }
 
   forEachUntilEndSection(void f(Token)) {

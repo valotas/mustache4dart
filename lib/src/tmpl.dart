@@ -88,7 +88,7 @@ class _Template {
 
   void _write(ctx, StringSink out, {bool assumeNullNonExistingProperty}) {
     if (list.head == null) {
-      return EMPTY_STRING;
+      return;
     }
     if (!(ctx is MustacheContext)) {
       ctx = new MustacheContext(ctx,
