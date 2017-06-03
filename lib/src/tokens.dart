@@ -9,7 +9,7 @@ abstract class Token {
 
   Token _next;
   Token prev;
-  bool rendable = true;
+  bool _rendable = true;
 
   Token.withSource(this._source);
 
@@ -57,6 +57,12 @@ abstract class Token {
    * This describes the value of the token.
    */
   String get value;
+
+  void set rendable(bool rendable) {
+    _rendable = rendable;
+  }
+
+  bool get rendable => _rendable;
 
   /**
    * Two tokens are the same if their _val are the same.
