@@ -313,8 +313,8 @@ class _ObjectReflectorDeclaration {
     }
   }
 
-  _createNamedArguments(MustacheContext ctx) {
-    var map = {};
+  Map<Symbol, dynamic> _createNamedArguments(MustacheContext ctx) {
+    var map = new Map<Symbol, dynamic>();
     var nestedContextParameterExists = declaration.parameters.firstWhere(
         (p) => p.simpleName == new Symbol('nestedContext'),
         orElse: () => null);
