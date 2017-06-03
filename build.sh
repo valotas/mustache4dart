@@ -3,7 +3,8 @@
 # bail on error
 set -e
 
-dartanalyzer --fatal-warnings lib/*.dart test/*.dart
+echo "Analyzing with `dartanalyzer --version`"
+dartanalyzer --strong --fatal-warnings lib/*.dart test/*.dart
 
 # Assert that code is formatted.
 pub global activate dart_style

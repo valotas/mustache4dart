@@ -13,8 +13,8 @@ void main() {
       };
       var ctx = new MustacheContext(contextX);
       expect(ctx['nodes'], isNotNull);
-      expect(ctx['nodes'].length, 1);
       expect(ctx['nodes'] is Iterable, isTrue);
+      expect((ctx['nodes'] as Iterable).length, 1);
       (ctx['nodes'] as Iterable).forEach((n) {
         expect(n['content'](), 'Y');
         expect(n['nodes'].length, 0);
@@ -60,7 +60,7 @@ void main() {
   group('Mirrorless mustache_context lib', () {
     test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
         () {
-      var ctx = new MustacheContext({'key1': 'value1'});
+      dynamic ctx = new MustacheContext({'key1': 'value1'});
       expect(ctx.useMirrors, USE_MIRRORS);
     });
 
@@ -69,14 +69,14 @@ void main() {
     });
 
     test('should return the result of the [] operator', () {
-      var ctx = new MustacheContext({'key1': 'value1'});
+      dynamic ctx = new MustacheContext({'key1': 'value1'});
       ctx.useMirrors = false;
       expect(ctx['key1'](), 'value1');
     });
 
     test('should not be able to analyze classes with reflectioon', () {
       var contactInfo = new _ContactInfo('type', 'value');
-      var ctx = new MustacheContext(contactInfo, parent: null);
+      dynamic ctx = new MustacheContext(contactInfo, parent: null);
       ctx.useMirrors = false;
       expect(ctx['type'], isNull);
     });
@@ -102,7 +102,7 @@ void main() {
   });
 
   test('Simple map with list of maps', () {
-    var ctx = new MustacheContext({
+    dynamic ctx = new MustacheContext({
       'k': [
         {'k1': 'item1'},
         {'k2': 'item2'},
@@ -126,8 +126,8 @@ void main() {
         }
       ]
     });
-    expect(ctx['k'].length, 2);
     expect(ctx['k'] is Iterable, isTrue);
+    expect((ctx['k'] as Iterable).length, 2);
     expect((ctx['k'] as Iterable).last['k3'].length, 2);
   });
 
@@ -142,9 +142,9 @@ void main() {
     p.contactInfos.add(new _ContactInfo('skype', 'some1'));
     var ctx = new MustacheContext(p);
     var contactInfos = ctx['contactInfos'];
-    expect(contactInfos.length, 2);
     expect(contactInfos is Iterable, isTrue);
     var iterableContactInfos = contactInfos as Iterable;
+    expect(iterableContactInfos.length, 2);
     expect(iterableContactInfos.first['value']['Num'](), '31');
   });
 

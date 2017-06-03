@@ -7,10 +7,10 @@ import 'package:mustache4dart/mustache4dart.dart';
 
 main() {
   var specs_dir = new Directory('spec/specs');
-  specs_dir.listSync().forEach((File f) {
-    var filename = f.path;
-    if (shouldRun(filename)) {
-      var text = f.readAsStringSync(encoding: UTF8);
+  specs_dir.listSync().forEach((FileSystemEntity entity) {
+    var filename = entity.path;
+    if (entity is File && shouldRun(filename)) {
+      var text = entity.readAsStringSync(encoding: UTF8);
       _defineGroupFromFile(filename, text);
     }
   });
@@ -24,7 +24,11 @@ _defineGroupFromFile(filename, text) {
     //Make sure that we reset the state of the Interpolation - Multiple Calls test
     //as for some reason dart can run the group more than once causing the test
     //to fail the second time it runs
-    tearDown(() => lambdas['Interpolation - Multiple Calls'].reset());
+    tearDown(() {
+      _DummyCallableWithState callable =
+          lambdas['Interpolation - Multiple Calls'];
+      callable.reset();
+    });
 
     tests.forEach((t) {
       var testDescription = new StringBuffer(t['name']);
@@ -79,7 +83,7 @@ class _DummyCallableWithState {
   reset() => _callCounter = 0;
 }
 
-var lambdas = {
+dynamic lambdas = {
   'Interpolation': (t) => 'world',
   'Interpolation - Expansion': (t) => '{{planet}}',
   'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
