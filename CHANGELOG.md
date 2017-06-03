@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## next
+* Use dartanalyzer `--strong` mode ([#61](https://github.com/valotas/mustache4dart/issues/61))
+
 ## 1.1.0 (2017-05-10)
 
 * Avoid trapping exceptions by using reflection ([#59](https://github.com/valotas/mustache4dart/pull/59))
