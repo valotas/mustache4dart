@@ -28,14 +28,16 @@ abstract class MustacheContext {
   value([arg]);
 
   bool get isFalsey;
+
   bool get isLambda;
+
   MustacheContext field(String key);
+
   MustacheContext _getMustachContext(String key);
 }
 
 class _MustacheContext implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
-  static final Symbol BRACKETS_OPERATOR = new Symbol("[]");
 
   final ctx;
   final _MustacheContext parent;
@@ -117,23 +119,7 @@ class _MustacheContext implements MustacheContext {
   }
 
   dynamic _getActualValue(String key) {
-    //Try to make dart2js understand that when we define USE_MIRRORS = false
-    //we do not want to use any reflector as that inflates the generated
-    //javascript.
     if (useMirrors && USE_MIRRORS) {
-      if (reflect(ctx).type.instanceMembers.containsKey(BRACKETS_OPERATOR)) {
-        MethodMirror m = reflect(ctx).type.instanceMembers[BRACKETS_OPERATOR];
-        TypeMirror reflectedString = reflectType(String);
-        if (reflectedString.isAssignableTo(m.parameters[0].type)) {
-          try {
-            return ctx[key];
-          } catch (NoSuchMethodError) {
-            //This should never happen unless we were trapping a lower level
-            //NoSuchMethodError before.  Continue to do so to be bug-for-bug
-            //compatible.
-          }
-        }
-      }
       return ctxReflector[key];
     } else {
       try {
@@ -234,39 +220,60 @@ class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
   }
 }
 
+final Symbol BRACKETS_OPERATOR = new Symbol("[]");
+final STRING_TYPE = reflectType(String);
+
 /**
  * Helper class which given an object it will try to get a value by key analyzing
  * the object by reflection
  */
 class _ObjectReflector {
   final InstanceMirror m;
+  final dynamic object;
 
   factory _ObjectReflector(o) {
-    return new _ObjectReflector._(reflect(o));
+    return new _ObjectReflector._(o, reflect(o));
   }
 
-  _ObjectReflector._(this.m);
+  _ObjectReflector._(this.object, this.m);
 
   operator [](String key) {
-    var declaration = getDeclaration(key);
+    var fieldWithValue = fieldValue(key);
 
-    if (declaration == null) {
+    if (fieldWithValue == null) {
       return null;
     }
 
-    return declaration.value;
+    return fieldWithValue.value;
   }
 
   bool hasSlot(String key) {
-    return getDeclaration(key) != null;
+    return fieldValue(key) != null;
   }
 
-  _ObjectReflectorDeclaration getDeclaration(String key) {
+  _FieldValue fieldValue(String key) {
+    var bracketsOp = m.type.instanceMembers[BRACKETS_OPERATOR];
+    if (bracketsOp != null &&
+        STRING_TYPE.isAssignableTo(bracketsOp.parameters[0].type)) {
+      return new _BracketsValue(object, key);
+    }
     return new _ObjectReflectorDeclaration(m, key);
   }
 }
 
-class _ObjectReflectorDeclaration {
+abstract class _FieldValue {
+  get value;
+}
+
+class _BracketsValue extends _FieldValue {
+  var value;
+
+  _BracketsValue(objectWithBracketsOperator, String key) {
+    this.value = objectWithBracketsOperator[key];
+  }
+}
+
+class _ObjectReflectorDeclaration extends _FieldValue {
   final InstanceMirror mirror;
   final MethodMirror declaration;
 
@@ -276,7 +283,8 @@ class _ObjectReflectorDeclaration {
     if (methodMirror == null) {
       //try appending the word get to the name:
       var nameWithGet =
-          "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
+          "get${declarationName[0].toUpperCase()}${declarationName.substring(
+          1)}";
       methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
     }
     return methodMirror == null
