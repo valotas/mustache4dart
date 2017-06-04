@@ -1,5 +1,6 @@
 library mustache_context_tests;
 
+import 'dart:mirrors';
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
@@ -210,6 +211,7 @@ void main() {
   });
 }
 
+@MirrorsUsed()
 class _Person {
   final name;
   final lastname;
@@ -233,6 +235,7 @@ class _Person {
   reversedLastName() => _reverse(lastname);
 }
 
+@MirrorsUsed()
 class _ContactInfo {
   final String type;
   final value;
@@ -240,6 +243,7 @@ class _ContactInfo {
   _ContactInfo(this.type, this.value);
 }
 
+@MirrorsUsed()
 class _Transformer {
   String transform(String val) => "<b>$val</b>";
 }
