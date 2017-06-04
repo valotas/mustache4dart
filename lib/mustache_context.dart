@@ -184,7 +184,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   _IterableMustacheContextDecorator(this.ctx,
       {this.parent, this.assumeNullNonExistingProperty});
 
-  call([arg]) => throw new Exception('Iterable can be called as a function');
+  call([arg]) => throw new Exception('Iterable can not be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
       new _MustachContextIteratorDecorator(ctx.iterator,
