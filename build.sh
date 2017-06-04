@@ -26,6 +26,5 @@ if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "stable" ]; then
   pub global run dart_coveralls report \
     --retry 2 \
     --exclude-test-files \
-    --debug \
     test/mustache_all.dart
 fi
