@@ -25,11 +25,11 @@ abstract class MustacheContext {
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 
-  call([arg]);
+  value([arg]);
 
   bool get isFalsey;
   bool get isLambda;
-  MustacheContext operator [](String key);
+  MustacheContext field(String key);
   MustacheContext _getMustachContext(String key);
 }
 
@@ -48,7 +48,7 @@ class _MustacheContext implements MustacheContext {
 
   bool get isFalsey => ctx == null || ctx == false;
 
-  call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
+  value([arg]) => isLambda ? callLambda(arg) : ctx.toString();
 
   callLambda(arg) => ctx is NoParamLambda
       ? ctx()
@@ -56,7 +56,7 @@ class _MustacheContext implements MustacheContext {
           ? ctx(arg, nestedContext: this)
           : ctx is OptionalParamLambda ? ctx(nestedContext: this) : ctx(arg);
 
-  operator [](String key) {
+  field(String key) {
     if (ctx == null) return null;
     return _getInThisOrParent(key);
   }
@@ -65,7 +65,7 @@ class _MustacheContext implements MustacheContext {
     var result = _getContextForKey(key);
     //if the result is null, try the parent context
     if (result == null && !_hasActualValueSlot(key) && parent != null) {
-      result = parent[key];
+      result = parent.field(key);
       if (result != null) {
         return _newMustachContextOrNull(result.ctx);
       }
@@ -174,7 +174,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   _IterableMustacheContextDecorator(this.ctx,
       {this.parent, this.assumeNullNonExistingProperty});
 
-  call([arg]) => throw new Exception('Iterable can not be called as a function');
+  value([arg]) => throw new Exception('Iterable can not be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
       new _MustachContextIteratorDecorator(ctx.iterator,
@@ -189,7 +189,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
 
   bool get isLambda => false;
 
-  operator [](String key) {
+  field(String key) {
     if (key == DOT) {
       return this;
     }

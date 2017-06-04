@@ -45,10 +45,10 @@ void main() {
         '#16 root cause: For null objects the value of any property should be null',
         () {
       var ctx = new MustacheContext(null);
-      expect(ctx['xxx'], null);
-      expect(ctx['123'], null);
-      expect(ctx[''], null);
-      expect(ctx[null], null);
+      expect(ctx.field('xxx'), null);
+      expect(ctx.field('123'), null);
+      expect(ctx.field(''), null);
+      expect(ctx.field(null), null);
     });
     test(
         '#17',
@@ -58,10 +58,10 @@ void main() {
     test('#17 root cause: setting the same context as a subcontext', () {
       var ctx = new MustacheContext({'a': 'aa', 'b': 'bb'});
       expect(ctx, isNotNull);
-      expect(ctx['a'].toString(), isNotNull);
+      expect(ctx.field('a').toString(), isNotNull);
 
       //Here lies a problem if the subaa.other == suba
-      expect(ctx['a']['a'].toString(), isNotNull);
+      expect(ctx.field('a').field('a').toString(), isNotNull);
     });
     test('#20', () {
       var currentPath = Directory.current.path;

@@ -12,26 +12,26 @@ void main() {
         'nodes': [contextY]
       };
       var ctx = new MustacheContext(contextX);
-      expect(ctx['nodes'], isNotNull);
-      expect(ctx['nodes'] is Iterable, isTrue);
-      expect((ctx['nodes'] as Iterable).length, 1);
-      (ctx['nodes'] as Iterable).forEach((n) {
-        expect(n['content'](), 'Y');
-        expect(n['nodes'].length, 0);
+      expect(ctx.field('nodes'), isNotNull);
+      expect(ctx.field('nodes') is Iterable, isTrue);
+      expect((ctx.field('nodes') as Iterable).length, 1);
+      (ctx.field('nodes') as Iterable).forEach((n) {
+        expect(n.field('content').value(), 'Y');
+        expect(n.field('nodes').length, 0);
       });
     });
 
     test('Direct interpolation', () {
       var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
-      expect(ctx['n1']['.'](), '1');
-      expect(ctx['n2']['.'](), '2.0');
-      expect(ctx['s']['.'](), 'some string');
+      expect(ctx.field('n1').field('.').value(), '1');
+      expect(ctx.field('n2').field('.').value(), '2.0');
+      expect(ctx.field('s').field('.').value(), 'some string');
     });
 
     test('Direct list interpolation', () {
       var list = [1, 'two', 'three', '4'];
       var ctx = new MustacheContext(list);
-      expect(ctx['.'] is Iterable, isTrue);
+      expect(ctx.field('.') is Iterable, isTrue);
     });
   });
 
@@ -49,14 +49,14 @@ void main() {
     test('should return the result of the [] operator', () {
       dynamic ctx = new MustacheContext({'key1': 'value1'});
       ctx.useMirrors = false;
-      expect(ctx['key1'](), 'value1');
+      expect(ctx.field('key1').value(), 'value1');
     });
 
     test('should not be able to analyze classes with reflectioon', () {
       var contactInfo = new _ContactInfo('type', 'value');
       dynamic ctx = new MustacheContext(contactInfo, parent: null);
       ctx.useMirrors = false;
-      expect(ctx['type'], isNull);
+      expect(ctx.field('type'), isNull);
     });
 
     //TODO: add check for lambda returned from within a map
@@ -64,19 +64,19 @@ void main() {
 
   test('Simple context with map', () {
     var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
-    expect(ctx['k1'](), 'value1');
-    expect(ctx['k2'](), 'value2');
-    expect(ctx['k3'], null);
+    expect(ctx.field('k1').value(), 'value1');
+    expect(ctx.field('k2').value(), 'value2');
+    expect(ctx.field('k3'), null);
   });
 
   test('Simple context with object', () {
     var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
-    expect(ctx['name'](), 'Γιώργος');
-    expect(ctx['lastname'](), 'Βαλοτάσιος');
-    expect(ctx['last'], null);
-    expect(ctx['fullname'](), 'Γιώργος Βαλοτάσιος');
-    expect(ctx['reversedName'](), 'ςογρώιΓ');
-    expect(ctx['reversedLastName'](), 'ςοισάτολαΒ');
+    expect(ctx.field('name').value(), 'Γιώργος');
+    expect(ctx.field('lastname').value(), 'Βαλοτάσιος');
+    expect(ctx.field('last'), null);
+    expect(ctx.field('fullname').value(), 'Γιώργος Βαλοτάσιος');
+    expect(ctx.field('reversedName').value(), 'ςογρώιΓ');
+    expect(ctx.field('reversedLastName').value(), 'ςοισάτολαΒ');
   });
 
   test('Simple map with list of maps', () {
@@ -89,7 +89,7 @@ void main() {
         }
       ]
     });
-    expect(ctx['k'].length, 3);
+    expect(ctx.field('k').length, 3);
   });
 
   test('Map with list of lists', () {
@@ -104,9 +104,9 @@ void main() {
         }
       ]
     });
-    expect(ctx['k'] is Iterable, isTrue);
-    expect((ctx['k'] as Iterable).length, 2);
-    expect((ctx['k'] as Iterable).last['k3'].length, 2);
+    expect(ctx.field('k') is Iterable, isTrue);
+    expect((ctx.field('k') as Iterable).length, 2);
+    expect((ctx.field('k') as Iterable).last.field('k3').length, 2);
   });
 
   test('Object with iterables', () {
@@ -119,11 +119,11 @@ void main() {
     }));
     p.contactInfos.add(new _ContactInfo('skype', 'some1'));
     var ctx = new MustacheContext(p);
-    var contactInfos = ctx['contactInfos'];
+    var contactInfos = ctx.field('contactInfos');
     expect(contactInfos is Iterable, isTrue);
     var iterableContactInfos = contactInfos as Iterable;
     expect(iterableContactInfos.length, 2);
-    expect(iterableContactInfos.first['value']['Num'](), '31');
+    expect(iterableContactInfos.first.field('value').field('Num').value(), '31');
   });
 
   test('Deep search with object', () {
@@ -134,33 +134,33 @@ void main() {
     }
 
     MustacheContext ctx = new MustacheContext(p);
-    expect(ctx['name'](), 'name1');
-    expect(ctx['parent']['lastname'](), 'lastname2');
-    expect(ctx['parent']['parent']['fullname'](), 'name3 lastname3');
+    expect(ctx.field('name').value(), 'name1');
+    expect(ctx.field('parent').field('lastname').value(), 'lastname2');
+    expect(ctx.field('parent').field('parent').field('fullname').value(), 'name3 lastname3');
   });
 
   test('simple MustacheFunction value', () {
     var t = new _Transformer();
     var ctx = new MustacheContext(t);
-    var f = ctx['transform'];
+    var f = ctx.field('transform');
 
     expect(f.isLambda, true);
-    expect(f('123 456 777'), t.transform('123 456 777'));
+    expect(f.value('123 456 777'), t.transform('123 456 777'));
   });
 
   test('MustacheFunction from anonymus function', () {
     var map = {'transform': (String val) => "$val!"};
     var ctx = new MustacheContext(map);
-    var f = ctx['transform'];
+    var f = ctx.field('transform');
 
     expect(f.isLambda, true);
-    expect(f('woh'), 'woh!');
+    expect(f.value('woh'), 'woh!');
   });
 
   test('Dotted names', () {
     var ctx =
         new MustacheContext({'person': new _Person('George', 'Valotasios')});
-    expect(ctx['person.name'](), 'George');
+    expect(ctx.field('person.name').value(), 'George');
   });
 
   test('Context with another context', () {
@@ -169,9 +169,9 @@ void main() {
           'a': {'one': 1},
           'b': {'two': 2}
         }));
-    expect(ctx['name'](), 'George');
-    expect(ctx['a']['one'](), '1');
-    expect(ctx['b']['two'](), '2');
+    expect(ctx.field('name').value(), 'George');
+    expect(ctx.field('a').field('one').value(), '1');
+    expect(ctx.field('b.two').value(), '2');
   });
 
   test('Deep subcontext test', () {
@@ -185,24 +185,25 @@ void main() {
       'b': {'two': 2},
       'c': {'three': 3}
     });
-    expect(ctx['a'], isNotNull, reason: "a should exists when using $map");
-    expect(ctx['a']['one'](), '1');
-    expect(ctx['a']['two'], isNull);
-    expect(ctx['a']['b'], isNotNull,
+    expect(ctx.field('a'), isNotNull, reason: "a should exists when using $map");
+    expect(ctx.field('a').field('one').value(), '1');
+    expect(ctx.field('a').field('two'), isNull);
+    expect(ctx.field('a').field('b'), isNotNull,
         reason: "a.b should exists when using $map");
-    expect(ctx['a']['b']['one'](), '1',
+    expect(ctx.field('a').field('b').field('one').value(), '1',
         reason: "a.b.one == a.own when using $map");
-    expect(ctx['a']['b']['two'](), '2',
+    expect(ctx.field('a').field('b').field('two').value(), '2',
         reason: "a.b.two == b.two when using $map");
-    expect(ctx['a']['b']['three'], isNull);
-    expect(ctx['a']['b']['c'], isNotNull,
+    expect(ctx.field('a').field('b').field('three'), isNull);
+    expect(ctx.field('a').field('b').field('c'), isNotNull,
         reason: "a.b.c should not be null when using $map");
 
-    expect(ctx['a']['b']['c']['one'](), '1',
+    var abc = ctx.field('a').field('b').field('c');
+    expect(abc.field('one').value(), '1',
         reason: "a.b.c.one == a.one when using $map");
-    expect(ctx['a']['b']['c']['two'](), '2',
+    expect(abc.field('two').value(), '2',
         reason: "a.b.c.two == b.two when using $map");
-    expect(ctx['a']['b']['c']['three'](), '3');
+    expect(abc.field('three').value(), '3');
   });
 }
 
