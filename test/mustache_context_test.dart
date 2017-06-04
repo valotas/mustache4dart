@@ -123,7 +123,8 @@ void main() {
     expect(contactInfos is Iterable, isTrue);
     var iterableContactInfos = contactInfos as Iterable;
     expect(iterableContactInfos.length, 2);
-    expect(iterableContactInfos.first.field('value').field('Num').value(), '31');
+    expect(
+        iterableContactInfos.first.field('value').field('Num').value(), '31');
   });
 
   test('Deep search with object', () {
@@ -136,7 +137,8 @@ void main() {
     MustacheContext ctx = new MustacheContext(p);
     expect(ctx.field('name').value(), 'name1');
     expect(ctx.field('parent').field('lastname').value(), 'lastname2');
-    expect(ctx.field('parent').field('parent').field('fullname').value(), 'name3 lastname3');
+    expect(ctx.field('parent').field('parent').field('fullname').value(),
+        'name3 lastname3');
   });
 
   test('simple MustacheFunction value', () {
@@ -185,7 +187,8 @@ void main() {
       'b': {'two': 2},
       'c': {'three': 3}
     });
-    expect(ctx.field('a'), isNotNull, reason: "a should exists when using $map");
+    expect(ctx.field('a'), isNotNull,
+        reason: "a should exists when using $map");
     expect(ctx.field('a').field('one').value(), '1');
     expect(ctx.field('a').field('two'), isNull);
     expect(ctx.field('a').field('b'), isNotNull,
