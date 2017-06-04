@@ -35,6 +35,8 @@ abstract class MustacheContext {
 
 class _MustacheContext implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
+  static final Symbol BRACKETS_OPERATOR = new Symbol("[]");
+
   final ctx;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
@@ -119,8 +121,8 @@ class _MustacheContext implements MustacheContext {
     //we do not want to use any reflector as that inflates the generated
     //javascript.
     if (useMirrors && USE_MIRRORS) {
-      if (reflect(ctx).type.instanceMembers.containsKey(new Symbol("[]"))) {
-        MethodMirror m = reflect(ctx).type.instanceMembers[new Symbol("[]")];
+      if (reflect(ctx).type.instanceMembers.containsKey(BRACKETS_OPERATOR)) {
+        MethodMirror m = reflect(ctx).type.instanceMembers[BRACKETS_OPERATOR];
         TypeMirror reflectedString = reflectType(String);
         if (reflectedString.isAssignableTo(m.parameters[0].type)) {
           try {
