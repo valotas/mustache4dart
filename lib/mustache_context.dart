@@ -31,18 +31,9 @@ abstract class MustacheContext {
   bool get isLambda;
   MustacheContext operator [](String key);
   MustacheContext _getMustachContext(String key);
-  String get rootContextString;
 }
 
-abstract class MustacheToString {
-  dynamic get ctx;
-  MustacheContext get parent;
-
-  String get rootContextString =>
-      parent == null ? ctx.toString() : parent.rootContextString;
-}
-
-class _MustacheContext extends MustacheToString implements MustacheContext {
+class _MustacheContext implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
   final ctx;
   final _MustacheContext parent;
@@ -175,7 +166,6 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
-    with MustacheToString
     implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;

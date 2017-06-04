@@ -170,7 +170,7 @@ class _ExpressionToken extends Token {
     if (val == null) {
       //TODO define an exception for such cases
       if (errorOnMissingProperty) {
-        throw "Could not find '$value' property in ${ctx.rootContextString}}";
+        throw "Could not find '$value' property";
       }
       return EMPTY_STRING;
     }
@@ -275,7 +275,7 @@ class _StartSectionToken extends _ExpressionToken
     var val = ctx[value];
     //TODO: remove null check by returning a falsey context
     if (errorOnMissingProperty && val == null) {
-      throw "Could not find '$value' property in ${ctx.rootContextString}}";
+      throw "Could not find '$value' property";
     }
     if (val == null || val.isFalsey) {
       return EMPTY_STRING;
