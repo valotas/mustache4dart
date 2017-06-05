@@ -1,9 +1,25 @@
 language: dart
 sudo: false
+
 dart:
   - stable
   - 1.22.0
   - 1.21.1
   - 1.20.1
   - 1.19.1
+
+dart_task:
+  - dartfmt
+  - dartanalyzer: --strong --fatal-warnings lib/*.dart test/*.dart
+  - test
+  - test: test/mustache_context_test.dart --platform chrome
+
 script: ./build.sh
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+  - $HOME/.pub-cache
