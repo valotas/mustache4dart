@@ -14,7 +14,7 @@ dart_task:
   - test
   - test: test/mustache_context_test.dart --platform chrome
 
-script: ./build.sh
+# script: ./build.sh
 
 branches:
   only:
