@@ -3,6 +3,7 @@ dist: trusty
 sudo: false
 
 addons:
+  firefox: 53
   apt:
     packages:
       - google-chrome-stable
