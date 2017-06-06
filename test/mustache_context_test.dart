@@ -27,7 +27,7 @@ void main() {
       expect(ctx.field('n1').field('.').value(), '1');
       expect(ctx.field('n2').field('.').value(), '2.0');
       expect(ctx.field('s').field('.').value(), 'some string');
-    });
+    }, testOn: "vm");
 
     test('Direct list interpolation', () {
       var list = [1, 'two', 'three', '4'];

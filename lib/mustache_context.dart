@@ -119,6 +119,9 @@ class _MustacheContext implements MustacheContext {
   }
 
   dynamic _getActualValue(String key) {
+    if (ctx is Map) {
+      return ctx[key];
+    }
     if (useMirrors && USE_MIRRORS) {
       return ctxReflector[key];
     } else {
@@ -253,11 +256,21 @@ class _ObjectReflector {
 
   _FieldValue fieldValue(String key) {
     var bracketsOp = m.type.instanceMembers[BRACKETS_OPERATOR];
-    if (bracketsOp != null &&
-        STRING_TYPE.isAssignableTo(bracketsOp.parameters[0].type)) {
+    if (_isStringAssignableTo(bracketsOp)) {
       return new _BracketsValue(object, key);
     }
     return new _ObjectReflectorDeclaration(m, key);
+  }
+}
+
+_isStringAssignableTo(MethodMirror m) {
+  if (m == null) {
+    return false;
+  }
+  try {
+    return STRING_TYPE.isAssignableTo(m.parameters[0].type);
+  } catch (e) {
+    return false;
   }
 }
 
