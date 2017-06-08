@@ -1,8 +1,10 @@
 library mustache_context_tests;
 
+import 'dart:mirrors' as mirrors;
 import 'package:test/test.dart';
 import 'package:mustache4dart/src/mirrors.dart';
 
+@mirrors.MirrorsUsed()
 class Person {
   final String name;
   final String lastname;
@@ -20,6 +22,13 @@ class Person {
   }
 }
 
+@mirrors.MirrorsUsed()
+class ClassWithBrackets {
+  operator [] (String input) {
+    return new Person(input);
+  }
+}
+
 void main() {
   group('reflect', () {
     test('returns a mirror object', () {
@@ -31,9 +40,30 @@ void main() {
       test('should return an object', () {
         var cat = new Person("cat");
 
-        var actual = reflect(cat);
+        var actual = reflect(cat).field('name');
 
-        expect(actual.field('name'), isNotNull);
+        expect(actual, isNotNull);
+        expect(actual, new isInstanceOf<Field>());
+      });
+
+      group(".exists", () {
+        final cat = new Person("cat");
+
+        test('returns true if the field exists', () {
+          expect(reflect(cat).field('name').exists, isTrue);
+        });
+
+        test('returns true if the getter exists', () {
+          expect(reflect(cat).field('fullname').exists, isTrue);
+        });
+
+        test('returns true if the get method exists', () {
+          expect(reflect(cat).field('fullnameWithInitial').exists, isTrue);
+        });
+
+        test('returns false no field exists', () {
+          expect(reflect(cat).field('fullnameWithInitial2').exists, isFalse);
+        });
       });
 
       group(".val()", () {
@@ -54,7 +84,7 @@ void main() {
               "George Valotasios");
         });
 
-        test('returns the value of a getter method', () {
+        test('returns the value of a get method', () {
           var george = new Person("George",
               lastname: "Valotasios",
               parent: new Person("Thomas"));
@@ -66,26 +96,29 @@ void main() {
         });
 
         test('returns the value from a [] operator', () {
-          var george = {
-            "name": "George"
-          };
+          final object = new ClassWithBrackets();
+
+          final actual = reflect(object).field('xyz');
+
+          expect(actual.val(), isNotNull);
+          expect(actual.val(), new isInstanceOf<Person>());
+          expect(actual.val().name, 'xyz');
+        }, onPlatform: {
+          "js": new Skip("[] operator can not be reflected in javascript")
+        });
+
+        test('returns always a reference to the value', () {
+          var thomas = new Person("Thomas");
+          var george = new Person("George",
+              lastname: "Valotasios",
+              parent: thomas);
+
 
           var actual = reflect(george);
 
-          expect(actual.field('name').val(), "George");
+          expect(actual.field('parent').val(), thomas);
         });
       });
-    });
-
-    test(
-        "isLambda == true when the object is a function" +
-            "with more than one parameters", () {
-      var f = (s) => "[$s]";
-
-      var actual = reflect(f);
-
-      expect(actual, isNotNull);
-      expect(actual.isLambda, true);
     });
   });
 }

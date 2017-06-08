@@ -14,7 +14,10 @@ class Mirror {
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
-        instanceMirror.type.instanceMembers;
+        _instanceMembers(instanceMirror);
+    if (members == null) {
+      return noField;
+    }
     if (_isStringAssignableToBracketsOperator(members)) {
       return new BracketsField(object, name);
     }
@@ -25,7 +28,16 @@ class Mirror {
       final rest = name.substring(1);
       methodMirror = members[new Symbol("get${capital}${rest}")];
     }
+    if (methodMirror == null) {
+      return noField;
+    }
     return new MethodMirrorField(this.instanceMirror, methodMirror);
+  }
+}
+
+_instanceMembers(mirrors.InstanceMirror m) {
+  if (m != null && m.type != null) {
+    return m.type.instanceMembers;
   }
 }
 
@@ -41,10 +53,18 @@ _isStringAssignableToBracketsOperator(Map<Symbol, mirrors.MethodMirror> members)
   }
 }
 
-abstract class Field {
-  bool get isEmpty;
-  dynamic val();
+class Field {
+  bool get exists {
+    return false;
+  }
+
+  dynamic val() {
+    return null;
+  }
 }
+
+final noField = new Field();
+
 
 class MethodMirrorField extends Field {
   final mirrors.InstanceMirror instance;
@@ -52,7 +72,7 @@ class MethodMirrorField extends Field {
 
   MethodMirrorField(this.instance, this.method);
 
-  bool get isEmpty => !(isVariable || isGetter || isParameterlessMethod);
+  bool get exists => isVariable || isGetter || isParameterlessMethod;
 
   bool get isGetter => method.isGetter;
 
@@ -61,7 +81,7 @@ class MethodMirrorField extends Field {
   bool get isParameterlessMethod => method.parameters.length == 0;
 
   val() {
-    if (isEmpty) {
+    if (!exists) {
       return null;
     }
     mirrors.InstanceMirror resultMirror;
@@ -81,8 +101,8 @@ class BracketsField extends Field {
     this.value = objectWithBracketsOperator[key];
   }
 
-  bool get isEmpty {
-    value == null;
+  bool get exists {
+    value != null;
   }
 
   val() {
