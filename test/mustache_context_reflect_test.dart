@@ -32,7 +32,7 @@ class ClassWithLambda {
 
 @mirrors.MirrorsUsed()
 class ClassWithBrackets {
-  operator [] (String input) {
+  operator [](String input) {
     return new Person(input);
   }
 }
@@ -88,14 +88,12 @@ void main() {
 
           var actual = reflect(george);
 
-          expect(actual.field('fullname').val(),
-              "George Valotasios");
+          expect(actual.field('fullname').val(), "George Valotasios");
         });
 
         test('returns the value of a get method', () {
           var george = new Person("George",
-              lastname: "Valotasios",
-              parent: new Person("Thomas"));
+              lastname: "Valotasios", parent: new Person("Thomas"));
 
           var actual = reflect(george);
 
@@ -117,9 +115,8 @@ void main() {
 
         test('returns always a reference to the value', () {
           var thomas = new Person("Thomas");
-          var george = new Person("George",
-              lastname: "Valotasios",
-              parent: thomas);
+          var george =
+              new Person("George", lastname: "Valotasios", parent: thomas);
 
           var actual = reflect(george);
 

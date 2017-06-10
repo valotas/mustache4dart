@@ -14,7 +14,7 @@ class Mirror {
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
-    _instanceMembers(instanceMirror);
+        _instanceMembers(instanceMirror);
     if (members == null) {
       return noField;
     }
@@ -66,14 +66,14 @@ class Field {
 
 final noField = new Field();
 
-
 class MethodMirrorField extends Field {
   final mirrors.InstanceMirror instance;
   final mirrors.MethodMirror method;
 
   MethodMirrorField(this.instance, this.method);
 
-  bool get exists => isVariable || isGetter || isParameterlessMethod || isLambda;
+  bool get exists =>
+      isVariable || isGetter || isParameterlessMethod || isLambda;
 
   bool get isGetter => method.isGetter;
 
