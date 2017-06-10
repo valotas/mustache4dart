@@ -2,8 +2,7 @@ library mustache_context;
 
 import 'dart:collection';
 
-@MirrorsUsed(symbols: '*')
-import 'dart:mirrors';
+import 'package:mustache4dart/src/mirrors.dart';
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
@@ -43,7 +42,7 @@ class _MustacheContext implements MustacheContext {
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
   bool useMirrors = USE_MIRRORS;
-  _ObjectReflector _ctxReflector;
+  Mirror _ctxReflection;
 
   _MustacheContext(this.ctx,
       {_MustacheContext this.parent, this.assumeNullNonExistingProperty});
@@ -123,7 +122,7 @@ class _MustacheContext implements MustacheContext {
       return ctx[key];
     }
     if (useMirrors && USE_MIRRORS) {
-      return ctxReflector[key];
+      return ctxReflector.field(key).val();
     } else {
       try {
         return ctx[key];
@@ -141,19 +140,17 @@ class _MustacheContext implements MustacheContext {
       return (ctx as Map).containsKey(key);
     } else if (useMirrors && USE_MIRRORS) {
       //TODO test the case of no mirrors
-      return ctxReflector.hasSlot(key);
+      return ctxReflector.field(key).exists;
     }
     return false;
   }
 
-  get ctxReflector {
-    if (_ctxReflector == null) {
-      _ctxReflector = new _ObjectReflector(ctx);
+  Mirror get ctxReflector {
+    if (_ctxReflection == null) {
+      _ctxReflection = reflect(ctx);
     }
-    return _ctxReflector;
+    return _ctxReflection;
   }
-
-  String toString() => "MustacheContext($ctx, $parent)";
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
@@ -221,146 +218,4 @@ class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
       return false;
     }
   }
-}
-
-final Symbol BRACKETS_OPERATOR = new Symbol("[]");
-final STRING_TYPE = reflectType(String);
-
-/**
- * Helper class which given an object it will try to get a value by key analyzing
- * the object by reflection
- */
-class _ObjectReflector {
-  final InstanceMirror m;
-  final dynamic object;
-
-  factory _ObjectReflector(o) {
-    return new _ObjectReflector._(o, reflect(o));
-  }
-
-  _ObjectReflector._(this.object, this.m);
-
-  operator [](String key) {
-    var fieldWithValue = fieldValue(key);
-
-    if (fieldWithValue == null) {
-      return null;
-    }
-
-    return fieldWithValue.value;
-  }
-
-  bool hasSlot(String key) {
-    return fieldValue(key) != null;
-  }
-
-  _FieldValue fieldValue(String key) {
-    var bracketsOp = m.type.instanceMembers[BRACKETS_OPERATOR];
-    if (_isStringAssignableTo(bracketsOp)) {
-      return new _BracketsValue(object, key);
-    }
-    return new _ObjectReflectorDeclaration(m, key);
-  }
-}
-
-_isStringAssignableTo(MethodMirror m) {
-  if (m == null) {
-    return false;
-  }
-  try {
-    return STRING_TYPE.isAssignableTo(m.parameters[0].type);
-  } catch (e) {
-    return false;
-  }
-}
-
-abstract class _FieldValue {
-  get value;
-}
-
-class _BracketsValue extends _FieldValue {
-  var value;
-
-  _BracketsValue(objectWithBracketsOperator, String key) {
-    this.value = objectWithBracketsOperator[key];
-  }
-}
-
-class _ObjectReflectorDeclaration extends _FieldValue {
-  final InstanceMirror mirror;
-  final MethodMirror declaration;
-
-  factory _ObjectReflectorDeclaration(
-      InstanceMirror m, String declarationName) {
-    var methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
-    if (methodMirror == null) {
-      //try appending the word get to the name:
-      var nameWithGet =
-          "get${declarationName[0].toUpperCase()}${declarationName.substring(
-          1)}";
-      methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
-    }
-    return methodMirror == null
-        ? null
-        : new _ObjectReflectorDeclaration._(m, methodMirror);
-  }
-
-  _ObjectReflectorDeclaration._(this.mirror, this.declaration);
-
-  bool get isLambda => declaration.parameters.length >= 1;
-
-  Function get lambda => (val, {MustacheContext nestedContext}) {
-        var im = mirror.invoke(
-            declaration.simpleName,
-            _createPositionalArguments(val),
-            _createNamedArguments(nestedContext));
-        return im is InstanceMirror ? im.reflectee : null;
-      };
-
-  _createPositionalArguments(val) {
-    var positionalParam = declaration.parameters
-        .firstWhere((p) => !p.isOptional, orElse: () => null);
-    if (positionalParam == null) {
-      return [];
-    } else {
-      return [val];
-    }
-  }
-
-  Map<Symbol, dynamic> _createNamedArguments(MustacheContext ctx) {
-    var map = new Map<Symbol, dynamic>();
-    var nestedContextParameterExists = declaration.parameters.firstWhere(
-        (p) => p.simpleName == new Symbol('nestedContext'),
-        orElse: () => null);
-    if (nestedContextParameterExists != null) {
-      map[nestedContextParameterExists.simpleName] = ctx;
-    }
-    return map;
-  }
-
-  get value {
-    if (isLambda) {
-      return lambda;
-    }
-
-    //Now we try to find out a field or a getter named after the given name
-    var im = null;
-    if (isVariableOrGetter) {
-      im = mirror.getField(declaration.simpleName);
-    } else if (isParameterlessMethod) {
-      im = mirror.invoke(declaration.simpleName, []);
-    }
-    if (im != null && im is InstanceMirror) {
-      return im.reflectee;
-    }
-    return null;
-  }
-
-  //TODO check if we really need the declaration is VariableMirror test
-  bool get isVariableOrGetter =>
-      (declaration is VariableMirror) ||
-      (declaration is MethodMirror && declaration.isGetter);
-
-  bool get isParameterlessMethod =>
-      declaration is MethodMirror && declaration.parameters.length == 0;
 }
