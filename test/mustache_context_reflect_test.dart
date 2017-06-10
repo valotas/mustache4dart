@@ -22,6 +22,14 @@ class Person {
   }
 }
 
+class ClassWithLambda {
+  final int num;
+
+  ClassWithLambda(this.num);
+
+  lambdaWithArity1(str) => "[[$str $num]]";
+}
+
 @mirrors.MirrorsUsed()
 class ClassWithBrackets {
   operator [] (String input) {
@@ -113,10 +121,18 @@ void main() {
               lastname: "Valotasios",
               parent: thomas);
 
-
           var actual = reflect(george);
 
           expect(actual.field('parent').val(), thomas);
+        });
+
+        test('returns a ref to the function if it has an arity of 1', () {
+          final labmbda = new ClassWithLambda(1);
+
+          final actual = reflect(labmbda).field('lambdaWithArity1');
+
+          expect(actual.val(), new isInstanceOf<Function>());
+          expect(actual.val()("-"), "[[- 1]]");
         });
       });
     });

@@ -14,7 +14,7 @@ class Mirror {
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
-        _instanceMembers(instanceMirror);
+    _instanceMembers(instanceMirror);
     if (members == null) {
       return noField;
     }
@@ -41,7 +41,8 @@ _instanceMembers(mirrors.InstanceMirror m) {
   }
 }
 
-_isStringAssignableToBracketsOperator(Map<Symbol, mirrors.MethodMirror> members) {
+_isStringAssignableToBracketsOperator(
+    Map<Symbol, mirrors.MethodMirror> members) {
   if (!members.containsKey(bracketsOperator)) {
     return false;
   }
@@ -72,7 +73,7 @@ class MethodMirrorField extends Field {
 
   MethodMirrorField(this.instance, this.method);
 
-  bool get exists => isVariable || isGetter || isParameterlessMethod;
+  bool get exists => isVariable || isGetter || isParameterlessMethod || isLambda;
 
   bool get isGetter => method.isGetter;
 
@@ -80,12 +81,14 @@ class MethodMirrorField extends Field {
 
   bool get isParameterlessMethod => method.parameters.length == 0;
 
+  bool get isLambda => method.parameters.length >= 1;
+
   val() {
     if (!exists) {
       return null;
     }
     mirrors.InstanceMirror resultMirror;
-    if (isVariable || isGetter) {
+    if (isVariable || isGetter || isLambda) {
       resultMirror = instance.getField(method.simpleName);
     } else {
       resultMirror = instance.invoke(method.simpleName, []);
