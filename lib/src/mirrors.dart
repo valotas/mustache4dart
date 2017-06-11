@@ -4,7 +4,7 @@ reflect(o) {
   return new Mirror(o, mirrors.reflect(o));
 }
 
-final bracketsOperator = new Symbol("[]");
+final _bracketsOperator = new Symbol("[]");
 
 class Mirror {
   final mirrors.InstanceMirror instanceMirror;
@@ -16,16 +16,16 @@ class Mirror {
     final Map<Symbol, mirrors.MethodMirror> members =
         _instanceMembers(instanceMirror);
     if (members == null) {
-      return noField;
+      return _noField;
     }
     if (_isStringAssignableToBracketsOperator(members)) {
-      return new BracketsField(object, name);
+      return new _BracketsField(object, name);
     }
     final methodMirror = members[new Symbol(name)];
     if (methodMirror == null) {
-      return noField;
+      return _noField;
     }
-    return new MethodMirrorField(this.instanceMirror, methodMirror);
+    return new _MethodMirrorField(this.instanceMirror, methodMirror);
   }
 }
 
@@ -37,11 +37,11 @@ _instanceMembers(mirrors.InstanceMirror m) {
 
 _isStringAssignableToBracketsOperator(
     Map<Symbol, mirrors.MethodMirror> members) {
-  if (!members.containsKey(bracketsOperator)) {
+  if (!members.containsKey(_bracketsOperator)) {
     return false;
   }
   try {
-    mirrors.MethodMirror m = members[bracketsOperator];
+    mirrors.MethodMirror m = members[_bracketsOperator];
     return mirrors.reflectType(String).isAssignableTo(m.parameters[0].type);
   } catch (e) {
     return false;
@@ -58,13 +58,13 @@ class Field {
   }
 }
 
-final noField = new Field();
+final _noField = new Field();
 
-class MethodMirrorField extends Field {
+class _MethodMirrorField extends Field {
   final mirrors.InstanceMirror instance;
   final mirrors.MethodMirror method;
 
-  MethodMirrorField(this.instance, this.method);
+  _MethodMirrorField(this.instance, this.method);
 
   bool get exists => isVariable || isGetter || isLambda;
 
@@ -83,10 +83,10 @@ class MethodMirrorField extends Field {
   }
 }
 
-class BracketsField extends Field {
+class _BracketsField extends Field {
   var value;
 
-  BracketsField(objectWithBracketsOperator, String key) {
+  _BracketsField(objectWithBracketsOperator, String key) {
     this.value = objectWithBracketsOperator[key];
   }
 
