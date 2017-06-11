@@ -90,9 +90,7 @@ class BracketsField extends Field {
     this.value = objectWithBracketsOperator[key];
   }
 
-  bool get exists {
-    value != null;
-  }
+  bool get exists => value != null;
 
   val() {
     return value;
