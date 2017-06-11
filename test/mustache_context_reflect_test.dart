@@ -65,12 +65,12 @@ void main() {
           expect(reflect(cat).field('fullname').exists, isTrue);
         });
 
-        test('returns true if the get method exists', () {
-          expect(reflect(cat).field('fullnameWithInitial').exists, isTrue);
+        test('returns false if the method does not exist', () {
+          expect(reflect(cat).field('fullnameWithInitial').exists, isFalse);
         });
 
-        test('returns false no field exists', () {
-          expect(reflect(cat).field('fullnameWithInitial2').exists, isFalse);
+        test('returns false if no field exists', () {
+          expect(reflect(cat).field('xyz').exists, isFalse);
         });
       });
 
@@ -91,14 +91,13 @@ void main() {
           expect(actual.field('fullname').val(), "George Valotasios");
         });
 
-        test('returns the value of a get method', () {
-          var george = new Person("George",
+        test('does not returns the value of a get methods', () {
+          final george = new Person("George",
               lastname: "Valotasios", parent: new Person("Thomas"));
 
-          var actual = reflect(george);
+          final actual = reflect(george);
 
-          expect(actual.field('fullnameWithInitial').val(),
-              "George T. Valotasios");
+          expect(actual.field('fullnameWithInitial').exists, isFalse);
         });
 
         test('returns the value from a [] operator', () {

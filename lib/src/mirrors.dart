@@ -21,13 +21,7 @@ class Mirror {
     if (_isStringAssignableToBracketsOperator(members)) {
       return new BracketsField(object, name);
     }
-    var methodMirror = members[new Symbol(name)];
-    if (methodMirror == null) {
-      //try appending the word get to the name:
-      final capital = name[0].toUpperCase();
-      final rest = name.substring(1);
-      methodMirror = members[new Symbol("get${capital}${rest}")];
-    }
+    final methodMirror = members[new Symbol(name)];
     if (methodMirror == null) {
       return noField;
     }
@@ -73,26 +67,19 @@ class MethodMirrorField extends Field {
   MethodMirrorField(this.instance, this.method);
 
   bool get exists =>
-      isVariable || isGetter || isParameterlessMethod || isLambda;
+      isVariable || isGetter || isLambda;
 
   bool get isGetter => method.isGetter;
 
   bool get isVariable => method is mirrors.VariableMirror;
 
-  bool get isParameterlessMethod => method.parameters.length == 0;
-
-  bool get isLambda => method.parameters.length >= 1;
+  bool get isLambda => method.parameters.length >= 0;
 
   val() {
     if (!exists) {
       return null;
     }
-    mirrors.InstanceMirror resultMirror;
-    if (isVariable || isGetter || isLambda) {
-      resultMirror = instance.getField(method.simpleName);
-    } else {
-      resultMirror = instance.invoke(method.simpleName, []);
-    }
+    final resultMirror = instance.getField(method.simpleName);
     return resultMirror.reflectee;
   }
 }

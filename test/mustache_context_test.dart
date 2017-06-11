@@ -76,7 +76,7 @@ void main() {
     expect(ctx.field('lastname').value(), 'Βαλοτάσιος');
     expect(ctx.field('last'), null);
     expect(ctx.field('fullname').value(), 'Γιώργος Βαλοτάσιος');
-    expect(ctx.field('reversedName').value(), 'ςογρώιΓ');
+    expect(ctx.field('reversedName'), null);
     expect(ctx.field('reversedLastName').value(), 'ςοισάτολαΒ');
   });
 
@@ -221,8 +221,6 @@ class _Person {
   _Person(this.name, this.lastname, [this.parent = null]);
 
   get fullname => "$name $lastname";
-
-  getReversedName() => _reverse(name);
 
   static _reverse(String str) {
     StringBuffer out = new StringBuffer();

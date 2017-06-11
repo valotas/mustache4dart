@@ -7,7 +7,7 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
 
 class A {
-  String getBar() => 'bar';
+  final bar = 'bar';
   String get foo => 'foo';
 }
 
