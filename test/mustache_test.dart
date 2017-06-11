@@ -177,7 +177,7 @@ void main() {
 
         expect(render(template, context), "4true4|4true4|");
       });
-    });
+    }, onPlatform: {'js': new Skip("Broken mirrors, should be investigated")});
   });
 }
 
