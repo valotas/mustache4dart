@@ -66,8 +66,7 @@ class MethodMirrorField extends Field {
 
   MethodMirrorField(this.instance, this.method);
 
-  bool get exists =>
-      isVariable || isGetter || isLambda;
+  bool get exists => isVariable || isGetter || isLambda;
 
   bool get isGetter => method.isGetter;
 

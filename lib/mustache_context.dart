@@ -85,9 +85,7 @@ class _MustacheContext implements MustacheContext {
       return this;
     }
     if (key.contains(DOT)) {
-      Iterator<String> i = key
-          .split(DOT)
-          .iterator;
+      Iterator<String> i = key.split(DOT).iterator;
       var val = this;
       while (i.moveNext()) {
         val = val._getMustachContext(i.current);
@@ -146,9 +144,7 @@ class _MustacheContext implements MustacheContext {
       return (ctx as Map).containsKey(key);
     } else if (useMirrors && USE_MIRRORS) {
       //TODO test the case of no mirrors
-      return ctxReflector
-          .field(key)
-          .exists;
+      return ctxReflector.field(key).exists;
     }
     return false;
   }
