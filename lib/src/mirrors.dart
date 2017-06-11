@@ -53,9 +53,7 @@ class Field {
     return false;
   }
 
-  dynamic val() {
-    return null;
-  }
+  dynamic val() => null;
 }
 
 final _noField = new Field();
@@ -92,7 +90,5 @@ class _BracketsField extends Field {
 
   bool get exists => value != null;
 
-  val() {
-    return value;
-  }
+  val() => value;
 }
