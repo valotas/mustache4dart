@@ -39,8 +39,7 @@ mustache4dart will try the followings
 1. use the `[]` operator with `firstname` as the parameter
 2. search for a field named `firstname`
 3. search for a getter named `firstname`
-4. search for a method named `firstname`
-5. search for a method named `getFirstname`
+4. search for a method named `firstname` (see Lambdas support)
 
 in each case the first valid value will be used.
 
