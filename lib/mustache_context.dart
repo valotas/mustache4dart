@@ -63,12 +63,12 @@ class _MustacheContext implements MustacheContext {
     return ctx(arg);
   }
 
-  field(String key) {
+  MustacheContext field(String key) {
     if (ctx == null) return null;
     return _getInThisOrParent(key);
   }
 
-  _getInThisOrParent(String key) {
+  MustacheContext _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     //if the result is null, try the parent context
     if (result == null && !_hasActualValueSlot(key) && parent != null) {
@@ -80,7 +80,7 @@ class _MustacheContext implements MustacheContext {
     return result;
   }
 
-  _getContextForKey(String key) {
+  MustacheContext _getContextForKey(String key) {
     if (key == DOT) {
       return this;
     }
@@ -99,12 +99,12 @@ class _MustacheContext implements MustacheContext {
     return _getMustachContext(key);
   }
 
-  _getMustachContext(String key) {
-    var v = _getActualValue(key);
+  MustacheContext _getMustachContext(String key) {
+    final v = _getActualValue(key);
     return _newMustachContextOrNull(v);
   }
 
-  _newMustachContextOrNull(v) {
+  MustacheContext _newMustachContextOrNull(v) {
     if (v == null) {
       return null;
     }
