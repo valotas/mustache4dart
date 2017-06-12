@@ -15,9 +15,6 @@ class Mirror {
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
         _instanceMembers(instanceMirror);
-    if (members == null) {
-      return _noField;
-    }
     if (_isStringAssignableToBracketsOperator(members)) {
       return new _BracketsField(object, name);
     }
