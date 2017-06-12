@@ -185,21 +185,17 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   bool get isLambda => false;
 
   field(String key) {
-    if (key == DOT) {
-      return this;
-    }
-    throw new Exception(
-        'Iterable can only be iterated. No [] implementation is available');
+    assert(key ==
+        DOT); // 'Iterable can only be iterated. No [] implementation is available'
+    return this;
   }
 
   _getMustachContext(String key) {
-    if (key == 'empty' || key == 'isEmpty') {
-      return new _MustacheContext(isEmpty,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
-    }
-    throw new Exception(
-        'Iterable can only be asked for empty or isEmpty keys or be iterated');
+    // 'Iterable can only be asked for empty or isEmpty keys or be iterated'
+    assert(key == 'empty' || key == 'isEmpty');
+    return new _MustacheContext(isEmpty,
+        parent: parent,
+        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 }
 
