@@ -1,5 +1,3 @@
-library mustache_context_tests;
-
 import 'dart:mirrors' as mirrors;
 import 'package:test/test.dart';
 import 'package:mustache4dart/src/mirrors.dart';

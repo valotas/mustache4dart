@@ -1,7 +1,5 @@
 @TestOn('vm')
 
-library mustache_specs;
-
 import 'dart:io';
 import 'dart:convert';
 import 'package:test/test.dart';

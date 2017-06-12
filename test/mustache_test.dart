@@ -1,5 +1,3 @@
-library mustache_tests;
-
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
