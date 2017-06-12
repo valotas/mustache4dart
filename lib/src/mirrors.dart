@@ -29,10 +29,11 @@ class Mirror {
   }
 }
 
-_instanceMembers(mirrors.InstanceMirror m) {
+Map<Symbol, mirrors.MethodMirror> _instanceMembers(mirrors.InstanceMirror m) {
   if (m != null && m.type != null) {
     return m.type.instanceMembers;
   }
+  return null;
 }
 
 _isStringAssignableToBracketsOperator(

@@ -8,7 +8,7 @@ class Person {
   final String lastname;
   final Person parent;
 
-  Person(this.name, {this.lastname = null, this.parent = null});
+  Person(this.name, {this.lastname: null, this.parent: null});
 
   get fullname {
     return "$name $lastname";
