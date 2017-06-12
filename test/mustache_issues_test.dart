@@ -26,22 +26,19 @@ class OtherChild extends Parent {}
 
 void main() {
   group('mustache4dart issues', () {
-    test('#9: use empty strings for non existing variable',
-            () =>
-            expect(
-                render("{{#sec}}[{{variable}}]{{/sec}}", {'sec': 42}), '[]'));
+    test(
+        '#9: use empty strings for non existing variable',
+        () => expect(
+            render("{{#sec}}[{{variable}}]{{/sec}}", {'sec': 42}), '[]'));
 
     test('#10',
-            () =>
-            expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
+        () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
 
     test(
         '#11',
-            () =>
-            expect(
-                    () =>
-                    render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}),
-                throwsFormatException));
+        () => expect(
+            () => render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}),
+            throwsFormatException));
 
     test('#12: Write to a StringSink', () {
       StringSink out = new StringBuffer();
@@ -51,27 +48,26 @@ void main() {
     });
 
     group('#16', () {
-      test('side effect', () =>
-          expect(render('{{^x}}x{{/x}}!!!', null), 'x!!!'));
+      test('side effect',
+          () => expect(render('{{^x}}x{{/x}}!!!', null), 'x!!!'));
 
       test(
           'root cause: For null objects the value of any property should be null',
-              () {
-            var ctx = new MustacheContext(null);
-            expect(ctx.field('xxx'), null);
-            expect(ctx.field('123'), null);
-            expect(ctx.field(''), null);
-            expect(ctx.field(null), null);
-          });
+          () {
+        var ctx = new MustacheContext(null);
+        expect(ctx.field('xxx'), null);
+        expect(ctx.field('123'), null);
+        expect(ctx.field(''), null);
+        expect(ctx.field(null), null);
+      });
     });
 
     group('#17', () {
       test(
           'side effect',
-              () =>
-              expect(
-                  render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {'a': 'aa', 'b': 'bb'}),
-                  '[aa|bb]'));
+          () => expect(
+              render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {'a': 'aa', 'b': 'bb'}),
+              '[aa|bb]'));
 
       test('root cause: setting the same context as a subcontext', () {
         final ctx = new MustacheContext({'a': 'aa', 'b': 'bb'});
@@ -93,9 +89,7 @@ void main() {
 
       final String out = render(template, {'ma': 'ma'});
       expect(out, template);
-    }, onPlatform: {
-      "js": new Skip("io is not available on a browser")
-    });
+    }, onPlatform: {"js": new Skip("io is not available on a browser")});
 
     test('#25', () {
       var ctx = {
@@ -149,26 +143,23 @@ void main() {
 
     test(
         '#41 do not look into parent context if current context has field but its value is null',
-            () {
-          var c = new Child()
-            ..foo = 'child'
-            ..children = [
-              new OtherChild()
-                ..foo = 'otherchild',
-              new OtherChild()
-                ..foo = null
-            ];
+        () {
+      var c = new Child()
+        ..foo = 'child'
+        ..children = [
+          new OtherChild()..foo = 'otherchild',
+          new OtherChild()..foo = null
+        ];
 
-          var template = '''
+      var template = '''
 {{foo}}
 {{#children}}{{foo}}!{{/children}}''';
 
-          var output = render(
-              template, c, assumeNullNonExistingProperty: false);
-          var expected = "child\notherchild!!";
+      var output = render(template, c, assumeNullNonExistingProperty: false);
+      var expected = "child\notherchild!!";
 
-          expect(output, expected);
-        });
+      expect(output, expected);
+    });
 
     test('#44 should provide a way to check for non empty lists', () {
       final map = {

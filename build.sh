@@ -29,4 +29,4 @@ if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "stable" ]; then
     test/mustache_all.dart
 fi
 
-pub run test test/mustache_context_test.dart -p chrome,firefox
+pub run test -p chrome,firefox

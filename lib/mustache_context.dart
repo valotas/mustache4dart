@@ -24,6 +24,8 @@ abstract class MustacheContext {
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 
+  get ctx;
+
   value([arg]);
 
   bool get isFalsey;
