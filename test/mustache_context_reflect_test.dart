@@ -33,6 +33,9 @@ class ClassWithLambda {
 @mirrors.MirrorsUsed()
 class ClassWithBrackets {
   operator [](String input) {
+    if (input == 'nullval') {
+      return null;
+    }
     return new Person(input);
   }
 }
@@ -40,15 +43,15 @@ class ClassWithBrackets {
 void main() {
   group('reflect', () {
     test('returns a mirror object', () {
-      var cat = new Person("cat");
+      final cat = new Person("cat");
       expect(reflect(cat), isNotNull);
     });
 
     group('field', () {
       test('should return an object', () {
-        var cat = new Person("cat");
+        final cat = new Person("cat");
 
-        var actual = reflect(cat).field('name');
+        final actual = reflect(cat).field('name');
 
         expect(actual, isNotNull);
         expect(actual, new isInstanceOf<Field>());
@@ -72,21 +75,26 @@ void main() {
         test('returns false if no field exists', () {
           expect(reflect(cat).field('xyz').exists, isFalse);
         });
+
+        test('returns false if [] operator returns a null value', () {
+          expect(reflect(new ClassWithBrackets()).field('nullval').exists,
+              isFalse);
+        });
       });
 
       group(".val()", () {
         test('returns the value of a field', () {
-          var cat = new Person("cat");
+          final cat = new Person("cat");
 
-          var actual = reflect(cat);
+          final actual = reflect(cat);
 
           expect(actual.field('name').val(), "cat");
         });
 
         test('returns the value of a getter', () {
-          var george = new Person("George", lastname: "Valotasios");
+          final george = new Person("George", lastname: "Valotasios");
 
-          var actual = reflect(george);
+          final actual = reflect(george);
 
           expect(actual.field('fullname').val(), "George Valotasios");
         });
@@ -113,11 +121,11 @@ void main() {
         });
 
         test('returns always a reference to the value', () {
-          var thomas = new Person("Thomas");
-          var george =
+          final thomas = new Person("Thomas");
+          final george =
               new Person("George", lastname: "Valotasios", parent: thomas);
 
-          var actual = reflect(george);
+          final actual = reflect(george);
 
           expect(actual.field('parent').val(), thomas);
         });
