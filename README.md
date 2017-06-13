@@ -13,7 +13,7 @@ Using it
 In order to use the library, just add it to your `pubspec.yaml` as a dependency
 
 	dependencies:
-	  mustache4dart: '>= 1.0.0 < 2.0.0'
+	  mustache4dart: '>= 2.0.0 < 3.0.0'
 
 and then import the package
 
