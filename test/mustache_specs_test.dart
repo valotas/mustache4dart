@@ -1,4 +1,4 @@
-library mustache_specs;
+@TestOn('vm')
 
 import 'dart:io';
 import 'dart:convert';

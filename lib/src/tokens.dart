@@ -166,19 +166,19 @@ class _ExpressionToken extends Token {
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var val = ctx[value];
-    if (val == null) {
+    var field = ctx.field(value);
+    if (field == null) {
       //TODO define an exception for such cases
       if (errorOnMissingProperty) {
-        throw "Could not find '$value' property in ${ctx.rootContextString}}";
+        throw "Could not find '$value' property";
       }
       return EMPTY_STRING;
     }
-    if (val.isLambda) {
+    if (field.isLambda) {
       //A lambda's return value should be parsed
-      return render(val(null), ctx);
+      return render(field.value(null), ctx);
     }
-    return val();
+    return field.value();
   }
 
   String toString() => "ExpressionToken($value)";
@@ -272,31 +272,31 @@ class _StartSectionToken extends _ExpressionToken
   Token get next => endSection.next;
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var val = ctx[value];
+    var field = ctx.field(value);
     //TODO: remove null check by returning a falsey context
-    if (errorOnMissingProperty && val == null) {
-      throw "Could not find '$value' property in ${ctx.rootContextString}}";
+    if (errorOnMissingProperty && field == null) {
+      throw "Could not find '$value' property";
     }
-    if (val == null || val.isFalsey) {
+    if (field == null || field.isFalsey) {
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
-    if (val is Iterable) {
-      (val as Iterable).forEach((v) {
+    if (field is Iterable) {
+      (field as Iterable).forEach((v) {
         forEachUntilEndSection((Token t) => str.write(t.apply(v)));
       });
       return str.toString();
     }
 
-    if (val.isLambda) {
+    if (field.isLambda) {
       //apply the source to the given function
       forEachUntilEndSection((Token t) => str.write(t._source));
       //A lambda's return value should be parsed
-      return render(val(str.toString()), ctx, delimiter: delimiter);
+      return render(field.value(str.toString()), ctx, delimiter: delimiter);
     }
 
     //in any other case:
-    forEachUntilEndSection((Token t) => str.write(t.apply(val)));
+    forEachUntilEndSection((Token t) => str.write(t.apply(field)));
     return str.toString();
   }
 
@@ -330,9 +330,9 @@ class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
 
   apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var val = ctx[value];
+    var field = ctx.field(value);
     //TODO: remove null check. Always return a falsey context
-    if (val == null || val.isFalsey) {
+    if (field == null || field.isFalsey) {
       StringBuffer buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
         var val2 = t.apply(ctx);
