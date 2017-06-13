@@ -1,6 +1,6 @@
 # Mustache for Dart
 
-[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=v1.0.12)](https://travis-ci.org/valotas/mustache4dart)
+[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=master)](https://travis-ci.org/valotas/mustache4dart)
 [![Coverage Status](https://coveralls.io/repos/github/valotas/mustache4dart/badge.svg?branch=master)](https://coveralls.io/github/valotas/mustache4dart?branch=master)
 
 A simple implementation of [Mustache][mustache] for the
@@ -13,7 +13,7 @@ Using it
 In order to use the library, just add it to your `pubspec.yaml` as a dependency
 
 	dependencies:
-	  mustache4dart: '>= 1.0.0 < 2.0.0'
+	  mustache4dart: '>= 2.0.0 < 3.0.0'
 
 and then import the package
 
@@ -39,22 +39,21 @@ mustache4dart will try the followings
 1. use the `[]` operator with `firstname` as the parameter
 2. search for a field named `firstname`
 3. search for a getter named `firstname`
-4. search for a method named `firstname`
-5. search for a method named `getFirstname`
+4. search for a method named `firstname` (see Lambdas support)
 
 in each case the first valid value will be used.
 
 #### @MirrorsUsed
 In order to do the stuff described above the mirror library is being used which
-could lead to big js files when compiling the library with dartjs. The
-implementation does use the `@MirrorsUsed` annotation but
-[as documented][mirrorsused] this is experimental.
+could lead to big js files when compiling the library with dartjs. In order to
+preserve the type information you have to annotate the objects used as
+contextes with `@MirrorsUsed`. Have in mind though that [as documented][mirrorsused]
+this is experimental.
 
 In order to avoid the use of the mirrors package, make sure that you compile
 your library with `dart2js -DMIRRORS=false `. In that case though you must
 always make sure that your context object have a right implementation of the
-`[]` operator as it will be the only check made against them (from the ones
-described above) in order to define a value.
+`[]` operator as no other checks on the object will be available.
 
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a

@@ -2,8 +2,7 @@ library mustache_context;
 
 import 'dart:collection';
 
-@MirrorsUsed(symbols: '*')
-import 'dart:mirrors';
+import 'package:mustache4dart/src/mirrors.dart';
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
@@ -23,30 +22,27 @@ abstract class MustacheContext {
         parent: parent, errorOnMissingProperty: errorOnMissingProperty);
   }
 
-  call([arg]);
+  get ctx;
+
+  value([arg]);
 
   bool get isFalsey;
+
   bool get isLambda;
-  MustacheContext operator [](String key);
+
+  MustacheContext field(String key);
+
   MustacheContext _getMustachContext(String key);
-  String get rootContextString;
 }
 
-abstract class MustacheToString {
-  dynamic get ctx;
-  MustacheContext get parent;
-
-  String get rootContextString =>
-      parent == null ? ctx.toString() : parent.rootContextString;
-}
-
-class _MustacheContext extends MustacheToString implements MustacheContext {
+class _MustacheContext implements MustacheContext {
   static final FALSEY_CONTEXT = new _MustacheContext(false);
+
   final ctx;
   final _MustacheContext parent;
   final bool errorOnMissingProperty;
   bool useMirrors = USE_MIRRORS;
-  _ObjectReflector _ctxReflector;
+  Mirror _ctxReflection;
 
   _MustacheContext(this.ctx,
       {_MustacheContext this.parent, this.errorOnMissingProperty});
@@ -55,20 +51,24 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
 
   bool get isFalsey => ctx == null || ctx == false;
 
-  call([arg]) => isLambda ? callLambda(arg) : ctx.toString();
+  value([arg]) => isLambda ? callLambda(arg) : ctx.toString();
 
-  callLambda(arg) => ctx is NoParamLambda
-      ? ctx()
-      : ctx is TwoParamLambda
-          ? ctx(arg, nestedContext: this)
-          : ctx is OptionalParamLambda ? ctx(nestedContext: this) : ctx(arg);
+  callLambda(arg) {
+    if (ctx is NoParamLambda) {
+      return ctx is OptionalParamLambda ? ctx(nestedContext: this) : ctx();
+    }
+    if (ctx is TwoParamLambda) {
+      return ctx(arg, nestedContext: this);
+    }
+    return ctx(arg);
+  }
 
-  operator [](String key) {
+  MustacheContext field(String key) {
     if (ctx == null) return null;
     return _getInThisOrParent(key);
   }
 
-  _getInThisOrParent(String key) {
+  MustacheContext _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     var hasSlot = _hasActualValueSlot(key);
     if (errorOnMissingProperty && !hasSlot && parent == null) {
@@ -76,7 +76,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     }
     //if the result is null, try the parent context
     if (result == null && !hasSlot && parent != null) {
-      result = parent[key];
+      result = parent.field(key);;
       if (result != null) {
         return _newMustachContextOrNull(result.ctx);
       }
@@ -84,7 +84,7 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     return result;
   }
 
-  _getContextForKey(String key) {
+  MustacheContext _getContextForKey(String key) {
     if (key == DOT) {
       return this;
     }
@@ -103,12 +103,12 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
     return _getMustachContext(key);
   }
 
-  _getMustachContext(String key) {
-    var v = _getActualValue(key);
+  MustacheContext _getMustachContext(String key) {
+    final v = _getActualValue(key);
     return _newMustachContextOrNull(v);
   }
 
-  _newMustachContextOrNull(v) {
+  MustacheContext _newMustachContextOrNull(v) {
     if (v == null) {
       return null;
     }
@@ -124,24 +124,11 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
   }
 
   dynamic _getActualValue(String key) {
-    //Try to make dart2js understand that when we define USE_MIRRORS = false
-    //we do not want to use any reflector as that inflates the generated
-    //javascript.
+    if (ctx is Map) {
+      return ctx[key];
+    }
     if (useMirrors && USE_MIRRORS) {
-      if (reflect(ctx).type.instanceMembers.containsKey(new Symbol("[]"))) {
-        MethodMirror m = reflect(ctx).type.instanceMembers[new Symbol("[]")];
-        TypeMirror reflectedString = reflectType(String);
-        if (reflectedString.isAssignableTo(m.parameters[0].type)) {
-          try {
-            return ctx[key];
-          } catch (NoSuchMethodError) {
-            //This should never happen unless we were trapping a lower level
-            //NoSuchMethodError before.  Continue to do so to be bug-for-bug
-            //compatible.
-          }
-        }
-      }
-      return ctxReflector[key];
+      return ctxReflector.field(key).val();
     } else {
       try {
         return ctx[key];
@@ -156,23 +143,20 @@ class _MustacheContext extends MustacheToString implements MustacheContext {
       return (ctx as Map).containsKey(key);
     } else if (useMirrors && USE_MIRRORS) {
       //TODO test the case of no mirrors
-      return ctxReflector.hasSlot(key);
+      return ctxReflector.field(key).exists;
     }
     return false;
   }
 
-  get ctxReflector {
-    if (_ctxReflector == null) {
-      _ctxReflector = new _ObjectReflector(ctx);
+  Mirror get ctxReflector {
+    if (_ctxReflection == null) {
+      _ctxReflection = reflect(ctx);
     }
-    return _ctxReflector;
+    return _ctxReflection;
   }
-
-  String toString() => "MustacheContext($ctx, $parent)";
 }
 
 class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
-    with MustacheToString
     implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;
@@ -181,7 +165,8 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   _IterableMustacheContextDecorator(this.ctx,
       {this.parent, this.errorOnMissingProperty});
 
-  call([arg]) => throw new Exception('Iterable can be called as a function');
+  value([arg]) =>
+      throw new Exception('Iterable can not be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
       new _MustachContextIteratorDecorator(ctx.iterator,
@@ -195,21 +180,18 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
 
   bool get isLambda => false;
 
-  operator [](String key) {
-    if (key == DOT) {
-      return this;
-    }
-    throw new Exception(
-        'Iterable can only be iterated. No [] implementation is available');
+  field(String key) {
+    assert(key ==
+        DOT); // 'Iterable can only be iterated. No [] implementation is available'
+    return this;
   }
 
   _getMustachContext(String key) {
-    if (key == 'empty' || key == 'isEmpty') {
-      return new _MustacheContext(isEmpty,
-          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
-    }
-    throw new Exception(
-        'Iterable can only be asked for empty or isEmpty keys or be iterated');
+    // 'Iterable can only be asked for empty or isEmpty keys or be iterated'
+    assert(key == 'empty' || key == 'isEmpty');
+    return new _MustacheContext(isEmpty,
+        parent: parent,
+        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 }
 
@@ -233,114 +215,4 @@ class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
       return false;
     }
   }
-}
-
-/**
- * Helper class which given an object it will try to get a value by key analyzing
- * the object by reflection
- */
-class _ObjectReflector {
-  final InstanceMirror m;
-
-  factory _ObjectReflector(o) {
-    return new _ObjectReflector._(reflect(o));
-  }
-
-  _ObjectReflector._(this.m);
-
-  operator [](String key) {
-    var declaration = getDeclaration(key);
-
-    if (declaration == null) {
-      return null;
-    }
-
-    return declaration.value;
-  }
-
-  bool hasSlot(String key) {
-    return getDeclaration(key) != null;
-  }
-
-  _ObjectReflectorDeclaration getDeclaration(String key) {
-    return new _ObjectReflectorDeclaration(m, key);
-  }
-}
-
-class _ObjectReflectorDeclaration {
-  final InstanceMirror mirror;
-  final MethodMirror declaration;
-
-  factory _ObjectReflectorDeclaration(
-      InstanceMirror m, String declarationName) {
-    var methodMirror = m.type.instanceMembers[new Symbol(declarationName)];
-    if (methodMirror == null) {
-      //try appending the word get to the name:
-      var nameWithGet =
-          "get${declarationName[0].toUpperCase()}${declarationName.substring(1)}";
-      methodMirror = m.type.instanceMembers[new Symbol(nameWithGet)];
-    }
-    return methodMirror == null
-        ? null
-        : new _ObjectReflectorDeclaration._(m, methodMirror);
-  }
-
-  _ObjectReflectorDeclaration._(this.mirror, this.declaration);
-
-  bool get isLambda => declaration.parameters.length >= 1;
-
-  Function get lambda => (val, {MustacheContext nestedContext}) {
-        var im = mirror.invoke(
-            declaration.simpleName,
-            _createPositionalArguments(val),
-            _createNamedArguments(nestedContext));
-        return im is InstanceMirror ? im.reflectee : null;
-      };
-
-  _createPositionalArguments(val) {
-    var positionalParam = declaration.parameters
-        .firstWhere((p) => !p.isOptional, orElse: () => null);
-    if (positionalParam == null) {
-      return [];
-    } else {
-      return [val];
-    }
-  }
-
-  _createNamedArguments(MustacheContext ctx) {
-    var map = {};
-    var nestedContextParameterExists = declaration.parameters.firstWhere(
-        (p) => p.simpleName == new Symbol('nestedContext'),
-        orElse: () => null);
-    if (nestedContextParameterExists != null) {
-      map[nestedContextParameterExists.simpleName] = ctx;
-    }
-    return map;
-  }
-
-  get value {
-    if (isLambda) {
-      return lambda;
-    }
-
-    //Now we try to find out a field or a getter named after the given name
-    var im = null;
-    if (isVariableOrGetter) {
-      im = mirror.getField(declaration.simpleName);
-    } else if (isParameterlessMethod) {
-      im = mirror.invoke(declaration.simpleName, []);
-    }
-    if (im != null && im is InstanceMirror) {
-      return im.reflectee;
-    }
-    return null;
-  }
-
-  //TODO check if we really need the declaration is VariableMirror test
-  bool get isVariableOrGetter =>
-      (declaration is VariableMirror) ||
-      (declaration is MethodMirror && declaration.isGetter);
-
-  bool get isParameterlessMethod =>
-      declaration is MethodMirror && declaration.parameters.length == 0;
 }

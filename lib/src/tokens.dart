@@ -9,7 +9,7 @@ abstract class Token {
 
   Token _next;
   Token prev;
-  bool rendable = true;
+  bool _rendable = true;
 
   Token.withSource(this._source);
 
@@ -43,7 +43,7 @@ abstract class Token {
     return next;
   }
 
-  StringBuffer apply(MustacheContext context);
+  String apply(MustacheContext context);
 
   void set next(Token n) {
     _next = n;
@@ -57,12 +57,18 @@ abstract class Token {
    */
   String get value;
 
+  void set rendable(bool rendable) {
+    _rendable = rendable;
+  }
+
+  bool get rendable => _rendable;
+
   /**
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
     if (other is Token) {
-      return value == (other as Token).value;
+      return value == other.value;
     }
     if (other is String) {
       return value == other;
@@ -158,16 +164,16 @@ class _ExpressionToken extends Token {
 
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
 
-  apply(MustacheContext ctx) {
-    var val = ctx[value];
-    if (val == null) {
+  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
+    final field = ctx.field(value);
+    if (field == null) {
       return EMPTY_STRING;
     }
-    if (val.isLambda) {
+    if (field.isLambda) {
       //A lambda's return value should be parsed
-      return render(val(null), ctx);
+      return render(field.value(null), ctx);
     }
-    return val();
+    return field.value();
   }
 
   String toString() => "ExpressionToken($value)";
@@ -255,28 +261,28 @@ class _StartSectionToken extends _ExpressionToken
   Token get next => endSection.next;
 
   apply(MustacheContext ctx) {
-    var val = ctx[value];
-    if (val == null || val.isFalsey) {
+    final field = ctx.field(value);
+    if (field == null || field.isFalsey) {
       return EMPTY_STRING;
     }
     StringBuffer str = new StringBuffer();
-    if (val is Iterable) {
-      val.forEach((v) {
+    if (field is Iterable) {
+      (field as Iterable).forEach((v) {
         forEachUntilEndSection((Token t) => str.write(t.apply(v)));
       });
-      return str;
+      return str.toString();
     }
 
-    if (val.isLambda) {
+    if (field.isLambda) {
       //apply the source to the given function
       forEachUntilEndSection((Token t) => str.write(t._source));
       //A lambda's return value should be parsed
-      return render(val(str.toString()), ctx, delimiter: delimiter);
+      return render(field.value(str.toString()), ctx, delimiter: delimiter);
     }
 
     //in any other case:
-    forEachUntilEndSection((Token t) => str.write(t.apply(val)));
-    return str;
+    forEachUntilEndSection((Token t) => str.write(t.apply(field)));
+    return str.toString();
   }
 
   forEachUntilEndSection(void f(Token)) {
@@ -306,9 +312,9 @@ class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
 
   apply(MustacheContext ctx) {
-    var val = ctx[value];
+    final field = ctx.field(value);
     //TODO: remove null check. Always return a falsey context
-    if (val == null || val.isFalsey) {
+    if (field == null || field.isFalsey) {
       StringBuffer buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
         var val2 = t.apply(ctx);
