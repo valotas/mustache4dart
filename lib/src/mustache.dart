@@ -7,7 +7,10 @@ render(String template, Object context,
     StringSink out,
     bool errorOnMissingProperty: false}) {
   return compile(template,
-          partial: partial, delimiter: delimiter, ident: ident)(context,
+      partial: partial,
+      delimiter: delimiter,
+      ident:
+          ident)(context,
       out: out, errorOnMissingProperty: errorOnMissingProperty);
 }
 
