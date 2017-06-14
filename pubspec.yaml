@@ -7,3 +7,6 @@ environment:
   sdk: '>=0.8.10+6 <2.0.0'
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
+  grinder: '^0.8.0+3'
+  glob: "^1.1.3"
+
