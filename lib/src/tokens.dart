@@ -164,7 +164,7 @@ class _ExpressionToken extends Token {
 
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
+  apply(MustacheContext ctx) {
     final field = ctx.field(value);
     if (field == null) {
       return EMPTY_STRING;

@@ -189,9 +189,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   _getMustachContext(String key) {
     // 'Iterable can only be asked for empty or isEmpty keys or be iterated'
     assert(key == 'empty' || key == 'isEmpty');
-    return new _MustacheContext(isEmpty,
-        parent: parent,
-        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+    return new _MustacheContext(isEmpty, parent: parent);
   }
 }
 

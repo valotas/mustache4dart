@@ -216,7 +216,7 @@ void main() {
       final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
       expect(
-          () => ctx['b'],
+          () => ctx.field('b'),
           throwsA(predicate((e) =>
               e is StateError &&
               e.message == 'Could not find "b" in given context')));
@@ -226,14 +226,14 @@ void main() {
       final map = {'a': null};
       final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
-      expect(ctx['a'], null);
+      expect(ctx.field('a'), null);
     });
 
     test('try also parent context before throwing an exception', () {
       final map = {'a': null, 'b': 'this is a value'};
       final ctx = new MustacheContext(map, errorOnMissingProperty: true);
 
-      expect(ctx['b']['a'], null);
+      expect(ctx.field('b').field('a'), null);
     });
   });
 }
