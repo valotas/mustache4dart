@@ -1,36 +1,79 @@
+import 'dart:io' show Platform;
 import 'package:grinder/grinder.dart';
 import 'package:glob/glob.dart';
 
 main(args) => grind(args);
 
 final isStable = Dart.version() == "1.24.0";
+final dartFiles = new Glob('{lib,test}/**.dart').listSync().map((f) => f.path);
 
 @Task('Analyze dart files with dartanalyzer')
 analyze() {
-  final files = new Glob('{lib,test}/**.dart')
-    .listSync()
-    .map((f) => f.path);
+  log("Analyzing following files with dartanalyzer:");
+  log(dartFiles.join("\n"));
 
-  run(sdkBin('dartanalyzer'), arguments: [
-    '--strong',
-    '--fatal-warnings'
-  ]..addAll(files));
+  run(sdkBin('dartanalyzer'),
+      quiet: true,
+      arguments: ['--strong', '--fatal-warnings']..addAll(dartFiles));
 }
 
-@Task('Format .dart files')
+@Task('Check format .dart files')
 formatCheck() {
   if (!isStable) {
     log("No dartfmt check on ${Dart.version()} is needed");
     return;
   }
-  final needsFormat = DartFmt.dryRun('./lib');
+  final needsFormat = DartFmt.dryRun(dartFiles);
   if (needsFormat) {
     throw 'Code needs formatting';
   }
 }
 
+@Task('Format .dart files')
+format() {
+  if (!isStable) {
+    log("No dartfmt should be used on ${Dart.version()}");
+    return;
+  }
+  DartFmt.format(dartFiles);
+}
+
+@Task('Testing')
+test() {
+  final List<String> args = ['-pvm'];
+  if (isStable) {
+    log("${Dart
+        .version()} is stable. Tests will be run also on chrome and firefox");
+    args.add('-pchrome');
+    args.add('-pfirefox');
+  } else {
+    log("${Dart.version()} is not stable. Tests will not be run on browser");
+  }
+
+  Pub.run('test', arguments: args);
+}
+
+@Task('Check coverage')
+cover() {
+  if (!isStable) {
+    log("${Dart.version()} is not stable. Skipping coveralls");
+    return;
+  }
+  if (Platform.environment["COVERALLS_TOKEN"] == null) {
+    log("No COVERALLS_TOKEN found. Skipping coveralls");
+    return;
+  }
+  final coveralls = new PubApp.global('dart_coveralls');
+  coveralls.run([
+    'report',
+    '--retry 2',
+    '--exclude-test-files',
+    'test/mustasche_all.dart'
+  ]);
+}
+
 @DefaultTask('Build the project.')
-@Depends(analyze, formatCheck)
+@Depends(analyze, formatCheck, test, cover)
 build() {
   log("Built on ${Dart.version()}, stable: $isStable");
 }
