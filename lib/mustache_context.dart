@@ -76,7 +76,7 @@ class _MustacheContext implements MustacheContext {
     }
     //if the result is null, try the parent context
     if (result == null && !hasSlot && parent != null) {
-      result = parent.field(key);;
+      result = parent.field(key);
       if (result != null) {
         return _newMustachContextOrNull(result.ctx);
       }
