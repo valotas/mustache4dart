@@ -4,8 +4,20 @@ import 'package:glob/glob.dart';
 
 main(args) => grind(args);
 
-final isStable = Dart.version() == "1.24.0";
+const EXPECTED_STABLE = '1.24.0';
 final dartFiles = new Glob('{lib,test}/**.dart').listSync().map((f) => f.path);
+
+@Task('Check if version is stable')
+isStable() {
+  final v = Dart.version();
+  if (Platform.environment['TRAVIS_DART_VERSION'] == 'stable') {
+    if (v != EXPECTED_STABLE) {
+      throw "Travis stable version ($v) different than expected ($EXPECTED_STABLE)";
+    }
+    return true;
+  }
+  return v == EXPECTED_STABLE;
+}
 
 @Task('Analyze dart files with dartanalyzer')
 analyze() {
@@ -19,7 +31,7 @@ analyze() {
 
 @Task('Check format .dart files')
 formatCheck() {
-  if (!isStable) {
+  if (!isStable()) {
     log("No dartfmt check on ${Dart.version()} is needed");
     return;
   }
@@ -31,7 +43,7 @@ formatCheck() {
 
 @Task('Format .dart files')
 format() {
-  if (!isStable) {
+  if (!isStable()) {
     log("No dartfmt should be used on ${Dart.version()}");
     return;
   }
@@ -41,7 +53,7 @@ format() {
 @Task('Testing')
 test() {
   final List<String> args = ['-pvm'];
-  if (isStable) {
+  if (isStable()) {
     log("${Dart
         .version()} is stable. Tests will be run also on chrome and firefox");
     args.add('-pchrome');
@@ -55,7 +67,7 @@ test() {
 
 @Task('Check coverage')
 cover() {
-  if (!isStable) {
+  if (!isStable()) {
     log("${Dart.version()} is not stable. Skipping coveralls");
     return;
   }
@@ -73,7 +85,7 @@ cover() {
 }
 
 @DefaultTask('Build the project.')
-@Depends(analyze, formatCheck, test, cover)
+@Depends(isStable, analyze, formatCheck, test, cover)
 build() {
   log("Built on ${Dart.version()}, stable: $isStable");
 }
