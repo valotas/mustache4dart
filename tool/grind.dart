@@ -82,9 +82,8 @@ cover() {
   final coveralls = new PubApp.global('dart_coveralls');
   coveralls.run([
     'report',
-    '--retry 2',
-    '--exclude-test-files',
-    'test/mustasche_all.dart'
+    '-T',
+    'test/mustache_all.dart'
   ]);
 }
 
