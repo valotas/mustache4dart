@@ -21,7 +21,7 @@ before_script:
   - sh -e /etc/init.d/xvfb start &
   - sleep 3
 
-script: ./build.sh
+script: pub run grinder
 
 branches:
   only:
