@@ -4,19 +4,19 @@ import 'package:glob/glob.dart';
 
 main(args) => grind(args);
 
-const EXPECTED_STABLE = '1.24.0';
+const List<String> EXPECTED_STABLE = const [ '1.24.0', '1.24.1' ];
 final dartFiles = new Glob('{lib,test}/**.dart').listSync().map((f) => f.path);
 
 @Task('Check if version is stable')
 isStable() {
   final v = Dart.version();
   if (Platform.environment['TRAVIS_DART_VERSION'] == 'stable') {
-    if (v != EXPECTED_STABLE) {
+    if (!EXPECTED_STABLE.contains(v)) {
       throw "Travis stable version ($v) different than expected ($EXPECTED_STABLE)";
     }
     return true;
   }
-  return v == EXPECTED_STABLE;
+  return EXPECTED_STABLE.contains(v);
 }
 
 @Task('Analyze dart files with dartanalyzer')
