@@ -4,8 +4,12 @@ import 'package:glob/glob.dart';
 
 main(args) => grind(args);
 
-const List<String> EXPECTED_STABLE = const [ '1.24.0', '1.24.1' ];
-final dartFiles = new Glob('{lib,test}/**.dart').listSync().map((f) => f.path);
+const List<String> EXPECTED_STABLE = const ['1.24.0', '1.24.1'];
+final dartFiles = new Glob('{lib,test}/**.dart')
+    .listSync()
+    .map((f) => f.path)
+    // filter out test/packages as 1.19.0 includes them in test folder
+    .where((String path) => !path.startsWith('./test/packages'));
 
 @Task('Check if version is stable')
 isStable() {
