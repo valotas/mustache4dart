@@ -70,15 +70,19 @@ class _MustacheContext implements MustacheContext {
 
   MustacheContext _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
-    var hasSlot = _hasActualValueSlot(key);
-    if (errorOnMissingProperty && !hasSlot && parent == null) {
-      throw new StateError('Could not find "$key" in given context');
-    }
-    //if the result is null, try the parent context
-    if (result == null && !hasSlot && parent != null) {
-      result = parent.field(key);
-      if (result != null) {
-        return _newMustachContextOrNull(result.ctx);
+
+    if (result == null) {
+      final hasSlot = _hasActualValueSlot(key);
+      if (errorOnMissingProperty && !hasSlot && parent == null) {
+        throw new StateError('Could not find "$key" in given context');
+      }
+
+      //if the result is null, try the parent context
+      if (!hasSlot && parent != null) {
+        result = parent.field(key);
+        if (result != null) {
+          return _newMustachContextOrNull(result.ctx);
+        }
       }
     }
     return result;
