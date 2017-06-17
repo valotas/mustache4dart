@@ -318,9 +318,9 @@ class _InvertedSectionToken extends _StartSectionToken {
     final field = ctx.field(value);
     //TODO: remove null check. Always return a falsey context
     if (field == null || field.isFalsey) {
-      StringBuffer buf = new StringBuffer();
+      final buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
-        var val2 = t.apply(ctx);
+        final val2 = t.apply(ctx);
         buf.write(val2);
       });
       return buf.toString();
