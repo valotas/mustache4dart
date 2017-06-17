@@ -67,6 +67,9 @@ abstract class Token {
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
+    if (this.hashCode != other.hashCode) {
+      return false;
+    }
     if (other is Token) {
       return value == other.value;
     }
