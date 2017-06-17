@@ -181,7 +181,7 @@ void main() {
     expect(abc.field('three').value(), '3');
   });
 
-  group('with assumeNullNonExistingProperty = false', () {
+  group('with errorOnMissingProperty = true', () {
     test('throws exception if property not found in context', () {
       final map = {
         'a': {'one': 1}

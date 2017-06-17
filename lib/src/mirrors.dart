@@ -4,7 +4,7 @@ const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
 Reflection reflect(o, {bool useMirrors = USE_MIRRORS}) {
   if (o is Map) {
-    return new Reflection(o);
+    return new MapReflection(o);
   }
   if (useMirrors && USE_MIRRORS) {
     return new Mirror(o, mirrors.reflect(o));
@@ -24,6 +24,29 @@ class Reflection {
   }
 }
 
+class Field {
+  bool get exists {
+    return false;
+  }
+
+  dynamic val() => null;
+}
+
+class MapReflection extends Reflection {
+  final Map map;
+
+  MapReflection(this.map) : super(map);
+
+  Field field(String name) {
+    if (map.containsKey(name)) {
+      return new _BracketsField(map, name, existingKey: true);
+    }
+    return _noField;
+  }
+}
+
+final _noField = new Field();
+
 final _bracketsOperator = new Symbol("[]");
 
 class Mirror extends Reflection {
@@ -33,7 +56,7 @@ class Mirror extends Reflection {
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
-    _instanceMembers(instanceMirror);
+        _instanceMembers(instanceMirror);
     if (_isStringAssignableToBracketsOperator(members)) {
       return new _BracketsField(object, name);
     }
@@ -65,16 +88,6 @@ _isStringAssignableToBracketsOperator(
   }
 }
 
-class Field {
-  bool get exists {
-    return false;
-  }
-
-  dynamic val() => null;
-}
-
-final _noField = new Field();
-
 class _MethodMirrorField extends Field {
   final mirrors.InstanceMirror instance;
   final mirrors.MethodMirror method;
@@ -103,20 +116,22 @@ const Object empty = const Object();
 class _BracketsField extends Field {
   final dynamic objectWithBracketsOperator;
   final String key;
+  final bool existingKey;
   var value;
 
-  _BracketsField(this.objectWithBracketsOperator, this.key) {
-    this.value = null;
+  _BracketsField(this.objectWithBracketsOperator, this.key,
+      {this.existingKey: false}) {
+    this.value = empty;
   }
 
-  bool get exists => val() != empty;
+  bool get exists => existingKey || val() != null;
 
   val() {
-    if (value == null) {
+    if (value == empty) {
       try {
         value = objectWithBracketsOperator[key];
       } catch (e) {
-        value = empty;
+        value = null;
       }
     }
     return value;
