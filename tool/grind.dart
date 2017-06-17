@@ -5,6 +5,8 @@ import 'package:glob/glob.dart';
 main(args) => grind(args);
 
 const List<String> EXPECTED_STABLE = const ['1.24.0', '1.24.1'];
+
+final dartVersion = Dart.version();
 final dartFiles = new Glob('{lib,test}/**.dart')
     .listSync()
     .map((f) => f.path)
@@ -13,14 +15,13 @@ final dartFiles = new Glob('{lib,test}/**.dart')
 
 @Task('Check if version is stable')
 isStable() {
-  final v = Dart.version();
   if (Platform.environment['TRAVIS_DART_VERSION'] == 'stable') {
-    if (!EXPECTED_STABLE.contains(v)) {
-      throw "Travis stable version ($v) different than expected ($EXPECTED_STABLE)";
+    if (!EXPECTED_STABLE.contains(dartVersion)) {
+      throw "Travis stable version ($dartVersion) different than expected ($EXPECTED_STABLE)";
     }
     return true;
   }
-  return EXPECTED_STABLE.contains(v);
+  return EXPECTED_STABLE.contains(dartVersion);
 }
 
 @Task('Analyze dart files with dartanalyzer')
@@ -36,7 +37,7 @@ analyze() {
 @Task('Check format .dart files')
 formatCheck() {
   if (!isStable()) {
-    log("No dartfmt check on ${Dart.version()} is needed");
+    log("No dartfmt check on $dartVersion is needed");
     return;
   }
   final needsFormat = DartFmt.dryRun(dartFiles);
@@ -48,8 +49,7 @@ formatCheck() {
 @Task('Format .dart files')
 format() {
   if (!isStable()) {
-    log("No dartfmt should be used on ${Dart.version()}");
-    return;
+    throw "dartfmt is only allowed on $EXPECTED_STABLE, current: $dartVersion";
   }
   DartFmt.format(dartFiles);
 }
@@ -58,8 +58,7 @@ format() {
 test() {
   final List<String> args = ['-pvm'];
   if (isStable()) {
-    log("${Dart
-        .version()} is stable. Tests will be run also on chrome and firefox");
+    log("$dartVersion is in $EXPECTED_STABLE. Tests will be run also on chrome and firefox");
     args.add('-pchrome');
     args.add('-pfirefox');
   } else {
@@ -72,7 +71,7 @@ test() {
 @Task('Check coverage')
 cover() {
   if (!isStable()) {
-    log("${Dart.version()} is not stable. Skipping coveralls");
+    log("$dartVersion is not in $EXPECTED_STABLE. Skipping coveralls");
     return;
   }
   if (Platform.environment["COVERALLS_TOKEN"] == null) {
@@ -90,5 +89,5 @@ cover() {
 @DefaultTask('Build the project.')
 @Depends(isStable, analyze, formatCheck, test, cover)
 build() {
-  log("Built on ${Dart.version()}, stable: $isStable");
+  log("Built on $dartVersion, stable: ${isStable()}");
 }
