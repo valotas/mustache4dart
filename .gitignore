@@ -1,6 +1,7 @@
 .idea/
 bin/
 build/
+.pub/
 packages
 *.swp
 *~

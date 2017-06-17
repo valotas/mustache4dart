@@ -35,8 +35,7 @@ abstract class Token {
   }
 
   Token call(MustacheContext context, StringSink out) {
-    if (out == null)
-      throw new Exception("Need an output to write the rendered result");
+    assert(out != null);
     var string = apply(context);
     if (rendable) {
       out.write(string);
@@ -68,6 +67,9 @@ abstract class Token {
    * Two tokens are the same if their _val are the same.
    */
   bool operator ==(other) {
+    if (this.hashCode != other.hashCode) {
+      return false;
+    }
     if (other is Token) {
       return value == other.value;
     }
@@ -165,13 +167,9 @@ class _ExpressionToken extends Token {
 
   _ExpressionToken.withSource(this.value, source) : super.withSource(source);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var field = ctx.field(value);
+  apply(MustacheContext ctx) {
+    final field = ctx.field(value);
     if (field == null) {
-      //TODO define an exception for such cases
-      if (errorOnMissingProperty) {
-        throw "Could not find '$value' property";
-      }
       return EMPTY_STRING;
     }
     if (field.isLambda) {
@@ -188,8 +186,7 @@ class _DelimiterToken extends _ExpressionToken
     implements StandAloneLineCapable {
   _DelimiterToken(String val) : super.withSource(val, null);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
-      EMPTY_STRING;
+  apply(MustacheContext ctx) => EMPTY_STRING;
 
   bool get rendable => false;
 
@@ -204,7 +201,7 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
 
   _PartialToken(this.partial, String val) : super.withSource(val, null);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
+  apply(MustacheContext ctx) {
     if (partial != null) {
       var partialTemplate = partial(value);
       if (partialTemplate != null) {
@@ -234,8 +231,7 @@ class _PartialToken extends _ExpressionToken implements StandAloneLineCapable {
 class _CommentToken extends _ExpressionToken implements StandAloneLineCapable {
   _CommentToken() : super.withSource(EMPTY_STRING, EMPTY_STRING);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
-      EMPTY_STRING;
+  apply(MustacheContext ctx) => EMPTY_STRING;
 
   String toString() => "_CommentsToken()";
 }
@@ -243,13 +239,9 @@ class _CommentToken extends _ExpressionToken implements StandAloneLineCapable {
 class _EscapeHtmlToken extends _ExpressionToken {
   _EscapeHtmlToken(String val, String source) : super.withSource(val, source);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
+  apply(MustacheContext ctx) {
     var val = super.apply(ctx);
-    if (!(val is String)) {
-      throw new Exception(
-          "Computed value ($val) is not a string. Can not apply it");
-    }
-
+    assert(val is String);
     return val
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -271,12 +263,8 @@ class _StartSectionToken extends _ExpressionToken
   //Override the next getter
   Token get next => endSection.next;
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var field = ctx.field(value);
-    //TODO: remove null check by returning a falsey context
-    if (errorOnMissingProperty && field == null) {
-      throw "Could not find '$value' property";
-    }
+  apply(MustacheContext ctx) {
+    final field = ctx.field(value);
     if (field == null || field.isFalsey) {
       return EMPTY_STRING;
     }
@@ -301,9 +289,7 @@ class _StartSectionToken extends _ExpressionToken
   }
 
   forEachUntilEndSection(void f(Token)) {
-    if (f == null) {
-      throw new Exception('Can not apply a null function!');
-    }
+    assert(f != null);
     Token n = super.next;
     while (!identical(n, endSection)) {
       f(n);
@@ -321,21 +307,20 @@ class _EndSectionToken extends _ExpressionToken
     implements StandAloneLineCapable {
   _EndSectionToken(String val) : super.withSource(val, null);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) =>
-      EMPTY_STRING;
+  apply(MustacheContext ctx) => EMPTY_STRING;
   String toString() => "EndSectionToken($value)";
 }
 
 class _InvertedSectionToken extends _StartSectionToken {
   _InvertedSectionToken(String val, Delimiter del) : super(val, del);
 
-  apply(MustacheContext ctx, {bool errorOnMissingProperty: false}) {
-    var field = ctx.field(value);
+  apply(MustacheContext ctx) {
+    final field = ctx.field(value);
     //TODO: remove null check. Always return a falsey context
     if (field == null || field.isFalsey) {
-      StringBuffer buf = new StringBuffer();
+      final buf = new StringBuffer();
       forEachUntilEndSection((Token t) {
-        var val2 = t.apply(ctx);
+        final val2 = t.apply(ctx);
         buf.write(val2);
       });
       return buf.toString();

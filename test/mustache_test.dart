@@ -68,6 +68,28 @@ void main() {
             render('{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n', map), '1\n\n2\n'));
   });
 
+  group('render', () {
+    test('throws exeption if given template is null', () {
+      expect(
+          () => render(null, {}),
+          throwsA(predicate((e) =>
+              e is ArgumentError &&
+              e.message == "The given template is null")));
+    });
+
+    test(
+        'throws exception on missing property when assumeNullNonExistingProperty = false',
+        () {
+      final propName = "theProp";
+      final ctx = {'the': 'val'};
+      expect(
+          () => render('<{{$propName}}>', ctx, errorOnMissingProperty: true),
+          throwsA(predicate((e) =>
+              e is StateError &&
+              e.message == 'Could not find "$propName" in given context')));
+    });
+  });
+
   group('Performance tests', () {
     test('Compiled templates should be at least 2 times faster', () {
       var tmpl =
@@ -103,22 +125,6 @@ void main() {
   }, skip: "Performance should not be part of unittest");
 
   group('mustache4dart enhancements', () {
-    test('Throw exception on unknown tag', () {
-      try {
-        render('Hi {{name}}', {'namee': 'George'});
-      } catch (e) {
-        expect(e, "Could not find 'name' property in {namee: George}}");
-      }
-    });
-
-    test('Throw exception on unknown start tag', () {
-      try {
-        render('Hi {{#name}}man!{{/name}}', {'namee': 'George'});
-      } catch (e) {
-        expect(e, "Could not find 'name' property in {namee: George}}");
-      }
-    });
-
     group('Lambdas with nested context (#39)', () {
       test(
           'Provide lambdas as a dynamic (String s, {nestedContext}) function within a map',

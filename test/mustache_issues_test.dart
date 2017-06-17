@@ -149,12 +149,10 @@ void main() {
           new OtherChild()..foo = null
         ];
 
-      var template = '''
-{{foo}}
-{{#children}}{{foo}}!{{/children}}''';
+      var template = '''{{foo}}[{{#children}}[{{foo}}]!{{/children}}]''';
 
-      var output = render(template, c, assumeNullNonExistingProperty: false);
-      var expected = "child\notherchild!!";
+      var output = render(template, c, errorOnMissingProperty: true);
+      var expected = "child[[otherchild]![]!]";
 
       expect(output, expected);
     });

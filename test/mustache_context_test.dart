@@ -34,33 +34,6 @@ void main() {
     });
   });
 
-  group('Mirrorless mustache_context lib', () {
-    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
-        () {
-      dynamic ctx = new MustacheContext({'key1': 'value1'});
-      expect(ctx.useMirrors, USE_MIRRORS);
-    });
-
-    test('should be disabled by default', () {
-      expect(USE_MIRRORS, true);
-    });
-
-    test('should return the result of the [] operator', () {
-      dynamic ctx = new MustacheContext({'key1': 'value1'});
-      ctx.useMirrors = false;
-      expect(ctx.field('key1').value(), 'value1');
-    });
-
-    test('should not be able to analyze classes with reflectioon', () {
-      var contactInfo = new _ContactInfo('type', 'value');
-      dynamic ctx = new MustacheContext(contactInfo, parent: null);
-      ctx.useMirrors = false;
-      expect(ctx.field('type'), isNull);
-    });
-
-    //TODO: add check for lambda returned from within a map
-  });
-
   test('Simple context with map', () {
     var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
     expect(ctx.field('k1').value(), 'value1');
@@ -206,6 +179,35 @@ void main() {
     expect(abc.field('two').value(), '2',
         reason: "a.b.c.two == b.two when using $map");
     expect(abc.field('three').value(), '3');
+  });
+
+  group('with errorOnMissingProperty = true', () {
+    test('throws exception if property not found in context', () {
+      final map = {
+        'a': {'one': 1}
+      };
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
+
+      expect(
+          () => ctx.field('b'),
+          throwsA(predicate((e) =>
+              e is StateError &&
+              e.message == 'Could not find "b" in given context')));
+    });
+
+    test('handles null as normal value', () {
+      final map = {'a': null};
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
+
+      expect(ctx.field('a'), null);
+    });
+
+    test('try also parent context before throwing an exception', () {
+      final map = {'a': null, 'b': 'this is a value'};
+      final ctx = new MustacheContext(map, errorOnMissingProperty: true);
+
+      expect(ctx.field('b').field('a'), null);
+    });
   });
 }
 
