@@ -35,7 +35,9 @@ class Field {
 class MapReflection extends Reflection {
   final Map map;
 
-  MapReflection(map): this.map = map, super(map);
+  MapReflection(map)
+      : this.map = map,
+        super(map);
 
   Field field(String name) {
     if (map.containsKey(name)) {
