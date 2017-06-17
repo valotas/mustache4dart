@@ -2,7 +2,7 @@ import 'dart:mirrors' as mirrors;
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
-Reflection reflect(o, {bool useMirrors = USE_MIRRORS}) {
+Reflection reflect(o, {bool useMirrors: USE_MIRRORS}) {
   if (o is Map) {
     return new MapReflection(o);
   }
@@ -35,7 +35,7 @@ class Field {
 class MapReflection extends Reflection {
   final Map map;
 
-  MapReflection(this.map) : super(map);
+  MapReflection(map): this.map = map, super(map);
 
   Field field(String name) {
     if (map.containsKey(name)) {
