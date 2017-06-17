@@ -71,7 +71,7 @@ void main() {
   group('render', () {
     test('throws exeption if given template is null', () {
       expect(
-          () => render(null, null),
+          () => render(null, {}),
           throwsA(predicate((e) =>
               e is ArgumentError &&
               e.message == "The given template is null")));
