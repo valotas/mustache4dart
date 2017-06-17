@@ -4,7 +4,6 @@ import 'dart:collection';
 
 import 'package:mustache4dart/src/mirrors.dart';
 
-const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
 typedef NoParamLambda();
@@ -43,8 +42,7 @@ class _MustacheContext implements MustacheContext {
   final ctx;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
-  bool useMirrors = USE_MIRRORS;
-  Mirror _ctxReflection;
+  Reflection _ctxReflection;
 
   _MustacheContext(this.ctx,
       {_MustacheContext this.parent, this.assumeNullNonExistingProperty});
@@ -73,10 +71,19 @@ class _MustacheContext implements MustacheContext {
   MustacheContext _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     //if the result is null, try the parent context
-    if (result == null && !_hasActualValueSlot(key) && parent != null) {
-      result = parent.field(key);
-      if (result != null) {
-        return _newMustachContextOrNull(result.ctx);
+
+    if (result == null) {
+      final hasSlot = ctxReflector.field(key).exists;
+      if (!assumeNullNonExistingProperty && !hasSlot && parent == null) {
+        throw new StateError('Could not find "$key" in given context');
+      }
+
+      //if the result is null, try the parent context
+      if (!hasSlot && parent != null) {
+        result = parent.field(key);
+        if (result != null) {
+          return _newMustachContextOrNull(result.ctx);
+        }
       }
     }
     return result;
@@ -87,7 +94,7 @@ class _MustacheContext implements MustacheContext {
       return this;
     }
     if (key.contains(DOT)) {
-      Iterator<String> i = key.split(DOT).iterator;
+      final Iterator<String> i = key.split(DOT).iterator;
       var val = this;
       while (i.moveNext()) {
         val = val._getMustachContext(i.current);
@@ -102,7 +109,7 @@ class _MustacheContext implements MustacheContext {
   }
 
   MustacheContext _getMustachContext(String key) {
-    final v = _getActualValue(key);
+    final v = ctxReflector.field(key).val();
     return _newMustachContextOrNull(v);
   }
 
@@ -123,35 +130,7 @@ class _MustacheContext implements MustacheContext {
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 
-  dynamic _getActualValue(String key) {
-    if (ctx is Map) {
-      return ctx[key];
-    }
-    if (useMirrors && USE_MIRRORS) {
-      return ctxReflector.field(key).val();
-    } else {
-      try {
-        return ctx[key];
-      } catch (NoSuchMethodError) {
-        return null;
-      }
-    }
-  }
-
-  bool _hasActualValueSlot(String key) {
-    if (assumeNullNonExistingProperty) {
-      return false;
-    }
-    if (ctx is Map) {
-      return (ctx as Map).containsKey(key);
-    } else if (useMirrors && USE_MIRRORS) {
-      //TODO test the case of no mirrors
-      return ctxReflector.field(key).exists;
-    }
-    return false;
-  }
-
-  Mirror get ctxReflector {
+  Reflection get ctxReflector {
     if (_ctxReflection == null) {
       _ctxReflection = reflect(ctx);
     }
