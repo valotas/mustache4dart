@@ -4,7 +4,6 @@ import 'dart:collection';
 
 import 'package:mustache4dart/src/mirrors.dart';
 
-const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
 typedef NoParamLambda();
@@ -41,8 +40,7 @@ class _MustacheContext implements MustacheContext {
   final ctx;
   final _MustacheContext parent;
   final bool errorOnMissingProperty;
-  bool useMirrors = USE_MIRRORS;
-  Mirror _ctxReflection;
+  Reflection _ctxReflection;
 
   _MustacheContext(this.ctx,
       {_MustacheContext this.parent, this.errorOnMissingProperty});
@@ -72,7 +70,7 @@ class _MustacheContext implements MustacheContext {
     var result = _getContextForKey(key);
 
     if (result == null) {
-      final hasSlot = _hasActualValueSlot(key);
+      final hasSlot = ctxReflector.field(key).exists;
       if (errorOnMissingProperty && !hasSlot && parent == null) {
         throw new StateError('Could not find "$key" in given context');
       }
@@ -108,7 +106,7 @@ class _MustacheContext implements MustacheContext {
   }
 
   MustacheContext _getMustachContext(String key) {
-    final v = _getActualValue(key);
+    final v = ctxReflector.field(key).val();
     return _newMustachContextOrNull(v);
   }
 
@@ -127,32 +125,7 @@ class _MustacheContext implements MustacheContext {
         parent: this, errorOnMissingProperty: errorOnMissingProperty);
   }
 
-  dynamic _getActualValue(String key) {
-    if (ctx is Map) {
-      return ctx[key];
-    }
-    if (useMirrors && USE_MIRRORS) {
-      return ctxReflector.field(key).val();
-    } else {
-      try {
-        return ctx[key];
-      } catch (NoSuchMethodError) {
-        return null;
-      }
-    }
-  }
-
-  bool _hasActualValueSlot(String key) {
-    if (ctx is Map) {
-      return (ctx as Map).containsKey(key);
-    } else if (useMirrors && USE_MIRRORS) {
-      //TODO test the case of no mirrors
-      return ctxReflector.field(key).exists;
-    }
-    return false;
-  }
-
-  Mirror get ctxReflector {
+  Reflection get ctxReflector {
     if (_ctxReflection == null) {
       _ctxReflection = reflect(ctx);
     }

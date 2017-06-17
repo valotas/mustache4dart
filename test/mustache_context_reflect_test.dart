@@ -59,23 +59,33 @@ void main() {
         final cat = new Person("cat");
 
         test('returns true if the field exists', () {
-          expect(reflect(cat).field('name').exists, isTrue);
+          expect(reflect(cat)
+              .field('name')
+              .exists, isTrue);
         });
 
         test('returns true if the getter exists', () {
-          expect(reflect(cat).field('fullname').exists, isTrue);
+          expect(reflect(cat)
+              .field('fullname')
+              .exists, isTrue);
         });
 
         test('returns false if the method does not exist', () {
-          expect(reflect(cat).field('fullnameWithInitial').exists, isFalse);
+          expect(reflect(cat)
+              .field('fullnameWithInitial')
+              .exists, isFalse);
         });
 
         test('returns false if no field exists', () {
-          expect(reflect(cat).field('xyz').exists, isFalse);
+          expect(reflect(cat)
+              .field('xyz')
+              .exists, isFalse);
         });
 
         test('returns false if [] operator returns a null value', () {
-          expect(reflect(new ClassWithBrackets()).field('nullval').exists,
+          expect(reflect(new ClassWithBrackets())
+              .field('nullval')
+              .exists,
               isFalse);
         });
       });
@@ -103,7 +113,9 @@ void main() {
 
           final actual = reflect(george);
 
-          expect(actual.field('fullnameWithInitial').exists, isFalse);
+          expect(actual
+              .field('fullnameWithInitial')
+              .exists, isFalse);
         });
 
         test('returns the value from a [] operator', () {
@@ -113,7 +125,9 @@ void main() {
 
           expect(actual.val(), isNotNull);
           expect(actual.val(), new isInstanceOf<Person>());
-          expect(actual.val().name, 'xyz');
+          expect(actual
+              .val()
+              .name, 'xyz');
         }, onPlatform: {
           "js": new Skip("[] operator can not be reflected in javascript")
         });
@@ -121,7 +135,7 @@ void main() {
         test('returns always a reference to the value', () {
           final thomas = new Person("Thomas");
           final george =
-              new Person("George", lastname: "Valotasios", parent: thomas);
+          new Person("George", lastname: "Valotasios", parent: thomas);
 
           final actual = reflect(george);
 
@@ -136,6 +150,30 @@ void main() {
           expect(actual.val(), new isInstanceOf<Function>());
           expect(actual.val()("-"), "[[- 1]]");
         });
+      });
+    });
+
+    test('does not use reflection with Maps', () {
+      final reflection = reflect({'name': "g"});
+      expect(reflection, isNot(new isInstanceOf<Mirror>()));
+    });
+
+    group('with useMirrors = false', () {
+      test('should be disabled by default', () {
+        expect(USE_MIRRORS, true);
+      });
+
+      test('should return the result of the [] operator', () {
+        final reflection = reflect(new ClassWithBrackets(), useMirrors: false);
+        final value = reflection.field('George').val();
+        expect(value, new isInstanceOf<Person>());
+        expect(value.name, 'George');
+      });
+
+      test('should not be able to analyze classes with reflectioon', () {
+        final george = new Person('George');
+        final reflection = reflect(george, useMirrors: false);
+        expect(reflection.field('name').exists, isFalse);
       });
     });
   });

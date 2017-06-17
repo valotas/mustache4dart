@@ -1,20 +1,39 @@
 import 'dart:mirrors' as mirrors;
 
-reflect(o) {
-  return new Mirror(o, mirrors.reflect(o));
+const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
+
+Reflection reflect(o, {bool useMirrors = USE_MIRRORS}) {
+  if (o is Map) {
+    return new Reflection(o);
+  }
+  if (useMirrors && USE_MIRRORS) {
+    return new Mirror(o, mirrors.reflect(o));
+  }
+
+  // in any other case fallback to a mirrorless reflection
+  return new Reflection(o);
+}
+
+class Reflection {
+  final dynamic object;
+
+  Reflection(this.object);
+
+  Field field(String name) {
+    return new _BracketsField(object, name);
+  }
 }
 
 final _bracketsOperator = new Symbol("[]");
 
-class Mirror {
+class Mirror extends Reflection {
   final mirrors.InstanceMirror instanceMirror;
-  final dynamic object;
 
-  Mirror(this.object, this.instanceMirror);
+  Mirror(object, this.instanceMirror) : super(object);
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =
-        _instanceMembers(instanceMirror);
+    _instanceMembers(instanceMirror);
     if (_isStringAssignableToBracketsOperator(members)) {
       return new _BracketsField(object, name);
     }
@@ -79,14 +98,27 @@ class _MethodMirrorField extends Field {
   }
 }
 
+const Object empty = const Object();
+
 class _BracketsField extends Field {
+  final dynamic objectWithBracketsOperator;
+  final String key;
   var value;
 
-  _BracketsField(objectWithBracketsOperator, String key) {
-    this.value = objectWithBracketsOperator[key];
+  _BracketsField(this.objectWithBracketsOperator, this.key) {
+    this.value = null;
   }
 
-  bool get exists => value != null;
+  bool get exists => val() != empty;
 
-  val() => value;
+  val() {
+    if (value == null) {
+      try {
+        value = objectWithBracketsOperator[key];
+      } catch (e) {
+        value = empty;
+      }
+    }
+    return value;
+  }
 }
