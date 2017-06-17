@@ -13,7 +13,8 @@ typedef TwoParamLambda(String s, {nestedContext});
 abstract class MustacheContext {
   factory MustacheContext(ctx,
       {MustacheContext parent, errorOnMissingProperty: false}) {
-    return _createMustacheContext(ctx, parent: parent, errorOnMissingProperty: errorOnMissingProperty);
+    return _createMustacheContext(ctx,
+        parent: parent, errorOnMissingProperty: errorOnMissingProperty);
   }
 
   get ctx;
@@ -29,7 +30,8 @@ abstract class MustacheContext {
   MustacheContext _getMustacheContext(String key);
 }
 
-_createMustacheContext(obj, {MustacheContext parent, bool errorOnMissingProperty}) {
+_createMustacheContext(obj,
+    {MustacheContext parent, bool errorOnMissingProperty}) {
   if (obj is Iterable) {
     return new _IterableMustacheContextDecorator(obj,
         parent: parent, errorOnMissingProperty: errorOnMissingProperty);
@@ -121,7 +123,8 @@ class _MustacheContext implements MustacheContext {
     if (obj == null) {
       return null;
     }
-    return _createMustacheContext(obj, parent: this, errorOnMissingProperty: this.errorOnMissingProperty);
+    return _createMustacheContext(obj,
+        parent: this, errorOnMissingProperty: this.errorOnMissingProperty);
   }
 
   Reflection get ctxReflector {
