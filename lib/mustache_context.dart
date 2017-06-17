@@ -13,12 +13,7 @@ typedef TwoParamLambda(String s, {nestedContext});
 abstract class MustacheContext {
   factory MustacheContext(ctx,
       {MustacheContext parent, errorOnMissingProperty: false}) {
-    if (ctx is Iterable) {
-      return new _IterableMustacheContextDecorator(ctx,
-          parent: parent, errorOnMissingProperty: errorOnMissingProperty);
-    }
-    return new _MustacheContext(ctx,
-        parent: parent, errorOnMissingProperty: errorOnMissingProperty);
+    return _createMustacheContext(ctx, parent: parent, errorOnMissingProperty: errorOnMissingProperty);
   }
 
   get ctx;
@@ -31,12 +26,24 @@ abstract class MustacheContext {
 
   MustacheContext field(String key);
 
-  MustacheContext _getMustachContext(String key);
+  MustacheContext _getMustacheContext(String key);
 }
 
-class _MustacheContext implements MustacheContext {
-  static final FALSEY_CONTEXT = new _MustacheContext(false);
+_createMustacheContext(obj, {MustacheContext parent, bool errorOnMissingProperty}) {
+  if (obj is Iterable) {
+    return new _IterableMustacheContextDecorator(obj,
+        parent: parent, errorOnMissingProperty: errorOnMissingProperty);
+  }
+  if (obj == false) {
+    return falseyContext;
+  }
+  return new _MustacheContext(obj,
+      parent: parent, errorOnMissingProperty: errorOnMissingProperty);
+}
 
+final falseyContext = new _MustacheContext(false);
+
+class _MustacheContext implements MustacheContext {
   final ctx;
   final _MustacheContext parent;
   final bool errorOnMissingProperty;
@@ -79,7 +86,7 @@ class _MustacheContext implements MustacheContext {
       if (!hasSlot && parent != null) {
         result = parent.field(key);
         if (result != null) {
-          return _newMustachContextOrNull(result.ctx);
+          return _createChildMustacheContext(result.ctx);
         }
       }
     }
@@ -94,7 +101,7 @@ class _MustacheContext implements MustacheContext {
       final Iterator<String> i = key.split(DOT).iterator;
       var val = this;
       while (i.moveNext()) {
-        val = val._getMustachContext(i.current);
+        val = val._getMustacheContext(i.current);
         if (val == null) {
           return null;
         }
@@ -102,27 +109,19 @@ class _MustacheContext implements MustacheContext {
       return val;
     }
     //else
-    return _getMustachContext(key);
+    return _getMustacheContext(key);
   }
 
-  MustacheContext _getMustachContext(String key) {
-    final v = ctxReflector.field(key).val();
-    return _newMustachContextOrNull(v);
+  MustacheContext _getMustacheContext(String fieldName) {
+    final v = ctxReflector.field(fieldName).val();
+    return _createChildMustacheContext(v);
   }
 
-  MustacheContext _newMustachContextOrNull(v) {
-    if (v == null) {
+  _createChildMustacheContext(obj) {
+    if (obj == null) {
       return null;
     }
-    if (v is Iterable) {
-      return new _IterableMustacheContextDecorator(v,
-          parent: this, errorOnMissingProperty: this.errorOnMissingProperty);
-    }
-    if (v == false) {
-      return FALSEY_CONTEXT;
-    }
-    return new _MustacheContext(v,
-        parent: this, errorOnMissingProperty: errorOnMissingProperty);
+    return _createMustacheContext(obj, parent: this, errorOnMissingProperty: this.errorOnMissingProperty);
   }
 
   Reflection get ctxReflector {
@@ -146,7 +145,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
       throw new Exception('Iterable can not be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
-      new _MustachContextIteratorDecorator(ctx.iterator,
+      new _MustacheContextIteratorDecorator(ctx.iterator,
           parent: parent, errorOnMissingProperty: errorOnMissingProperty);
 
   int get length => ctx.length;
@@ -163,21 +162,21 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
     return this;
   }
 
-  _getMustachContext(String key) {
+  _getMustacheContext(String key) {
     // 'Iterable can only be asked for empty or isEmpty keys or be iterated'
     assert(key == 'empty' || key == 'isEmpty');
     return new _MustacheContext(isEmpty, parent: parent);
   }
 }
 
-class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
+class _MustacheContextIteratorDecorator extends Iterator<_MustacheContext> {
   final Iterator delegate;
   final _MustacheContext parent;
   final bool errorOnMissingProperty;
 
   _MustacheContext current;
 
-  _MustachContextIteratorDecorator(this.delegate,
+  _MustacheContextIteratorDecorator(this.delegate,
       {this.parent, this.errorOnMissingProperty});
 
   bool moveNext() {
