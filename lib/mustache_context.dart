@@ -13,7 +13,9 @@ typedef TwoParamLambda(String s, {nestedContext});
 abstract class MustacheContext {
   factory MustacheContext(ctx,
       {MustacheContext parent, assumeNullNonExistingProperty: true}) {
-    return _createMustacheContext(ctx, parent: parent, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+    return _createMustacheContext(ctx,
+        parent: parent,
+        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
 
   get ctx;
@@ -29,16 +31,19 @@ abstract class MustacheContext {
   MustacheContext _getMustacheContext(String key);
 }
 
-_createMustacheContext(obj, {MustacheContext parent, bool assumeNullNonExistingProperty}) {
+_createMustacheContext(obj,
+    {MustacheContext parent, bool assumeNullNonExistingProperty}) {
   if (obj is Iterable) {
     return new _IterableMustacheContextDecorator(obj,
-        parent: parent, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+        parent: parent,
+        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
   if (obj == false) {
     return falseyContext;
   }
   return new _MustacheContext(obj,
-      parent: parent, assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+      parent: parent,
+      assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 }
 
 final falseyContext = new _MustacheContext(false);
@@ -122,8 +127,9 @@ class _MustacheContext implements MustacheContext {
     if (obj == null) {
       return null;
     }
-    return _createMustacheContext(obj, parent: this, assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
-
+    return _createMustacheContext(obj,
+        parent: this,
+        assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
   }
 
   Reflection get ctxReflector {
