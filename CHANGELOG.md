@@ -9,6 +9,8 @@ As part of the [MustacheContext rework][pr-64], a couple of simplifications have
 notable one is the drop support of mirroring methods starting with `get` as it does not make any
 sense with dart. Use a getter instead.
 
+[pr-64]: https://github.com/valotas/mustache4dart/pull/64
+
 ## 1.1.0 (2017-05-10)
 
 * Avoid trapping exceptions by using reflection ([#59](https://github.com/valotas/mustache4dart/pull/59))
@@ -35,5 +37,3 @@ sense with dart. Use a getter instead.
 ## 1.0.8 (2015-02-01)
 
 * Find property names in superclasses [issue](https://github.com/valotas/mustache4dart/issues/33)
-
-[pr-64][https://github.com/valotas/mustache4dart/pull/64]

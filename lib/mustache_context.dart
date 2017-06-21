@@ -4,7 +4,6 @@ import 'dart:collection';
 
 import 'package:mustache4dart/src/mirrors.dart';
 
-const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 const String DOT = '\.';
 
 typedef NoParamLambda();
@@ -14,12 +13,7 @@ typedef TwoParamLambda(String s, {nestedContext});
 abstract class MustacheContext {
   factory MustacheContext(ctx,
       {MustacheContext parent, assumeNullNonExistingProperty: true}) {
-    if (ctx is Iterable) {
-      return new _IterableMustacheContextDecorator(ctx,
-          parent: parent,
-          assumeNullNonExistingProperty: assumeNullNonExistingProperty);
-    }
-    return new _MustacheContext(ctx,
+    return _createMustacheContext(ctx,
         parent: parent,
         assumeNullNonExistingProperty: assumeNullNonExistingProperty);
   }
@@ -34,17 +28,31 @@ abstract class MustacheContext {
 
   MustacheContext field(String key);
 
-  MustacheContext _getMustachContext(String key);
+  MustacheContext _getMustacheContext(String key);
 }
 
-class _MustacheContext implements MustacheContext {
-  static final FALSEY_CONTEXT = new _MustacheContext(false);
+_createMustacheContext(obj,
+    {MustacheContext parent, bool assumeNullNonExistingProperty}) {
+  if (obj is Iterable) {
+    return new _IterableMustacheContextDecorator(obj,
+        parent: parent,
+        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+  }
+  if (obj == false) {
+    return falseyContext;
+  }
+  return new _MustacheContext(obj,
+      parent: parent,
+      assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+}
 
+final falseyContext = new _MustacheContext(false);
+
+class _MustacheContext implements MustacheContext {
   final ctx;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
-  bool useMirrors = USE_MIRRORS;
-  Mirror _ctxReflection;
+  Reflection _ctxReflection;
 
   _MustacheContext(this.ctx,
       {_MustacheContext this.parent, this.assumeNullNonExistingProperty});
@@ -73,10 +81,19 @@ class _MustacheContext implements MustacheContext {
   MustacheContext _getInThisOrParent(String key) {
     var result = _getContextForKey(key);
     //if the result is null, try the parent context
-    if (result == null && !_hasActualValueSlot(key) && parent != null) {
-      result = parent.field(key);
-      if (result != null) {
-        return _newMustachContextOrNull(result.ctx);
+
+    if (result == null) {
+      final hasSlot = ctxReflector.field(key).exists;
+      if (!assumeNullNonExistingProperty && !hasSlot && parent == null) {
+        throw new StateError('Could not find "$key" in given context');
+      }
+
+      //if the result is null, try the parent context
+      if (!hasSlot && parent != null) {
+        result = parent.field(key);
+        if (result != null) {
+          return _createChildMustacheContext(result.ctx);
+        }
       }
     }
     return result;
@@ -87,10 +104,10 @@ class _MustacheContext implements MustacheContext {
       return this;
     }
     if (key.contains(DOT)) {
-      Iterator<String> i = key.split(DOT).iterator;
+      final Iterator<String> i = key.split(DOT).iterator;
       var val = this;
       while (i.moveNext()) {
-        val = val._getMustachContext(i.current);
+        val = val._getMustacheContext(i.current);
         if (val == null) {
           return null;
         }
@@ -98,60 +115,24 @@ class _MustacheContext implements MustacheContext {
       return val;
     }
     //else
-    return _getMustachContext(key);
+    return _getMustacheContext(key);
   }
 
-  MustacheContext _getMustachContext(String key) {
-    final v = _getActualValue(key);
-    return _newMustachContextOrNull(v);
+  MustacheContext _getMustacheContext(String fieldName) {
+    final v = ctxReflector.field(fieldName).val();
+    return _createChildMustacheContext(v);
   }
 
-  MustacheContext _newMustachContextOrNull(v) {
-    if (v == null) {
+  _createChildMustacheContext(obj) {
+    if (obj == null) {
       return null;
     }
-    if (v is Iterable) {
-      return new _IterableMustacheContextDecorator(v,
-          parent: this,
-          assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
-    }
-    if (v == false) {
-      return FALSEY_CONTEXT;
-    }
-    return new _MustacheContext(v,
+    return _createMustacheContext(obj,
         parent: this,
-        assumeNullNonExistingProperty: assumeNullNonExistingProperty);
+        assumeNullNonExistingProperty: this.assumeNullNonExistingProperty);
   }
 
-  dynamic _getActualValue(String key) {
-    if (ctx is Map) {
-      return ctx[key];
-    }
-    if (useMirrors && USE_MIRRORS) {
-      return ctxReflector.field(key).val();
-    } else {
-      try {
-        return ctx[key];
-      } catch (NoSuchMethodError) {
-        return null;
-      }
-    }
-  }
-
-  bool _hasActualValueSlot(String key) {
-    if (assumeNullNonExistingProperty) {
-      return false;
-    }
-    if (ctx is Map) {
-      return (ctx as Map).containsKey(key);
-    } else if (useMirrors && USE_MIRRORS) {
-      //TODO test the case of no mirrors
-      return ctxReflector.field(key).exists;
-    }
-    return false;
-  }
-
-  Mirror get ctxReflector {
+  Reflection get ctxReflector {
     if (_ctxReflection == null) {
       _ctxReflection = reflect(ctx);
     }
@@ -172,7 +153,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
       throw new Exception('Iterable can not be called as a function');
 
   Iterator<_MustacheContext> get iterator =>
-      new _MustachContextIteratorDecorator(ctx.iterator,
+      new _MustacheContextIteratorDecorator(ctx.iterator,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
 
@@ -190,7 +171,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
     return this;
   }
 
-  _getMustachContext(String key) {
+  _getMustacheContext(String key) {
     // 'Iterable can only be asked for empty or isEmpty keys or be iterated'
     assert(key == 'empty' || key == 'isEmpty');
     return new _MustacheContext(isEmpty,
@@ -199,14 +180,14 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   }
 }
 
-class _MustachContextIteratorDecorator extends Iterator<_MustacheContext> {
+class _MustacheContextIteratorDecorator extends Iterator<_MustacheContext> {
   final Iterator delegate;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
 
   _MustacheContext current;
 
-  _MustachContextIteratorDecorator(this.delegate,
+  _MustacheContextIteratorDecorator(this.delegate,
       {this.parent, this.assumeNullNonExistingProperty});
 
   bool moveNext() {
