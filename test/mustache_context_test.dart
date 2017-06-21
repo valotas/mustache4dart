@@ -34,33 +34,6 @@ void main() {
     });
   });
 
-  group('Mirrorless mustache_context lib', () {
-    test('the use of mirrors should be configured with the USE_MIRRORS_DEFAULT',
-        () {
-      dynamic ctx = new MustacheContext({'key1': 'value1'});
-      expect(ctx.useMirrors, USE_MIRRORS);
-    });
-
-    test('should be disabled by default', () {
-      expect(USE_MIRRORS, true);
-    });
-
-    test('should return the result of the [] operator', () {
-      dynamic ctx = new MustacheContext({'key1': 'value1'});
-      ctx.useMirrors = false;
-      expect(ctx.field('key1').value(), 'value1');
-    });
-
-    test('should not be able to analyze classes with reflectioon', () {
-      var contactInfo = new _ContactInfo('type', 'value');
-      dynamic ctx = new MustacheContext(contactInfo, parent: null);
-      ctx.useMirrors = false;
-      expect(ctx.field('type'), isNull);
-    });
-
-    //TODO: add check for lambda returned from within a map
-  });
-
   test('Simple context with map', () {
     var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
     expect(ctx.field('k1').value(), 'value1');
