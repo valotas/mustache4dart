@@ -6,36 +6,36 @@ void main() {
     test('return literals', () async {
       final tokens = await tokenize("one!").toList();
       expect(tokens.length, 1);
-      expect(tokens[0].type, TokenType.Literal);
+      expect(tokens[0].type, TokenType.literal);
       expect(tokens[0].value, "one!");
     });
 
     test('return newLines', () async {
       final tokens = await tokenize("one\n").toList();
       expect(tokens.length, 2);
-      expect(tokens[1].type, TokenType.NewLine);
+      expect(tokens[1].type, TokenType.newLine);
     });
 
-    test('return \n\r as one newLine token', () async {
-      final tokens = await tokenize("one\n\rtrow").toList();
+    test('return \r\n as one newLine token', () async {
+      final tokens = await tokenize("one\r\ntrow").toList();
       expect(tokens.length, 3);
-      expect(tokens[1].type, TokenType.NewLine);
+      expect(tokens[1].type, TokenType.newLine);
     });
 
     test('returns opening mustaches', () async {
       final tokens = await tokenize("one {{m}}").toList();
       expect(tokens.length, 4);
-      expect(tokens[1].type, TokenType.Open);
+      expect(tokens[1].type, TokenType.opening);
     });
 
     test('returns closing mustaches', () async {
       final tokens = await tokenize("one {{m}}").toList();
       expect(tokens.length, 4);
-      expect(tokens[3].type, TokenType.Close);
+      expect(tokens[3].type, TokenType.closing);
     });
 
     test('return the right line of the token', () async {
-      final tokens = await tokenize("one\ntwo\n\rthree").toList();
+      final tokens = await tokenize("one\ntwo\r\nthree").toList();
       expect(tokens.length, 5);
       expect(tokens[0].line, 1);
       expect(tokens[1].line, 1);
@@ -45,17 +45,18 @@ void main() {
     });
 
     test('handles more than one line feed in a row', () async {
-      final tokens = await tokenize("one\n\n\r\nthree").toList();
+      final tokens = await tokenize("one\n\r\n\nthree").toList();
       expect(tokens.length, 5);
       expect(tokens[0].line, 1);
       expect(tokens[1].line, 1);
-      expect(tokens[2].line, 2);
+      expect(tokens[2].value, "\r\n");
+      expect(tokens[2].line, 2, reason: "${tokens[2].codeUnits}, col: ${tokens[2].col}, line: ${tokens[2].line}");
       expect(tokens[3].line, 3);
       expect(tokens[4].line, 4);
     });
 
     test('return the column of the token', () async {
-      final tokens = await tokenize("one\ntwo\n\rthree").toList();
+      final tokens = await tokenize("one\ntwo\r\nthree").toList();
       expect(tokens.length, 5);
       expect(tokens[0].col, 1);
       expect(tokens[1].col, 4);
@@ -67,15 +68,15 @@ void main() {
     test('return a literal foreach line', () async {
       final tokens = await tokenize("one\ntwo").toList();
       expect(tokens.length, 3);
-      expect(tokens[0].type, TokenType.Literal);
+      expect(tokens[0].type, TokenType.literal);
       expect(tokens[0].value, "one");
       expect(tokens[0].col, 1);
       expect(tokens[0].line, 1);
-      expect(tokens[1].type, TokenType.NewLine);
+      expect(tokens[1].type, TokenType.newLine);
       expect(tokens[1].value, "\n");
       expect(tokens[1].col, 4);
       expect(tokens[1].line, 1);
-      expect(tokens[2].type, TokenType.Literal);
+      expect(tokens[2].type, TokenType.literal);
       expect(tokens[2].value, "two");
       expect(tokens[2].col, 1);
       expect(tokens[2].line, 2);
