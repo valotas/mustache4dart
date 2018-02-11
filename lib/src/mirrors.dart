@@ -1,13 +1,20 @@
-import 'dart:mirrors' as mirrors;
+import 'package:reflectable/reflectable.dart';
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
+
+class _Reflector extends Reflectable {
+  const _Reflector() : super();
+}
+
+const MustachContext = const _Reflector();
+const _reflector = MustachContext;
 
 Reflection reflect(o, {bool useMirrors: USE_MIRRORS}) {
   if (o is Map) {
     return new MapReflection(o);
   }
   if (useMirrors && USE_MIRRORS) {
-    return new Mirror(o, mirrors.reflect(o));
+    return new Mirror(o, _reflector.reflect(o));
   }
 
   // in any other case fallback to a mirrorless reflection
@@ -52,13 +59,12 @@ final _noField = new Field();
 final _bracketsOperator = new Symbol("[]");
 
 class Mirror extends Reflection {
-  final mirrors.InstanceMirror instanceMirror;
+  final InstanceMirror instanceMirror;
 
   Mirror(object, this.instanceMirror) : super(object);
 
   Field field(String name) {
-    final Map<Symbol, mirrors.MethodMirror> members =
-        _instanceMembers(instanceMirror);
+    final Map<Symbol, MethodMirror> members = _instanceMembers(instanceMirror);
     if (_isStringAssignableToBracketsOperator(members)) {
       return new _BracketsField(object, name);
     }
@@ -70,29 +76,28 @@ class Mirror extends Reflection {
   }
 }
 
-Map<Symbol, mirrors.MethodMirror> _instanceMembers(mirrors.InstanceMirror m) {
+Map<Symbol, MethodMirror> _instanceMembers(InstanceMirror m) {
   if (m != null && m.type != null) {
     return m.type.instanceMembers;
   }
   return null;
 }
 
-_isStringAssignableToBracketsOperator(
-    Map<Symbol, mirrors.MethodMirror> members) {
+_isStringAssignableToBracketsOperator(Map<Symbol, MethodMirror> members) {
   if (!members.containsKey(_bracketsOperator)) {
     return false;
   }
   try {
-    mirrors.MethodMirror m = members[_bracketsOperator];
-    return mirrors.reflectType(String).isAssignableTo(m.parameters[0].type);
+    MethodMirror m = members[_bracketsOperator];
+    return _reflector.reflectType(String).isAssignableTo(m.parameters[0].type);
   } catch (e) {
     return false;
   }
 }
 
 class _MethodMirrorField extends Field {
-  final mirrors.InstanceMirror instance;
-  final mirrors.MethodMirror method;
+  final InstanceMirror instance;
+  final MethodMirror method;
 
   _MethodMirrorField(this.instance, this.method);
 
@@ -100,7 +105,7 @@ class _MethodMirrorField extends Field {
 
   bool get isGetter => method.isGetter;
 
-  bool get isVariable => method is mirrors.VariableMirror;
+  bool get isVariable => method is VariableMirror;
 
   bool get isLambda => method.parameters.length >= 0;
 
