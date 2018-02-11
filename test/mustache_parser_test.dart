@@ -22,16 +22,16 @@ void main() {
       expect(tokens[1].type, TokenType.newLine);
     });
 
-    test('returns opening mustaches', () async {
+    test('returns expressions', () async {
       final tokens = await tokenize("one {{m}}").toList();
-      expect(tokens.length, 4);
-      expect(tokens[1].type, TokenType.opening);
+      expect(tokens.length, 2);
+      expect(tokens[1].type, TokenType.expression);
     });
 
-    test('returns closing mustaches', () async {
-      final tokens = await tokenize("one {{m}}").toList();
-      expect(tokens.length, 4);
-      expect(tokens[3].type, TokenType.closing);
+    test('accepts {{{, }}} as delimiters', () async {
+      final tokens = await tokenize("one {{{m}}}").toList();
+      expect(tokens.length, 2);
+      expect(tokens[1].type, TokenType.expression);
     });
 
     test('return the right line of the token', () async {

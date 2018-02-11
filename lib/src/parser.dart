@@ -1,44 +1,79 @@
 import "dart:async";
 
-final int _LF = "\n".runes.first;
-final int _CR = "\r".runes.first;
-final int _OPEN = "{".runes.first;
-final int _CLOSE = "}".runes.first;
-final _CRLF = [_CR, _LF];
+final int _lf = "\n".runes.first;
+final int _cr = "\r".runes.first;
+final int _open = "{".runes.first;
+final int _close = "}".runes.first;
+final _crlf = [_cr, _lf];
 
 Stream<Token> tokenize(String input) {
   return _tokenize(new Stream.fromIterable([input]));
 }
 
 Stream<Token> _tokenize(Stream<String> chunks) {
+  final position = new _PositionMarker();
   return chunks
       .expand((chunk) => chunk.runes)
-      .transform(new _TokenizeTransformer())
-      .transform(_lineMerger());
+      .transform(position.trackColumns())
+      .transform(new _TokenizeTransformer(position))
+      .transform(_lineMerger())
+      .transform(position.trackLines());
+}
+
+class _PositionMarker {
+  int column = 1;
+  int line = 1;
+
+  trackColumns() {
+    return new StreamTransformer.fromHandlers(
+        handleData: (final int input, final EventSink<int> out) {
+          column++;
+          out.add(input);
+        }
+    );
+  }
+
+  trackLines() {
+    return new StreamTransformer.fromHandlers(
+        handleData: (final Token token, final EventSink<Token> out) {
+          if (token.type == TokenType.newLine) {
+            line++;
+            column = 1;
+          }
+          out.add(token);
+        }
+    );
+  }
 }
 
 class _TokenizeTransformer implements StreamTransformer<int, Token> {
+  final _PositionMarker positionMarker;
+
+  _TokenizeTransformer(this.positionMarker);
+
   Stream<Token> bind(Stream<int> input) =>
       new Stream.eventTransformed(input,
-              (EventSink sink) => new _TokenizerSink(sink));
+              (EventSink sink) =>
+          new _TokenizerSink(sink, this.positionMarker));
 }
 
 
 _lineMerger() {
   Token lastCarriageReturn = null;
+
   return new StreamTransformer<Token, Token>.fromHandlers(
       handleData: (final Token input, final EventSink<Token> out) {
         if (input.type != TokenType.newLine) {
           out.add(input);
           return;
         }
-        if (input.codeUnits[0] == _CR) {
+        if (input.codeUnits[0] == _cr) {
           lastCarriageReturn = input;
           return;
         }
         if (lastCarriageReturn != null) {
           final merged = new Token(
-              TokenType.newLine, _CRLF,
+              TokenType.newLine, _crlf,
               col: lastCarriageReturn.col,
               line: lastCarriageReturn.line);
           out.add(merged);
@@ -52,35 +87,32 @@ _lineMerger() {
 
 class _TokenizerSink extends EventSink<int> {
   final EventSink<Token> _out;
+  final _PositionMarker _position;
 
   TokenType _tokenType = null;
   List<int> _buffer = [];
-  int _currColumn = 1;
-  int _currLine = 1;
-  int _lastFlushColumn = 1;
+  List<int> _expressionBuffer = [];
 
-  _TokenizerSink(this._out);
+  _TokenizerSink(this._out, this._position);
 
   void add(int unit) {
-    if (unit == _LF || unit == _CR) {
+    if (unit == _lf || unit == _cr) {
       _addNewLine(unit);
-    } else if (unit == _OPEN) {
-      _addToken(TokenType.opening);
-    } else if (unit == _CLOSE) {
-      _addToken(TokenType.closing);
+    } else if (canBeExpression(unit)) {
+      _expressionBuffer.add(unit);
+      _addToken(TokenType.expression);
     } else {
       _addToken(TokenType.literal);
     }
-    _currColumn++;
     _buffer.add(unit);
+  }
+
+  bool canBeExpression(int unit) {
+    return unit == _open;
   }
 
   void _addNewLine(unit) {
     _flush();
-    if (unit == _LF) {
-      _currColumn = 0;
-      _currLine++;
-    }
     _tokenType = TokenType.newLine;
   }
 
@@ -96,9 +128,8 @@ class _TokenizerSink extends EventSink<int> {
       return;
     }
     final token = new Token(
-        _tokenType, _buffer, col: _lastFlushColumn, line: _currLine);
+        _tokenType, _buffer, col: _position.column, line: _position.line);
     _out.add(token);
-    _lastFlushColumn = _currColumn;
     _buffer = [];
   }
 
@@ -122,7 +153,7 @@ class Token {
   Token(this.type, this.codeUnits, {this.col, line})
       :
         this.value = new String.fromCharCodes(codeUnits),
-        this.line = codeUnits.length == 1 && codeUnits.single == _LF
+        this.line = codeUnits.length == 1 && codeUnits.single == _lf
             ? line - 1
             : line;
 }
@@ -130,6 +161,7 @@ class Token {
 enum TokenType {
   literal,
   newLine,
-  opening,
-  closing
+  expression,
+  openingDelimiter,
+  closingDelimiter
 }
