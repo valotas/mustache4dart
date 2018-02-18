@@ -55,6 +55,16 @@ your library with `dart2js -DMIRRORS=false `. In that case though you must
 always make sure that your context object have a right implementation of the
 `[]` operator as no other checks on the object will be available.
 
+#### @MustacheContext
+A new (and the recommended) way of reflection is based on the [reflectable][]
+package. This friendlier dart2js but needs a little bit of a work to be done
+correctly. First of all you should annotate your classes that are used as a
+context with `@MustacheContext`.
+
+At least for the moment if @MustacheContext is not used mustache4dart will still
+try to make use of the old mirrors implementation if that is supported by your
+running environment.
+
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a
 partial. You can do that by providing a function that returns a template
@@ -143,3 +153,4 @@ The library will follow a [semantic versioning][semver]
 [testrunner]: https://pub.dartlang.org/packages/test_runner
 [travis]: https://travis-ci.org/valotas/mustache4dart
 [coverage]: https://pub.dartlang.org/packages/coverage
+[reflectable]: https://pub.dartlang.org/packages/reflectable

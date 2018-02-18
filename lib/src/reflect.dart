@@ -1,3 +1,4 @@
+// @MirrorsUsed(metaTargets: const [MustacheContext])
 import 'dart:mirrors' as mirrors;
 import 'package:reflectable/reflectable.dart' as reflectable;
 
