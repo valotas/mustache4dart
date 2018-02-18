@@ -1,6 +1,6 @@
 import 'dart:mirrors' as mirrors;
 import 'package:test/test.dart';
-import 'package:mustache4dart/src/mirrors.dart';
+import 'package:mustache4dart/src/reflect.dart';
 
 @mirrors.MirrorsUsed()
 class Person {
@@ -145,7 +145,7 @@ void main() {
 
     test('does not use reflection with Maps', () {
       final reflection = reflect({'name': "g"});
-      expect(reflection, isNot(new isInstanceOf<Mirror>()));
+      expect(reflection, isNot(new isInstanceOf<ReflMirror>()));
     });
 
     group('with useMirrors = false', () {
