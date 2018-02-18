@@ -2,12 +2,18 @@ import 'package:reflectable/reflectable.dart';
 
 const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
-class _Reflector extends Reflectable {
-  const _Reflector() : super();
+class MustacheContext extends Reflectable {
+  const MustacheContext()
+      : super(
+          declarationsCapability,
+          invokingCapability,
+          typeAnnotationQuantifyCapability,
+          typeRelationsCapability,
+        );
 }
 
-const MustachContext = const _Reflector();
-const _reflector = MustachContext;
+const _reflector = const MustacheContext();
+final _stringType = _reflector.reflectType(String);
 
 Reflection reflect(o, {bool useMirrors: USE_MIRRORS}) {
   if (o is Map) {
@@ -32,6 +38,8 @@ class Reflection {
 }
 
 class Field {
+  const Field();
+
   bool get exists {
     return false;
   }
@@ -54,9 +62,8 @@ class MapReflection extends Reflection {
   }
 }
 
-final _noField = new Field();
-
-final _bracketsOperator = new Symbol("[]");
+const _noField = const Field();
+const _bracketsOperator = "[]";
 
 class Mirror extends Reflection {
   final InstanceMirror instanceMirror;
@@ -64,34 +71,28 @@ class Mirror extends Reflection {
   Mirror(object, this.instanceMirror) : super(object);
 
   Field field(String name) {
-    final Map<Symbol, MethodMirror> members = _instanceMembers(instanceMirror);
+    final Map<String, MethodMirror> members =
+        instanceMirror.type.instanceMembers;
     if (_isStringAssignableToBracketsOperator(members)) {
       return new _BracketsField(object, name);
     }
-    final methodMirror = members[new Symbol(name)];
+    final methodMirror = members[name];
     if (methodMirror == null) {
       return _noField;
     }
     return new _MethodMirrorField(this.instanceMirror, methodMirror);
   }
-}
 
-Map<Symbol, MethodMirror> _instanceMembers(InstanceMirror m) {
-  if (m != null && m.type != null) {
-    return m.type.instanceMembers;
-  }
-  return null;
-}
-
-_isStringAssignableToBracketsOperator(Map<Symbol, MethodMirror> members) {
-  if (!members.containsKey(_bracketsOperator)) {
-    return false;
-  }
-  try {
-    MethodMirror m = members[_bracketsOperator];
-    return _reflector.reflectType(String).isAssignableTo(m.parameters[0].type);
-  } catch (e) {
-    return false;
+  _isStringAssignableToBracketsOperator(Map<String, MethodMirror> members) {
+    if (!members.containsKey(_bracketsOperator)) {
+      return false;
+    }
+    try {
+      MethodMirror m = members[_bracketsOperator];
+      return _stringType.isAssignableTo(m.parameters[0].type);
+    } catch (e) {
+      return false;
+    }
   }
 }
 
@@ -113,8 +114,11 @@ class _MethodMirrorField extends Field {
     if (!exists) {
       return null;
     }
-    final resultMirror = instance.getField(method.simpleName);
-    return resultMirror.reflectee;
+    if (isGetter) {
+      return instance.invokeGetter(method.simpleName);
+    }
+    // isLambda
+    return (input) => instance.invoke(method.simpleName, [input]);
   }
 }
 
