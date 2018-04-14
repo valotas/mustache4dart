@@ -39,3 +39,7 @@ if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
 
   pub run test -p chrome,firefox
 fi
+
+# if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
+#  pub run test -p chrome,firefox
+# fi
