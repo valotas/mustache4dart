@@ -1,14 +1,7 @@
 language: dart
-dist: trusty
-sudo: false
-
-addons:
-  firefox: 53.0.3
-  apt:
-    packages:
-      - google-chrome-stable
 
 dart:
+  - dev
   - stable
   - 1.23.0
   - 1.22.0
@@ -26,7 +19,3 @@ script: ./build.sh
 branches:
   only:
     - master
-
-cache:
-  directories:
-    - $HOME/.pub-cache

@@ -300,7 +300,7 @@ class _StartSectionToken extends _ExpressionToken
     return str.toString();
   }
 
-  forEachUntilEndSection(void f(Token)) {
+  forEachUntilEndSection(void f(Token token)) {
     if (f == null) {
       throw new Exception('Can not apply a null function!');
     }
