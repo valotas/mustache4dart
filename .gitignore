@@ -6,3 +6,4 @@ packages
 *~
 pubspec.lock
 .packages
+.dart_tool/

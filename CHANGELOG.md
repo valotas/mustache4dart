@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## unreleased
+
+* Addressed a Dart 2 analysis issue
+
 ## 2.1.0 (2017-06-21)
 
 * Mirrors improvements [#65](https://github.com/valotas/mustache4dart/pull/65)
