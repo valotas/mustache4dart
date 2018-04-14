@@ -19,7 +19,3 @@ script: ./build.sh
 branches:
   only:
     - master
-
-cache:
-  directories:
-    - $HOME/.pub-cache
