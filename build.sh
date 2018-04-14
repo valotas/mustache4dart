@@ -10,6 +10,7 @@ if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
 fi
 $dartanalyzer
 
+pub deps
 
 # run the tests
 pub run test
