@@ -10,14 +10,14 @@ main() {
   specs_dir.listSync().forEach((FileSystemEntity entity) {
     var filename = entity.path;
     if (entity is File && shouldRun(filename)) {
-      var text = entity.readAsStringSync(encoding: UTF8);
+      var text = entity.readAsStringSync(encoding: utf8);
       _defineGroupFromFile(filename, text);
     }
   });
 }
 
 _defineGroupFromFile(filename, text) {
-  var json = JSON.decode(text);
+  var json = jsonDecode(text);
   var tests = json['tests'];
   filename = filename.substring(filename.lastIndexOf('/') + 1);
   group("Specs of $filename", () {

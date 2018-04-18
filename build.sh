@@ -13,7 +13,8 @@ $dartanalyzer
 pub deps
 
 # run the tests
-pub run test
+# pub run test
+dart --preview-dart-2 test/mustache_all.dart
 
 # Only run with the stable version of dart.
 if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
@@ -39,3 +40,7 @@ if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
 
   pub run test -p chrome,firefox
 fi
+
+# if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
+#  pub run test -p chrome,firefox
+# fi
