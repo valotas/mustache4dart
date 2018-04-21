@@ -13,8 +13,12 @@ $dartanalyzer
 pub deps
 
 # run the tests
-# pub run test
-dart --preview-dart-2 test/mustache_all.dart
+if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
+  pub run test
+else
+  # run locally the tests with dart-2 preview
+  dart --preview-dart-2 test/mustache_all.dart
+fi
 
 # Only run with the stable version of dart.
 if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
