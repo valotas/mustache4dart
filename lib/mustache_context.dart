@@ -105,7 +105,7 @@ class _MustacheContext implements MustacheContext {
     }
     if (key.contains(DOT)) {
       final Iterator<String> i = key.split(DOT).iterator;
-      var val = this;
+      MustacheContext val = this;
       while (i.moveNext()) {
         val = val._getMustacheContext(i.current);
         if (val == null) {
