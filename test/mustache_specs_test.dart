@@ -10,14 +10,14 @@ main() {
   specs_dir.listSync().forEach((FileSystemEntity entity) {
     var filename = entity.path;
     if (entity is File && shouldRun(filename)) {
-      var text = entity.readAsStringSync(encoding: UTF8);
+      var text = entity.readAsStringSync(encoding: utf8);
       _defineGroupFromFile(filename, text);
     }
   });
 }
 
 _defineGroupFromFile(filename, text) {
-  var json = JSON.decode(text);
+  var json = jsonDecode(text);
   var tests = json['tests'];
   filename = filename.substring(filename.lastIndexOf('/') + 1);
   group("Specs of $filename", () {
@@ -25,9 +25,7 @@ _defineGroupFromFile(filename, text) {
     //as for some reason dart can run the group more than once causing the test
     //to fail the second time it runs
     tearDown(() {
-      _DummyCallableWithState callable =
-          lambdas['Interpolation - Multiple Calls'];
-      callable.reset();
+      _multiCallReset();
     });
 
     tests.forEach((t) {
@@ -51,7 +49,7 @@ _defineGroupFromFile(filename, text) {
 
       //swap the data.lambda with a dart real function
       if (data['lambda'] != null) {
-        data['lambda'] = lambdas[t['name']];
+        data['lambda'] = _lambdas[t['name']];
       }
       reason.write(" with '$data'");
       if (partials != null) {
@@ -73,22 +71,15 @@ bool shouldRun(String filename) {
   return true;
 }
 
-//Until we'll find a way to load a piece of code dynamically,
-//we provide the lambdas at the test here
-class _DummyCallableWithState {
-  var _callCounter = 0;
+var _multiCallCount = 0;
+String _multiCallFunction(arg) => "${++_multiCallCount}";
+void _multiCallReset() => _multiCallCount = 0;
 
-  call(arg) => "${++_callCounter}";
-
-  reset() => _callCounter = 0;
-}
-
-dynamic lambdas = {
+final _lambdas = {
   'Interpolation': (t) => 'world',
   'Interpolation - Expansion': (t) => '{{planet}}',
   'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
-  'Interpolation - Multiple Calls': new _DummyCallableWithState(),
-  //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+  'Interpolation - Multiple Calls': _multiCallFunction,
   'Escaping': (t) => '>',
   'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
   'Section - Expansion': (txt) => "$txt{{planet}}$txt",

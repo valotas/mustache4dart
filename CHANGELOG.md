@@ -1,4 +1,10 @@
-# CHANGELOG
+## 2.1.3
+
+* Require Dart 2 and related fixes.
+
+## 2.1.2 (2018-05-12)
+
+* Dart 2 fixes.
 
 ## 2.1.1 (2018-04-14)
 

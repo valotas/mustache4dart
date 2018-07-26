@@ -83,7 +83,7 @@ void main() {
         currentPath = "$currentPath/test";
       }
       final template = new File("$currentPath/lorem-ipsum.txt")
-          .readAsStringSync(encoding: UTF8);
+          .readAsStringSync(encoding: utf8);
 
       final String out = render(template, {'ma': 'ma'});
       expect(out, template);
