@@ -2,6 +2,8 @@ language: dart
 
 dart:
   - dev
+  # Uncomment after stable 2.0 is published
+  #- stable
 
 before_script:
   - export DISPLAY=:99.0

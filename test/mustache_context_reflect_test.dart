@@ -1,8 +1,6 @@
-import 'dart:mirrors' as mirrors;
 import 'package:test/test.dart';
 import 'package:mustache4dart/src/mirrors.dart';
 
-@mirrors.MirrorsUsed()
 class Person {
   final String name;
   final String lastname;
@@ -28,7 +26,6 @@ class ClassWithLambda {
   lambdaWithArity1(str) => "[[$str $num]]";
 }
 
-@mirrors.MirrorsUsed()
 class ClassWithBrackets {
   operator [](String input) {
     if (input == 'nullval') {
@@ -52,7 +49,7 @@ void main() {
         final actual = reflect(cat).field('name');
 
         expect(actual, isNotNull);
-        expect(actual, new isInstanceOf<Field>());
+        expect(actual, TypeMatcher<Field>());
       });
 
       group(".exists", () {
@@ -116,7 +113,7 @@ void main() {
           final actual = reflect(object).field('xyz');
 
           expect(actual.val(), isNotNull);
-          expect(actual.val(), new isInstanceOf<Person>());
+          expect(actual.val(), TypeMatcher<Person>());
           expect(actual.val().name, 'xyz');
         }, onPlatform: {
           "js": new Skip("[] operator can not be reflected in javascript")
@@ -137,7 +134,7 @@ void main() {
 
           final actual = reflect(labmbda).field('lambdaWithArity1');
 
-          expect(actual.val(), new isInstanceOf<Function>());
+          expect(actual.val(), TypeMatcher<Function>());
           expect(actual.val()("-"), "[[- 1]]");
         });
       });
@@ -145,7 +142,7 @@ void main() {
 
     test('does not use reflection with Maps', () {
       final reflection = reflect({'name': "g"});
-      expect(reflection, isNot(new isInstanceOf<Mirror>()));
+      expect(reflection, isNot(TypeMatcher<Mirror>()));
     });
 
     group('with useMirrors = false', () {
@@ -156,7 +153,7 @@ void main() {
       test('should return the result of the [] operator', () {
         final reflection = reflect(new ClassWithBrackets(), useMirrors: false);
         final value = reflection.field('George').val();
-        expect(value, new isInstanceOf<Person>());
+        expect(value, TypeMatcher<Person>());
         expect(value.name, 'George');
       });
 
