@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.1.1 (2018-04-14)
+
+* Addressed Dart 2 analysis issues [#70](https://github.com/valotas/mustache4dart/pull/70)
+* Run tests against v2 vm of Dart
+
 ## 2.1.0 (2017-06-21)
 
 * Mirrors improvements [#65](https://github.com/valotas/mustache4dart/pull/65)

@@ -25,9 +25,7 @@ _defineGroupFromFile(filename, text) {
     //as for some reason dart can run the group more than once causing the test
     //to fail the second time it runs
     tearDown(() {
-      _DummyCallableWithState callable =
-          lambdas['Interpolation - Multiple Calls'];
-      callable.reset();
+      _multipleCallsDummy.reset();
     });
 
     tests.forEach((t) {
@@ -83,11 +81,13 @@ class _DummyCallableWithState {
   reset() => _callCounter = 0;
 }
 
+var _multipleCallsDummy = new _DummyCallableWithState();
+
 dynamic lambdas = {
   'Interpolation': (t) => 'world',
   'Interpolation - Expansion': (t) => '{{planet}}',
   'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
-  'Interpolation - Multiple Calls': new _DummyCallableWithState(),
+  'Interpolation - Multiple Calls': (t) => _multipleCallsDummy(t),
   //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
   'Escaping': (t) => '>',
   'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
