@@ -1,6 +1,7 @@
 .idea/
 bin/
 build/
+.vscode/
 packages
 *.swp
 *~
