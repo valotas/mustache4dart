@@ -1,8 +1,9 @@
 .idea/
 bin/
 build/
-packages
+.pub/
+packages/
+.packages
 *.swp
 *~
 pubspec.lock
-.packages
