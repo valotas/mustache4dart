@@ -3,22 +3,16 @@
 # bail on error
 set -e
 
-echo "Analyzing with `dartanalyzer --version`"
-dartanalyzer="dartanalyzer --strong --fatal-warnings lib/*.dart test/*.dart"
-if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
-  dartanalyzer="$dartanalyzer --preview-dart-2"
+if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
+  echo "Analyzing with `dartanalyzer --version`"
+  dartanalyzer="dartanalyzer --strong --fatal-warnings lib/*.dart test/*.dart"
+  $dartanalyzer
 fi
-$dartanalyzer
 
 pub deps
 
 # run the tests
-if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
-  pub run test
-else
-  # run locally the tests with dart-2 preview
-  dart --preview-dart-2 test/mustache_all.dart
-fi
+pub run test
 
 # Only run with the stable version of dart.
 if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
@@ -40,11 +34,9 @@ if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
       --exclude-test-files \
       test/mustache_all.dart
   fi
-
-
-  pub run test -p chrome,firefox
 fi
 
-# if [ "$TRAVIS_DART_VERSION" = "dev" ]; then
-#  pub run test -p chrome,firefox
-# fi
+if [ "$TRAVIS_DART_VERSION" = "1.23.0" ]; then
+  # make sure that dart2js works with dart v1
+  pub run test -p chrome,firefox
+fi
