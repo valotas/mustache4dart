@@ -10,10 +10,23 @@ just check the [tests][tests]. For more info, just read further.
 
 Using it
 --------
-In order to use the library, just add it to your `pubspec.yaml` as a dependency
+In order to use the library, just add it to your `pubspec.yaml` as a dependency.
 
+For dart v1, you should be using the v2 of this package:
+
+```yaml
 	dependencies:
-	  mustache4dart: '>= 2.0.0 < 3.0.0'
+		# for dar
+		mustache4dart: '>= 2.0.0 < 3.0.0'
+```
+
+For dart v2, you should be using the v3 of this package:
+
+```yaml
+	dependencies:
+		# for dar
+		mustache4dart: '>= 3.0.0 < 4.0.0'
+```
 
 and then import the package
 
@@ -43,18 +56,6 @@ mustache4dart will try the followings
 
 in each case the first valid value will be used.
 
-#### @MirrorsUsed
-In order to do the stuff described above the mirror library is being used which
-could lead to big js files when compiling the library with dartjs. In order to
-preserve the type information you have to annotate the objects used as
-contextes with `@MirrorsUsed`. Have in mind though that [as documented][mirrorsused]
-this is experimental.
-
-In order to avoid the use of the mirrors package, make sure that you compile
-your library with `dart2js -DMIRRORS=false `. In that case though you must
-always make sure that your context object have a right implementation of the
-`[]` operator as no other checks on the object will be available.
-
 ### Partials
 mustache4dart support partials but it needs somehow to know how to find a
 partial. You can do that by providing a function that returns a template
@@ -72,7 +73,7 @@ you can compile it to a function using the toplevel function compile:
 ```dart
 var salut = compile('Hello {{name}}!');
 print(salut({'name': 'Alice'})); //should print Hello Alice!
-``` 
+```
 
 ### Lambdas support
 The library passes all the optional [lambda specs][lambda_specs] based on
@@ -139,7 +140,6 @@ The library will follow a [semantic versioning][semver]
 [lambda_specs]: https://github.com/mustache/spec/blob/master/specs/~lambdas.yml
 [new_issue]: https://github.com/valotas/mustache4dart/issues/new
 [semver]: http://semver.org/
-[mirrorsused]: https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed
 [testrunner]: https://pub.dartlang.org/packages/test_runner
 [travis]: https://travis-ci.org/valotas/mustache4dart
 [coverage]: https://pub.dartlang.org/packages/coverage
