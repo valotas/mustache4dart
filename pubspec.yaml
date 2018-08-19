@@ -4,7 +4,7 @@ author: Georgios Valotasios <valotas@gmail.com>
 description: A mustache implementation for the Dart language
 homepage: https://github.com/valotas/mustache4dart
 environment:
-  sdk: '>=0.8.10+6 <3.0.0'
+  sdk: '>=2.0.0-dev.64.1 <3.0.0'
 dev_dependencies:
   test: ^1.3.0
   isolate: ^2.0.0
