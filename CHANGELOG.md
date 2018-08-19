@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.0.0-dev.0.0 (2018-08-19)
+
+* Drop support for dart v1
+
 ## 2.1.1 (2018-04-14)
 
 * Addressed Dart 2 analysis issues [#70](https://github.com/valotas/mustache4dart/pull/70)
