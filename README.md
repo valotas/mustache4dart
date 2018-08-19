@@ -16,7 +16,6 @@ For dart v1, you should be using the v2 of this package:
 
 ```yaml
 	dependencies:
-		# for dar
 		mustache4dart: '>= 2.0.0 < 3.0.0'
 ```
 
@@ -24,7 +23,6 @@ For dart v2, you should be using the v3 of this package:
 
 ```yaml
 	dependencies:
-		# for dar
 		mustache4dart: '>= 3.0.0 < 4.0.0'
 ```
 
