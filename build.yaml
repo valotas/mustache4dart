@@ -4,5 +4,5 @@ targets:
       reflectable:
         generate_for:
           - test/**_test.dart
-          options:
+        options:
           formatted: true
