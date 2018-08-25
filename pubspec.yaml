@@ -12,3 +12,4 @@ dev_dependencies:
   isolate: ^2.0.0
   build_runner: any
   build_test: any
+  # build_web_compilers: ^0.4.0

@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:mustache4dart/src/reflect.dart';
 
+@MustacheContext()
 class Person {
   final String name;
   final String lastname;
@@ -18,6 +19,7 @@ class Person {
   }
 }
 
+@MustacheContext()
 class ClassWithLambda {
   final int num;
 
@@ -142,26 +144,7 @@ void main() {
 
     test('does not use reflection with Maps', () {
       final reflection = reflect({'name': "g"});
-      expect(reflection, isNot(TypeMatcher<Mirror>()));
-    });
-
-    group('with useMirrors = false', () {
-      test('should be disabled by default', () {
-        expect(USE_MIRRORS, true);
-      });
-
-      test('should return the result of the [] operator', () {
-        final reflection = reflect(new ClassWithBrackets(), useMirrors: false);
-        final value = reflection.field('George').val();
-        expect(value, TypeMatcher<Person>());
-        expect(value.name, 'George');
-      });
-
-      test('should not be able to analyze classes with reflectioon', () {
-        final george = new Person('George');
-        final reflection = reflect(george, useMirrors: false);
-        expect(reflection.field('name').exists, isFalse);
-      });
+      expect(reflection, TypeMatcher<MapReflection>());
     });
   });
 }

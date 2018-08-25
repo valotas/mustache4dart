@@ -1,18 +1,19 @@
 import "mustache_context_test.dart" as context_test;
 import "mustache_context_reflect_test.dart" as context_reflect_test;
-import "mustache_context_reflect_with_reflectable_test.dart"
-    as context_reflectable_test;
 import "mustache_issues_test.dart" as issues_test;
 import "mustache_line_test.dart" as line_test;
 import "mustache_specs_test.dart" as specs_test;
 import "mustache_test.dart" as general_test;
+import "./mustache_all.reflectable.dart";
 
 void main() {
+  if (!bool.fromEnvironment("dart.library.mirrors")) {
+    initializeReflectable();
+  }
   context_test.main();
   context_reflect_test.main();
   issues_test.main();
   line_test.main();
   specs_test.main();
   general_test.main();
-  context_reflectable_test.main();
 }
