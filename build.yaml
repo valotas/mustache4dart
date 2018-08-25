@@ -1,0 +1,8 @@
+targets:
+  mustache4dart:
+    builders:
+      reflectable:
+        generate_for:
+          - test/**_test.dart
+          options:
+          formatted: true
