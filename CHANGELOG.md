@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.0.0-dev.1.0 (2018-08-25)
+
+* Make use of [`reflectable`](https://github.com/dart-lang/reflectable)
+
 ## 3.0.0-dev.0.0 (2018-08-19)
 
 * Drop support for dart v1
