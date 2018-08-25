@@ -1,8 +1,10 @@
 .idea/
 bin/
 build/
+.vscode/
 packages
 *.swp
 *~
 pubspec.lock
 .packages
+*.reflectable.dart
