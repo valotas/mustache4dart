@@ -16,7 +16,7 @@ const _reflector = MustacheContext();
 Reflection createReflection(o) {
   try {
     if (_reflector.canReflect(o)) {
-      return ReflMirror(o, _reflector.reflect(o));
+      return _ReflectorMirror(o, _reflector.reflect(o));
     }
     return null;
   } catch (e) {
@@ -24,12 +24,12 @@ Reflection createReflection(o) {
   }
 }
 
-class ReflMirror extends Reflection {
+class _ReflectorMirror extends Reflection {
   static const _bracketsOperator = "[]";
   final _stringType = _reflector.reflectType(String);
 
   final reflectable.InstanceMirror instanceMirror;
-  ReflMirror(object, this.instanceMirror) : super(object);
+  _ReflectorMirror(object, this.instanceMirror) : super(object);
 
   Field field(String name) {
     final Map<String, reflectable.MethodMirror> members =
@@ -42,7 +42,7 @@ class ReflMirror extends Reflection {
     if (methodMirror == null) {
       return noField;
     }
-    return new _ReflMethodMirrorField(this.instanceMirror, methodMirror);
+    return new _ReflectableMethodMirrorField(this.instanceMirror, methodMirror);
   }
 
   _isStringAssignableToBracketsOperator(
@@ -59,10 +59,10 @@ class ReflMirror extends Reflection {
   }
 }
 
-class _ReflMethodMirrorField extends Field {
+class _ReflectableMethodMirrorField extends Field {
   final reflectable.InstanceMirror instance;
   final reflectable.MethodMirror method;
-  _ReflMethodMirrorField(this.instance, this.method);
+  _ReflectableMethodMirrorField(this.instance, this.method);
   bool get exists => isVariable || isGetter || isLambda;
   bool get isGetter => method.isGetter;
   bool get isVariable => method is reflectable.VariableMirror;

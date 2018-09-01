@@ -5,14 +5,10 @@ const USE_MIRRORS = const bool.fromEnvironment('MIRRORS', defaultValue: true);
 
 const _bracketsOperator = Symbol("[]");
 
-class MustacheContext extends mirrors.MirrorsUsed {
-  const MustacheContext();
-}
-
 Reflection createReflection(o) {
   try {
     if (USE_MIRRORS) {
-      return new Mirror(o, mirrors.reflect(o));
+      return new _Mirror(o, mirrors.reflect(o));
     }
     return null;
   } catch (e) {
@@ -20,10 +16,10 @@ Reflection createReflection(o) {
   }
 }
 
-class Mirror extends Reflection {
+class _Mirror extends Reflection {
   final mirrors.InstanceMirror instanceMirror;
 
-  Mirror(object, this.instanceMirror) : super(object);
+  _Mirror(object, this.instanceMirror) : super(object);
 
   Field field(String name) {
     final Map<Symbol, mirrors.MethodMirror> members =

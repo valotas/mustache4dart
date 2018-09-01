@@ -1,7 +1,7 @@
 import "./reflect_with_reflector.dart"
+    // ignore: uri_does_not_exist
     if (dart.library.mirrors) "./reflect_with_mirrors.dart";
-export "./reflect_with_reflector.dart"
-    if (dart.library.mirrors) "./reflect_with_mirrors.dart";
+export "./reflect_with_reflector.dart";
 
 Reflection reflect(o) {
   if (o is Map) {
