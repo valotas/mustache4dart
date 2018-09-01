@@ -3,26 +3,33 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
+import './mustache_issues_test.reflectable.dart';
 
+@MustacheReflectable()
 class A {
   final bar = 'bar';
 
   String get foo => 'foo';
 }
 
+@MustacheReflectable()
 class B extends A {}
 
+@MustacheReflectable()
 class Parent {
   String foo;
 }
 
+@MustacheReflectable()
 class Child extends Parent {
   List<OtherChild> children = [];
 }
 
+@MustacheReflectable()
 class OtherChild extends Parent {}
 
 void main() {
+  initializeReflectable();
   group('mustache4dart issues', () {
     test(
         '#9: use empty strings for non existing variable',

@@ -1,8 +1,8 @@
 import 'package:reflectable/reflectable.dart' as reflectable;
 import "./reflect.dart";
 
-class MustacheContext extends reflectable.Reflectable {
-  const MustacheContext()
+class MustacheReflectable extends reflectable.Reflectable {
+  const MustacheReflectable()
       : super(
           reflectable.declarationsCapability,
           reflectable.invokingCapability,
@@ -11,23 +11,19 @@ class MustacheContext extends reflectable.Reflectable {
         );
 }
 
-const _reflector = MustacheContext();
+const _reflector = MustacheReflectable();
 
 Reflection createReflection(o) {
-  try {
-    if (_reflector.canReflect(o)) {
-      return _ReflectorMirror(o, _reflector.reflect(o));
-    }
-    return null;
-  } catch (e) {
-    return null;
+  if (_reflector.canReflect(o)) {
+    return _ReflectorMirror(o, _reflector.reflect(o));
   }
+  return null;
 }
 
-class _ReflectorMirror extends Reflection {
-  static const _bracketsOperator = "[]";
-  final _stringType = _reflector.reflectType(String);
+final _stringType = _reflector.reflectType(String);
+const _bracketsOperator = "[]";
 
+class _ReflectorMirror extends Reflection {
   final reflectable.InstanceMirror instanceMirror;
   _ReflectorMirror(object, this.instanceMirror) : super(object);
 
@@ -56,6 +52,11 @@ class _ReflectorMirror extends Reflection {
     } catch (e) {
       return false;
     }
+  }
+
+  @override
+  String toString() {
+    return "Instance of _ReflectorMirror";
   }
 }
 

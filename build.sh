@@ -39,7 +39,6 @@ if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
   fi
 fi
 
-if [ "$TRAVIS_DART_VERSION" = "1.23.0" ]; then
-  # make sure that dart2js works with dart v1
-  pub run test -p chrome,firefox
+if [ "$TRAVIS_DART_VERSION" = "stable" ]; then
+  pub run build_runner test -- -p chrome,firefox
 fi

@@ -3,7 +3,7 @@ targets:
     builders:
       reflectable:
         generate_for:
-          - test/**_all.dart
+          - test/**_test.dart
         options:
           formatted: true
       #build_web_compilers|entrypoint:

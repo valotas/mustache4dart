@@ -4,12 +4,8 @@ import "mustache_issues_test.dart" as issues_test;
 import "mustache_line_test.dart" as line_test;
 import "mustache_specs_test.dart" as specs_test;
 import "mustache_test.dart" as general_test;
-import "./mustache_all.reflectable.dart";
 
 void main() {
-  if (!bool.fromEnvironment("dart.library.mirrors")) {
-    initializeReflectable();
-  }
   context_test.main();
   context_reflect_test.main();
   issues_test.main();

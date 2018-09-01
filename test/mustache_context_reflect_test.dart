@@ -1,7 +1,8 @@
 import 'package:test/test.dart';
 import 'package:mustache4dart/src/reflect.dart';
+import './mustache_context_reflect_test.reflectable.dart';
 
-@MustacheContext()
+@MustacheReflectable()
 class Person {
   final String name;
   final String lastname;
@@ -19,7 +20,7 @@ class Person {
   }
 }
 
-@MustacheContext()
+@MustacheReflectable()
 class ClassWithLambda {
   final int num;
 
@@ -28,6 +29,7 @@ class ClassWithLambda {
   lambdaWithArity1(str) => "[[$str $num]]";
 }
 
+@MustacheReflectable()
 class ClassWithBrackets {
   operator [](String input) {
     if (input == 'nullval') {
@@ -38,11 +40,19 @@ class ClassWithBrackets {
 }
 
 void main() {
+  initializeReflectable();
+
   group('reflect', () {
     test('returns a mirror object', () {
       final cat = new Person("cat");
       expect(reflect(cat), isNotNull);
     });
+
+    test('returns a reflectable object when mirrors not available', () {
+      final cat = new Person("cat");
+      final Reflection reflection = reflect(cat);
+      expect(reflection.toString(), "Instance of _ReflectorMirror");
+    }, testOn: "browser");
 
     group('field([name])', () {
       test('should return an object', () {
@@ -117,8 +127,6 @@ void main() {
           expect(actual.val(), isNotNull);
           expect(actual.val(), TypeMatcher<Person>());
           expect(actual.val().name, 'xyz');
-        }, onPlatform: {
-          "js": new Skip("[] operator can not be reflected in javascript")
         });
 
         test('returns always a reference to the value', () {

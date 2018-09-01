@@ -1,7 +1,10 @@
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache_context.dart';
+import './mustache_context_test.reflectable.dart';
 
 void main() {
+  initializeReflectable();
+
   group('mustache_context lib', () {
     test('Recursion of iterable contextes', () {
       var contextY = {'content': 'Y', 'nodes': []};
@@ -41,7 +44,7 @@ void main() {
   });
 
   test('Simple context with object', () {
-    var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
+    var ctx = new MustacheContext(new Person('Γιώργος', 'Βαλοτάσιος'));
     expect(ctx.field('name').value(), 'Γιώργος');
     expect(ctx.field('lastname').value(), 'Βαλοτάσιος');
     expect(ctx.field('last'), null);
@@ -81,14 +84,14 @@ void main() {
   });
 
   test('Object with iterables', () {
-    var p = new _Person('Νικόλας', 'Νικολάου');
-    p.contactInfos.add(new _ContactInfo('Address', {
+    var p = new Person('Νικόλας', 'Νικολάου');
+    p.contactInfos.add(new ContactInfo('Address', {
       'Street': 'Κολοκωτρόνη',
       'Num': '31',
       'Zip': '42100',
       'Country': 'GR'
     }));
-    p.contactInfos.add(new _ContactInfo('skype', 'some1'));
+    p.contactInfos.add(new ContactInfo('skype', 'some1'));
     var ctx = new MustacheContext(p);
     var contactInfos = ctx.field('contactInfos');
     expect(contactInfos is Iterable, isTrue);
@@ -100,9 +103,9 @@ void main() {
 
   test('Deep search with object', () {
     //create our model:
-    _Person p = null;
+    Person p = null;
     for (int i = 10; i > 0; i--) {
-      p = new _Person("name$i", "lastname$i", p);
+      p = new Person("name$i", "lastname$i", p);
     }
 
     MustacheContext ctx = new MustacheContext(p);
@@ -132,12 +135,12 @@ void main() {
 
   test('Dotted names', () {
     var ctx =
-        new MustacheContext({'person': new _Person('George', 'Valotasios')});
+        new MustacheContext({'person': new Person('George', 'Valotasios')});
     expect(ctx.field('person.name').value(), 'George');
   });
 
   test('Context with another context', () {
-    var ctx = new MustacheContext(new _Person('George', 'Valotasios'),
+    var ctx = new MustacheContext(new Person('George', 'Valotasios'),
         parent: new MustacheContext({
           'a': {'one': 1},
           'b': {'two': 2}
@@ -181,13 +184,14 @@ void main() {
   });
 }
 
-class _Person {
+@MustacheReflectable()
+class Person {
   final name;
   final lastname;
-  final _Person parent;
-  List<_ContactInfo> contactInfos = [];
+  final Person parent;
+  List<ContactInfo> contactInfos = [];
 
-  _Person(this.name, this.lastname, [this.parent = null]);
+  Person(this.name, this.lastname, [this.parent = null]);
 
   get fullname => "$name $lastname";
 
@@ -202,11 +206,12 @@ class _Person {
   reversedLastName() => _reverse(lastname);
 }
 
-class _ContactInfo {
+@MustacheReflectable()
+class ContactInfo {
   final String type;
   final value;
 
-  _ContactInfo(this.type, this.value);
+  ContactInfo(this.type, this.value);
 }
 
 class _Transformer {
