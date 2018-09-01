@@ -1,6 +1,7 @@
 library mustache4dart;
 
 import 'mustache_context.dart';
+export 'src/reflect_with_reflector.dart' show MustacheReflectable;
 
 part 'src/mustache.dart';
 part 'src/tokens.dart';

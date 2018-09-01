@@ -1,11 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mustache4dart/mustache4dart.dart';
+import './mustache_test.reflectable.dart';
 
+@MustacheReflectable()
 class A {
   String name;
   A(this.name);
 }
 
+@MustacheReflectable()
 class B {
   final map = {};
 
@@ -23,6 +26,8 @@ class B {
 }
 
 void main() {
+  initializeReflectable();
+
   group('mustache4dart tests', () {
     var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
     var salut = compile(salutTemplate);
@@ -175,7 +180,7 @@ void main() {
 
         expect(render(template, context), "4true4|4true4|");
       });
-    }, onPlatform: {'js': new Skip("Broken mirrors, should be investigated")});
+    });
   });
 }
 

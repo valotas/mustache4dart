@@ -6,3 +6,12 @@ targets:
           - test/**_test.dart
         options:
           formatted: true
+      #build_web_compilers|entrypoint:
+      #  # These are globs for the entrypoints you want to compile.
+      #  generate_for:
+      #    - test/**_all.dart
+      #  options:
+      #    compiler: dart2js
+      #    # List any dart2js specific args here, or omit it.
+      #    dart2js_args:
+      #      - --enable-asserts

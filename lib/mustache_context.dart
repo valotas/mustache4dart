@@ -2,7 +2,8 @@ library mustache_context;
 
 import 'dart:collection';
 
-import 'package:mustache4dart/src/reflect.dart';
+import './src/reflect.dart';
+export './src/reflect.dart' show MustacheReflectable;
 
 const String DOT = '\.';
 
