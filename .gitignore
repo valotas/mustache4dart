@@ -1,8 +1,14 @@
 .idea/
 bin/
 build/
+.vscode/
 packages
 *.swp
 *~
-pubspec.lock
+
+# Files and directories created by pub
+.dart_tool/
 .packages
+
+pubspec.lock
+*.reflectable.dart

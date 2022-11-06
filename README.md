@@ -1,6 +1,6 @@
 # Mustache for Dart
 
-[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=master)](https://travis-ci.org/valotas/mustache4dart)
+[![Build Status](https://travis-ci.org/valotas/mustache4dart.svg?branch=dart2)](https://travis-ci.org/valotas/mustache4dart)
 [![Coverage Status](https://coveralls.io/repos/github/valotas/mustache4dart/badge.svg?branch=master)](https://coveralls.io/github/valotas/mustache4dart?branch=master)
 
 A simple implementation of [Mustache][mustache] for the
@@ -8,12 +8,23 @@ A simple implementation of [Mustache][mustache] for the
 [mustache v1.1.2+λ specs][specs]. If you want to have a look at how it works,
 just check the [tests][tests]. For more info, just read further.
 
-Using it
---------
-In order to use the library, just add it to your `pubspec.yaml` as a dependency
+## Using it
 
-	dependencies:
-	  mustache4dart: '>= 2.0.0 < 3.0.0'
+In order to use the library, just add it to your `pubspec.yaml` as a dependency.
+
+For dart v1, you should be using the v2 of this package:
+
+```yaml
+dependencies:
+  mustache4dart: ">= 2.0.0 < 3.0.0"
+```
+
+For dart v2, you should be using the v3 of this package:
+
+```yaml
+dependencies:
+  mustache4dart: ">= 3.0.0 < 4.0.0"
+```
 
 and then import the package
 
@@ -32,6 +43,7 @@ print(salutation); //shoud print Hello Bob!
 ```
 
 ### Context objects
+
 mustache4dart will look at your given object for operators, fields or methods.
 For example, if you give the template `{{firstname}}` for rendering,
 mustache4dart will try the followings
@@ -43,19 +55,8 @@ mustache4dart will try the followings
 
 in each case the first valid value will be used.
 
-#### @MirrorsUsed
-In order to do the stuff described above the mirror library is being used which
-could lead to big js files when compiling the library with dartjs. In order to
-preserve the type information you have to annotate the objects used as
-contextes with `@MirrorsUsed`. Have in mind though that [as documented][mirrorsused]
-this is experimental.
-
-In order to avoid the use of the mirrors package, make sure that you compile
-your library with `dart2js -DMIRRORS=false `. In that case though you must
-always make sure that your context object have a right implementation of the
-`[]` operator as no other checks on the object will be available.
-
 ### Partials
+
 mustache4dart support partials but it needs somehow to know how to find a
 partial. You can do that by providing a function that returns a template
 given a name:
@@ -66,25 +67,54 @@ expect(render('[{{>p}}]', null, partial: partialProvider), '[this is the partial
 ```
 
 ### Compiling to functions
+
 If you have a template that you are going to reuse with different contexts,
 you can compile it to a function using the toplevel function compile:
 
 ```dart
 var salut = compile('Hello {{name}}!');
 print(salut({'name': 'Alice'})); //should print Hello Alice!
-``` 
+```
 
 ### Lambdas support
+
 The library passes all the optional [lambda specs][lambda_specs] based on
-which lambdas must be treatable as arity 0 or 1 functions.
-As dart provides optional named parameters, you can pass to a given lambda
-function the `nestedContext`. In that case the current nested context will be
-given as parameter to the lambda function.
+which lambdas must be treated as arity 0 or 1 functions. As dart provides
+optional named parameters, you can pass to a given lambda function the
+`nestedContext`. In that case the current nested context will be given as
+parameter to the lambda function.
 
+## Flutter / Browser support
 
-Developing
-----------
-The project passes all the [Mustache specs][specs].  You have to make sure
+In order to achive support on targets where `dart:mirrors` is not allowed,
+[`reflectable`](https://pub.dartlang.org/packages/reflectable) is being used.
+In such a case the user should mark the objects used by mustache4dart with
+`@MustacheContext()` and make sure that the reflectable builder is being run
+accordingly.
+
+### `reflectable` setup
+
+The easiest way to get reflectable to work is by making use of
+[`build_runner`](https://pub.dartlang.org/packages/build_runner) with a
+`build.yaml` that should look like:
+
+```yaml
+targets:
+  # your package name, in my case is mustache4dart
+  mustache4dart:
+    builders:
+      reflectable:
+        # a list of dart files containing the annotated code,
+        # in my case that is only some test files
+        generate_for:
+          - test/**_test.dart
+        options:
+          formatted: true
+```
+
+## Developing
+
+The project passes all the [Mustache specs][specs]. You have to make sure
 though that you've downloaded them. Just make sure that you have done the
 steps described below.
 
@@ -123,13 +153,13 @@ pub global run coverage:collect_coverage --uri=http://... -o /tmp/mustache4dart.
 pub global run coverage:format_coverage --packages=app_package/.packages -i /tmp/mustache4dart.coverage.json
 ```
 
-Contributing
-------------
+## Contributing
+
 If you found a bug, just create a [new issue][new_issue] or even better fork
 and issue a pull request with you fix.
 
-Versioning
-----------
+## Versioning
+
 The library will follow a [semantic versioning][semver]
 
 [mustache]: http://mustache.github.com/
@@ -139,7 +169,6 @@ The library will follow a [semantic versioning][semver]
 [lambda_specs]: https://github.com/mustache/spec/blob/master/specs/~lambdas.yml
 [new_issue]: https://github.com/valotas/mustache4dart/issues/new
 [semver]: http://semver.org/
-[mirrorsused]: https://api.dartlang.org/apidocs/channels/stable/#dart-mirrors.MirrorsUsed
 [testrunner]: https://pub.dartlang.org/packages/test_runner
 [travis]: https://travis-ci.org/valotas/mustache4dart
 [coverage]: https://pub.dartlang.org/packages/coverage

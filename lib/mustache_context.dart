@@ -2,7 +2,7 @@ library mustache_context;
 
 import 'dart:collection';
 
-import 'package:mustache4dart/src/mirrors.dart';
+import 'package:mustache4dart/src/reflect.dart';
 
 const String DOT = '\.';
 
@@ -140,7 +140,7 @@ class _MustacheContext implements MustacheContext {
   }
 }
 
-class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
+class _IterableMustacheContextDecorator extends IterableBase<MustacheContext>
     implements MustacheContext {
   final Iterable ctx;
   final _MustacheContext parent;
@@ -152,7 +152,7 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   value([arg]) =>
       throw new Exception('Iterable can not be called as a function');
 
-  Iterator<_MustacheContext> get iterator =>
+  Iterator<MustacheContext> get iterator =>
       new _MustacheContextIteratorDecorator(ctx.iterator,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
@@ -180,19 +180,19 @@ class _IterableMustacheContextDecorator extends IterableBase<_MustacheContext>
   }
 }
 
-class _MustacheContextIteratorDecorator extends Iterator<_MustacheContext> {
+class _MustacheContextIteratorDecorator extends Iterator<MustacheContext> {
   final Iterator delegate;
   final _MustacheContext parent;
   final bool assumeNullNonExistingProperty;
 
-  _MustacheContext current;
+  MustacheContext current;
 
   _MustacheContextIteratorDecorator(this.delegate,
       {this.parent, this.assumeNullNonExistingProperty});
 
   bool moveNext() {
     if (delegate.moveNext()) {
-      current = new _MustacheContext(delegate.current,
+      current = _createMustacheContext(delegate.current,
           parent: parent,
           assumeNullNonExistingProperty: assumeNullNonExistingProperty);
       return true;
